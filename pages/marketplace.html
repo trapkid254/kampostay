@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Buy and sell second-hand items for student life on KampoStay Marketplace.">
+  <title>Student Marketplace — KampoStay</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <a href="../index.html" class="logo" aria-label="KampoStay home">
+        <img src="../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        <div class="nav__links">
+          <a href="search.html" class="nav__link">Search</a>
+          <a href="how-it-works.html" class="nav__link">How It Works</a>
+          <a href="roommates.html" class="nav__link">Roommates</a>
+          <a href="marketplace.html" class="nav__link is-active">Marketplace</a>
+        </div>
+        <div class="nav__actions">
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+          <button type="button" class="btn btn--primary btn--sm" data-sell-item>+ Sell Item</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-header__title">Student Marketplace</h1>
+        <p class="page-header__desc">Buy and sell textbooks, furniture, electronics, and more with fellow students.</p>
+      </div>
+    </div>
+    <div class="container section">
+      <div class="flex gap-4 mb-8 flex-wrap" role="group" aria-label="Filter by category">
+        <a href="#" class="location-chip is-active" data-market-filter="All">All</a>
+        <a href="#" class="location-chip" data-market-filter="Textbooks">Textbooks</a>
+        <a href="#" class="location-chip" data-market-filter="Furniture">Furniture</a>
+        <a href="#" class="location-chip" data-market-filter="Electronics">Electronics</a>
+        <a href="#" class="location-chip" data-market-filter="Clothing">Clothing</a>
+      </div>
+      <div id="marketplace-listings" class="grid grid--2">
+        <p class="text-muted">Loading marketplace…</p>
+      </div>
+    </div>
+  </main>
+
+  <div id="sell-item-modal" class="modal-overlay" role="dialog" aria-labelledby="sell-item-title" aria-hidden="true">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 id="sell-item-title">Sell an Item</h2>
+        <button class="modal__close" data-modal-close aria-label="Close" type="button">&times;</button>
+      </div>
+      <form id="sell-item-form" class="modal__body">
+        <div class="form-group">
+          <label class="form-label" for="sell-title">Item title</label>
+          <input type="text" id="sell-title" name="title" class="form-input" required placeholder="e.g. Mini Fridge, Calculus textbook">
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="sell-category">Category</label>
+            <select id="sell-category" name="category" class="form-select" required>
+              <option value="Textbooks">Textbooks</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sell-price">Price (KSh)</label>
+            <input type="number" id="sell-price" name="price" class="form-input" required min="1" step="50" placeholder="2500">
+          </div>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="sell-location">Location / Campus</label>
+            <input type="text" id="sell-location" name="location" class="form-input" required placeholder="e.g. JKUAT, Ruiru">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sell-condition">Condition</label>
+            <select id="sell-condition" name="condition" class="form-select">
+              <option>New</option>
+              <option selected>Used, good condition</option>
+              <option>Used, fair condition</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sell-contact">WhatsApp / Email</label>
+          <input type="text" id="sell-contact" name="contact" class="form-input" required placeholder="0712 345 678 or you@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sell-image">Item photo</label>
+          <div class="image-upload" data-image-upload>
+            <input type="file" id="sell-image" name="image" class="image-upload__input" accept="image/jpeg,image/png,image/webp,image/gif" capture="environment">
+            <label for="sell-image" class="image-upload__drop">
+              <span class="image-upload__prompt">
+                <svg class="icon icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+                <strong>Upload a photo</strong>
+                <span class="text-sm text-muted">JPG, PNG or WebP · max 5 MB</span>
+              </span>
+              <img class="image-upload__preview" alt="Selected item photo" hidden>
+            </label>
+            <button type="button" class="btn btn--ghost btn--sm image-upload__clear" data-clear-image hidden>Remove photo</button>
+          </div>
+        </div>
+      </form>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--ghost" data-modal-close>Cancel</button>
+        <button type="submit" form="sell-item-form" class="btn btn--primary">List Item</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 KampoStay. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/pages/marketplace.js"></script>
+</body>
+</html>

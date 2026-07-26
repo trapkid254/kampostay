@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="kampostay-api-base" content="https://kampostayback.onrender.com/api/v1">
+  <title>Admin Dashboard — KampoStay</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/variables.css"><link rel="stylesheet" href="../../css/base.css"><link rel="stylesheet" href="../../css/layout.css"><link rel="stylesheet" href="../../css/components.css"><link rel="stylesheet" href="../../css/pages.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <header class="header"><div class="header__inner">
+    <a href="../../index.html" class="logo"><img src="../../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay</a>
+    <nav class="nav" aria-label="Main">
+      <a class="nav__link" href="../../pages/search.html">Search</a>
+      <a class="nav__link" href="../../pages/blog/index.html">Blog</a>
+      <div class="nav__actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+        <a href="#" data-logout class="btn btn--ghost btn--sm">Log Out</a>
+      </div>
+    </nav>
+  </div></header>
+  <div class="page dashboard">
+    <aside class="dashboard__sidebar">
+      <h2 class="font-display mb-4">Admin Panel</h2>
+      <nav class="dashboard__nav" aria-label="Dashboard navigation">
+        <button type="button" class="dashboard__nav-link is-active" data-panel="overview" data-nav-icon="chart">Overview</button>
+        <button type="button" class="dashboard__nav-link" data-panel="users" data-nav-icon="users">Users</button>
+        <button type="button" class="dashboard__nav-link" data-panel="landlords" data-nav-icon="building">Landlords</button>
+        <button type="button" class="dashboard__nav-link" data-panel="properties" data-nav-icon="home">Properties</button>
+        <button type="button" class="dashboard__nav-link" data-panel="universities" data-nav-icon="graduation">Universities</button>
+        <button type="button" class="dashboard__nav-link" data-panel="bookings" data-nav-icon="calendar">Bookings</button>
+        <button type="button" class="dashboard__nav-link" data-panel="payments" data-nav-icon="creditCard">Payments</button>
+        <button type="button" class="dashboard__nav-link" data-panel="reviews" data-nav-icon="star">Reviews</button>
+        <button type="button" class="dashboard__nav-link" data-panel="reports" data-nav-icon="clipboard">Reports</button>
+        <button type="button" class="dashboard__nav-link" data-panel="blogs" data-nav-icon="fileText">Blogs</button>
+        <button type="button" class="dashboard__nav-link" data-panel="ads" data-nav-icon="megaphone">Ads</button>
+        <button type="button" class="dashboard__nav-link" data-panel="notifications" data-nav-icon="bell">Notifications</button>
+        <button type="button" class="dashboard__nav-link" data-panel="faqs" data-nav-icon="help">FAQs</button>
+        <button type="button" class="dashboard__nav-link" data-panel="coupons" data-nav-icon="ticket">Coupons</button>
+        <button type="button" class="dashboard__nav-link" data-panel="campaigns" data-nav-icon="megaphone">Campaigns</button>
+        <button type="button" class="dashboard__nav-link" data-panel="fraud" data-nav-icon="shield">Fraud</button>
+        <button type="button" class="dashboard__nav-link" data-panel="audit" data-nav-icon="clipboard">Audit Logs</button>
+        <button type="button" class="dashboard__nav-link" data-panel="settings" data-nav-icon="settings">Settings</button>
+      </nav>
+    </aside>
+    <main class="dashboard__main">
+      <div class="dashboard__panel is-active" data-panel="overview">
+        <h1>Platform Overview</h1>
+        <div class="chart-container glass-panel mt-4"><canvas id="admin-analytics-chart"></canvas></div>
+        <div class="grid grid--4 mt-8">
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-users">—</div><div class="stat-card__label">Users</div></div>
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-landlords">—</div><div class="stat-card__label">Landlords</div></div>
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-properties">—</div><div class="stat-card__label">Properties</div></div>
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-bookings">—</div><div class="stat-card__label">Bookings</div></div>
+        </div>
+      </div>
+      <div class="dashboard__panel" data-panel="users" hidden>
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <h1>Registered Users</h1>
+          <span id="admin-users-count" class="text-muted"></span>
+        </div>
+        <div class="form-group mt-4" style="max-width:220px;">
+          <label class="form-label" for="filter-role">Filter by role</label>
+          <select id="filter-role" class="form-select">
+            <option value="">All roles</option>
+            <option value="student">Students</option>
+            <option value="landlord">Landlords</option>
+            <option value="admin">Admins</option>
+          </select>
+        </div>
+        <table class="compare-table mt-4" id="admin-users-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="dashboard__panel" data-panel="landlords" hidden>
+        <h1>Landlords</h1>
+        <p class="text-muted mt-2">Landlord accounts from the live database.</p>
+        <table class="compare-table mt-4" id="admin-landlords-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="dashboard__panel" data-panel="properties" hidden>
+        <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+          <h1>Properties</h1>
+          <button type="button" class="btn btn--primary" data-add-property>+ Add Property</button>
+        </div>
+        <p class="text-muted mb-4">Verify draft listings or add a house on behalf of a landlord.</p>
+        <div id="admin-properties-list"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="universities" hidden>
+        <h1>Universities</h1>
+        <form id="admin-uni-form" class="glass-panel mt-4" style="padding:var(--space-6);">
+          <div class="form-group"><label class="form-label" for="uni-name">Name</label><input id="uni-name" name="name" class="form-input" required placeholder="e.g. Jomo Kenyatta University"></div>
+          <div class="form-group"><label class="form-label" for="uni-city">City</label><input id="uni-city" name="city" class="form-input" placeholder="Juja"></div>
+          <button type="submit" class="btn btn--primary btn--sm">+ Add University</button>
+        </form>
+        <div id="admin-universities" class="flex flex-wrap gap-4 mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="bookings" hidden><h1>Bookings</h1><div id="admin-bookings" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="payments" hidden><h1>Payments</h1><div id="admin-payments" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="reviews" hidden><h1>Reviews</h1><div id="admin-reviews" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="reports" hidden><h1>Reports</h1><div id="admin-reports" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="blogs" hidden>
+        <h1>Blog Management</h1>
+        <div id="admin-blogs" class="mt-4"></div>
+        <a href="../../pages/blog/index.html" class="btn btn--outline mt-4">View public blog</a>
+      </div>
+      <div class="dashboard__panel" data-panel="ads" hidden>
+        <h1>Advertisements</h1>
+        <form id="admin-ad-form" class="glass-panel mt-4" style="padding:var(--space-6);">
+          <div class="form-group"><label class="form-label" for="ad-title">Title</label><input id="ad-title" name="title" class="form-input" required></div>
+          <div class="form-group">
+            <label class="form-label" for="ad-placement">Placement</label>
+            <select id="ad-placement" name="placement" class="form-select" required>
+              <option value="homepage_banner">Homepage banner</option>
+              <option value="search_sidebar">Search sidebar</option>
+              <option value="property_detail">Property detail</option>
+              <option value="footer">Footer</option>
+              <option value="popup">Popup</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label" for="ad-link">Link URL</label><input id="ad-link" name="linkUrl" type="url" class="form-input"></div>
+          <button type="submit" class="btn btn--primary">Create Ad</button>
+        </form>
+        <div id="admin-ads" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="notifications" hidden>
+        <h1>Platform Notifications</h1>
+        <p class="text-muted mt-2">Recent notifications stored for the signed-in admin account.</p>
+        <div id="admin-notifications" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="faqs" hidden>
+        <h1>FAQ Management</h1>
+        <form id="admin-faq-form" class="glass-panel mt-4" style="padding:var(--space-6);">
+          <div class="form-group"><label class="form-label" for="faq-q">Question</label><input id="faq-q" name="question" class="form-input" required></div>
+          <div class="form-group"><label class="form-label" for="faq-a">Answer</label><textarea id="faq-a" name="answer" class="form-textarea" rows="3" required></textarea></div>
+          <button type="submit" class="btn btn--primary">+ Add FAQ</button>
+        </form>
+        <div id="admin-faqs" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="coupons" hidden>
+        <h1>Coupons</h1>
+        <form id="admin-coupon-form" class="glass-panel mt-4" style="padding:var(--space-6);">
+          <div class="form-group"><label class="form-label" for="coupon-code">Code</label><input id="coupon-code" name="code" class="form-input" required placeholder="STUDENT10"></div>
+          <div class="grid grid--2" style="gap:var(--space-4);">
+            <div class="form-group">
+              <label class="form-label" for="coupon-type">Type</label>
+              <select id="coupon-type" name="discountType" class="form-select">
+                <option value="percentage">Percentage</option>
+                <option value="fixed">Fixed (KES)</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label" for="coupon-value">Value</label><input id="coupon-value" name="discountValue" type="number" class="form-input" required min="1"></div>
+          </div>
+          <button type="submit" class="btn btn--primary">Create Coupon</button>
+        </form>
+        <div id="admin-coupons" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="campaigns" hidden>
+        <h1>Marketing Campaigns</h1>
+        <p class="text-muted mt-2">Active ads used as campaign placements.</p>
+        <div id="admin-campaigns" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="fraud" hidden>
+        <h1>Fraud Detection</h1>
+        <p class="text-muted mt-2">Listings with elevated fraud scores.</p>
+        <div id="admin-fraud" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="audit" hidden>
+        <h1>Audit Logs</h1>
+        <div id="admin-audit" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="settings" hidden>
+        <h1>Platform Settings</h1>
+        <form id="admin-settings-form" class="glass-panel mt-4" style="padding:var(--space-6);">
+          <div class="form-group"><label class="form-label" for="setting-platform">Platform Name</label><input id="setting-platform" name="platformName" class="form-input" placeholder="KampoStay"></div>
+          <button type="submit" class="btn btn--primary">Save Settings</button>
+        </form>
+        <div id="admin-settings-list" class="mt-4 text-muted text-sm"></div>
+      </div>
+    </main>
+  </div>
+  <div id="add-property-modal" class="modal-overlay" role="dialog" aria-labelledby="add-property-title" aria-hidden="true">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal__header">
+        <h2 id="add-property-title">Add Property</h2>
+        <button class="modal__close" data-modal-close type="button" aria-label="Close">&times;</button>
+      </div>
+      <form id="add-property-form" class="modal__body">
+        <div class="form-group">
+          <label class="form-label" for="property-landlord">Assign to landlord</label>
+          <select id="property-landlord" name="landlord" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="property-title">Title</label>
+          <input id="property-title" name="title" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="property-description">Description</label>
+          <textarea id="property-description" name="description" class="form-textarea" rows="3" required></textarea>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-university">University</label>
+            <select id="property-university" name="university" class="form-select" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-roomType">Room type</label>
+            <select id="property-roomType" name="roomType" class="form-select" required>
+              <option value="bedsitter">Bedsitter</option>
+              <option value="single">Single</option>
+              <option value="shared">Shared</option>
+              <option value="studio">Studio</option>
+              <option value="one_bedroom">One bedroom</option>
+              <option value="hostel_bed">Hostel bed</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-rent">Monthly rent (KSh)</label>
+            <input id="property-rent" name="rent" type="number" class="form-input" required min="1000" step="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-deposit">Deposit (KSh)</label>
+            <input id="property-deposit" name="deposit" type="number" class="form-input" min="0" step="100">
+          </div>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-estate">Estate</label>
+            <input id="property-estate" name="estate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-address">Address</label>
+            <input id="property-address" name="address" class="form-input" required>
+          </div>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-city">City</label>
+            <input id="property-city" name="city" class="form-input" placeholder="Nairobi">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-walk">Walk minutes</label>
+            <input id="property-walk" name="walkingTimeMinutes" type="number" class="form-input" min="1" placeholder="15">
+          </div>
+        </div>
+        <input type="hidden" name="county" value="Nairobi">
+        <input type="hidden" name="lat" value="-1.2921">
+        <input type="hidden" name="lng" value="36.8219">
+        <div class="form-group">
+          <label class="form-label" for="property-image">Image URL (optional)</label>
+          <input id="property-image" name="imageUrl" type="url" class="form-input">
+        </div>
+        <div class="form-group">
+          <span class="form-label">Amenities</span>
+          <div class="flex flex-wrap gap-4 mt-2">
+            <label class="form-checkbox"><input type="checkbox" name="wifi"> WiFi</label>
+            <label class="form-checkbox"><input type="checkbox" name="water" checked> Water</label>
+            <label class="form-checkbox"><input type="checkbox" name="furnished"> Furnished</label>
+            <label class="form-checkbox"><input type="checkbox" name="parking"> Parking</label>
+            <label class="form-checkbox"><input type="checkbox" name="laundry"> Laundry</label>
+            <label class="form-checkbox"><input type="checkbox" name="kitchen" checked> Kitchen</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="property-rules">House rules (one per line)</label>
+          <textarea id="property-rules" name="houseRules" class="form-textarea" rows="2"></textarea>
+        </div>
+      </form>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--ghost" data-modal-close>Cancel</button>
+        <button type="submit" form="add-property-form" class="btn btn--primary">Submit listing</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="../../js/app.js"></script>
+  <script type="module" src="../../js/pages/admin-dashboard.js"></script>
+</body>
+</html>

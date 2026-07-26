@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find compatible roommates near your Kenyan university with KampoStay matching.">
+  <title>Find Roommates — KampoStay</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <a href="../index.html" class="logo" aria-label="KampoStay home">
+        <img src="../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        <div class="nav__links">
+          <a href="search.html" class="nav__link">Search</a>
+          <a href="how-it-works.html" class="nav__link">How It Works</a>
+          <a href="roommates.html" class="nav__link is-active">Roommates</a>
+          <a href="marketplace.html" class="nav__link">Marketplace</a>
+        </div>
+        <div class="nav__actions">
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+          <a href="auth/login.html" class="btn btn--ghost btn--sm">Log In</a>
+          <a href="auth/register.html" class="btn btn--primary btn--sm">Sign Up</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-header__title">Find Your Roommate</h1>
+        <p class="page-header__desc">Match with compatible students based on lifestyle, budget, and university.</p>
+      </div>
+    </div>
+    <div class="container section">
+      <div class="glass-panel" style="padding:var(--space-6);margin-bottom:var(--space-8);">
+        <form id="roommate-filters" class="grid grid--3">
+          <div class="form-group">
+            <label class="form-label" for="rm-university">University / College</label>
+            <select id="rm-university" name="university" class="form-select"
+              data-institution-picker="all"
+              data-placeholder="Search university or college…"
+              data-empty-label="Any institution">
+              <option value="">Any institution</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rm-budget">Budget (KSh)</label>
+            <input type="number" id="rm-budget" name="budget" class="form-input" placeholder="Max rent share">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rm-gender">Gender</label>
+            <select id="rm-gender" name="gender" class="form-select">
+              <option value="">Any</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div id="roommate-results" class="grid grid--3">
+        <p class="text-muted">Loading roommate matches…</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 KampoStay. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/pages/roommates.js"></script>
+</body>
+</html>

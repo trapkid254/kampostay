@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your free KampoStay account and start finding student housing in Kenya.">
+  <meta name="kampostay-api-base" content="https://kampostayback.onrender.com/api/v1">
+  <title>Sign Up — KampoStay</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/pages.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-visual">
+      <a href="../../index.html" class="auth-visual__brand" style="color:inherit;text-decoration:none;">Kampo<span>Stay</span></a>
+      <p>Join thousands of Kenyan students finding safe, affordable housing.</p>
+    </div>
+    <div class="auth-form-panel">
+      <form id="register-form" class="auth-form">
+        <h1 class="auth-form__title">Create Account</h1>
+        <p class="auth-form__subtitle">Free for students. Start searching in minutes.</p>
+
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" class="form-input" required autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" class="form-input" required autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input type="email" id="email" name="email" class="form-input" required autocomplete="email" placeholder="you@example.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="university">University / College</label>
+          <select id="university" name="university" class="form-select"
+            data-institution-picker="all"
+            data-allow-empty="false"
+            data-placeholder="Search your university or college…"
+            data-empty-label="Select institution…">
+            <option value="">Select institution…</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="role">I am a…</label>
+          <select id="role" name="role" class="form-select">
+            <option value="student">Student</option>
+            <option value="landlord">Landlord</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-input" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" required autocomplete="new-password">
+        </div>
+
+        <label class="form-checkbox mb-4">
+          <input type="checkbox" name="terms" required>
+          I agree to the <a href="../safety.html">Terms &amp; Safety Policy</a>
+        </label>
+
+        <button type="submit" class="btn btn--primary btn--lg" style="width:100%;">Create Account</button>
+        <p class="text-center mt-8 text-muted">Already have an account? <a href="login.html">Log in</a></p>
+        <p class="text-center mt-4"><a href="../../index.html" class="text-sm">← Back to home</a></p>
+      </form>
+    </div>
+  </div>
+  <script type="module" src="../../js/app.js"></script>
+  <script type="module" src="../../js/pages/auth.js"></script>
+</body>
+</html>

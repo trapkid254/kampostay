@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rent affordability and move-in cost calculators for Kenyan students.">
+  <title>Calculators â€” KampoStay</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css"><link rel="stylesheet" href="../css/base.css"><link rel="stylesheet" href="../css/layout.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+  <header class="header"><div class="header__inner"><a href="../index.html" class="logo"><img src="../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay</a><nav class="nav"><button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button></nav></div></header>
+  <main class="page">
+    <div class="page-header"><div class="container"><h1>Housing Calculators</h1><p class="page-header__desc">Plan your budget before you move.</p></div></div>
+    <div class="container section"><div class="grid grid--2">
+      <div class="glass-panel calculator">
+        <h2>Rent Affordability</h2>
+        <p class="text-muted mb-4">How much rent can you afford based on your income?</p>
+        <form id="affordability-form">
+          <div class="form-group"><label class="form-label">Monthly Income (KSh)</label><input type="number" name="income" class="form-input" required placeholder="e.g. 15000"></div>
+          <div class="form-group"><label class="form-label">Max Rent Ratio (%)</label><select name="ratio" class="form-select"><option value="30" selected>30% (Recommended)</option><option value="25">25%</option><option value="35">35%</option><option value="40">40%</option></select></div>
+          <button type="submit" class="btn btn--primary">Calculate</button>
+        </form>
+        <div id="affordability-result" class="calculator__result"></div>
+      </div>
+      <div class="glass-panel calculator">
+        <h2>Move-In Cost</h2>
+        <p class="text-muted mb-4">Estimate your total upfront costs when moving in.</p>
+        <form id="movein-form">
+          <div class="form-group"><label class="form-label">Monthly Rent (KSh)</label><input type="number" name="rent" class="form-input" required></div>
+          <div class="form-group"><label class="form-label">Deposit (KSh)</label><input type="number" name="deposit" class="form-input" placeholder="Usually 1 month rent"></div>
+          <div class="form-group"><label class="form-label">Agent Fee (KSh)</label><input type="number" name="agent" class="form-input" value="0"></div>
+          <div class="form-group"><label class="form-label">Transport (KSh)</label><input type="number" name="transport" class="form-input" value="0"></div>
+          <div class="form-group"><label class="form-label">Supplies & Setup (KSh)</label><input type="number" name="supplies" class="form-input" value="0"></div>
+          <button type="submit" class="btn btn--primary">Calculate</button>
+        </form>
+        <div id="movein-result" class="calculator__result"></div>
+      </div>
+    </div></div>
+  </main>
+  <footer class="footer"><div class="container"><div class="footer__bottom"><p class="footer__copyright">&copy; 2026 KampoStay. All rights reserved.</p></div></div></footer>
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/pages/calculators.js"></script>
+</body>
+</html>

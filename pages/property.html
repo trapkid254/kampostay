@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View property details, amenities, map, reviews, and book a viewing on KampoStay.">
+  <title>Property Details — KampoStay</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <a href="../index.html" class="logo" aria-label="KampoStay home">
+        <img src="../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <div class="nav__actions">
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+          <a href="search.html" class="btn btn--outline btn--sm">Back to Search</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="container" id="property-content">
+      <div id="property-gallery" class="property-gallery"></div>
+      <div class="property-detail">
+        <div class="property-main">
+          <div id="property-header"></div>
+          <section class="mt-8 reveal" aria-labelledby="amenities-title">
+            <h2 id="amenities-title">Amenities</h2>
+            <div id="amenities-grid" class="amenities-grid mt-4"></div>
+          </section>
+          <section class="mt-8 reveal" aria-labelledby="rules-title">
+            <h2 id="rules-title">House Rules</h2>
+            <ul id="house-rules" class="mt-4"></ul>
+          </section>
+          <section class="mt-8 reveal" aria-labelledby="map-title">
+            <h2 id="map-title">Location &amp; Directions</h2>
+            <div id="property-map" class="mt-4"></div>
+            <button id="directions-btn" class="btn btn--outline mt-4 btn--with-icon" type="button">Get Walking Directions</button>
+          </section>
+          <section class="mt-8 reveal" aria-labelledby="reviews-title">
+            <h2 id="reviews-title">Reviews</h2>
+            <div id="reviews-list" class="mt-4"></div>
+          </section>
+          <section class="mt-8 reveal" aria-labelledby="emergency-title">
+            <h2 id="emergency-title">Emergency Nearby</h2>
+            <div id="emergency-list" class="grid grid--3 mt-4"></div>
+          </section>
+        </div>
+        <aside class="property-sidebar">
+          <div class="glass-panel" style="padding:var(--space-6);" id="booking-panel"></div>
+          <div class="glass-panel mt-4" style="padding:var(--space-6);" id="landlord-panel"></div>
+          <canvas id="share-qr" class="mt-4" aria-label="Share QR code" style="max-width:160px;margin-inline:auto;display:block;"></canvas>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div id="booking-modal" class="modal-overlay" role="dialog" aria-labelledby="booking-modal-title" aria-hidden="true">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 id="booking-modal-title">Book a Viewing</h2>
+        <button class="modal__close" data-modal-close aria-label="Close" type="button">&times;</button>
+      </div>
+      <form id="booking-form" class="modal__body">
+        <div class="form-group">
+          <label class="form-label" for="view-date">Preferred Date</label>
+          <input type="date" id="view-date" name="date" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="view-time">Preferred Time</label>
+          <input type="time" id="view-time" name="time" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="view-notes">Notes</label>
+          <textarea id="view-notes" name="notes" class="form-textarea" rows="3"></textarea>
+        </div>
+      </form>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" data-modal-close type="button">Cancel</button>
+        <button type="submit" form="booking-form" class="btn btn--primary">Confirm Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="payment-modal" class="modal-overlay" role="dialog" aria-labelledby="payment-modal-title" aria-hidden="true">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 id="payment-modal-title">Pay &amp; Reserve Room</h2>
+        <button class="modal__close" data-modal-close aria-label="Close" type="button">&times;</button>
+      </div>
+      <form id="payment-form" class="modal__body">
+        <p class="text-muted mb-4">Reserving <strong id="pay-property-title">this room</strong>. Amount due today: <strong id="pay-amount">—</strong> (deposit).</p>
+        <fieldset class="form-group">
+          <legend class="form-label">Payment method</legend>
+          <label class="pay-option"><input type="radio" name="method" value="mpesa" checked> <span>M-Pesa STK Push</span></label>
+          <label class="pay-option"><input type="radio" name="method" value="card"> <span>Visa / Mastercard</span></label>
+          <label class="pay-option"><input type="radio" name="method" value="bank"> <span>Bank transfer</span></label>
+        </fieldset>
+        <div class="form-group" id="mpesa-phone-group">
+          <label class="form-label" for="pay-phone">M-Pesa phone number</label>
+          <input type="tel" id="pay-phone" name="phone" class="form-input" placeholder="07XX XXX XXX" autocomplete="tel">
+        </div>
+        <div class="guarantee-box">
+          <div>
+            <strong>100% refund if the room does not match</strong>
+            <p class="text-sm text-muted">Paid on KampoStay and the place is completely different from the listing photos, amenities, or location? Report within 48 hours of your first visit for a full refund.</p>
+          </div>
+        </div>
+      </form>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" data-modal-close type="button">Cancel</button>
+        <button type="submit" form="payment-form" class="btn btn--primary">Confirm Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 KampoStay. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/pages/property-page.js"></script>
+</body>
+</html>

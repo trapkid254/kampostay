@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="kampostay-api-base" content="https://kampostayback.onrender.com/api/v1">
+  <meta name="description" content="Student dashboard — manage bookings, favourites, and housing search on KampoStay.">
+  <title>Student Dashboard — KampoStay</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/variables.css"><link rel="stylesheet" href="../../css/base.css"><link rel="stylesheet" href="../../css/layout.css"><link rel="stylesheet" href="../../css/components.css"><link rel="stylesheet" href="../../css/pages.css">
+</head>
+<body>
+  <header class="header"><div class="header__inner">
+    <a href="../../index.html" class="logo"><img src="../../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay</a>
+    <nav class="nav" aria-label="Main">
+      <a class="nav__link" href="../../pages/search.html">Search</a>
+      <a class="nav__link" href="../../pages/marketplace.html">Marketplace</a>
+      <div class="nav__actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+        <a href="#" data-logout class="btn btn--ghost btn--sm">Log Out</a>
+      </div>
+    </nav>
+  </div></header>
+  <div class="page dashboard">
+    <aside class="dashboard__sidebar">
+      <h2 class="font-display mb-4">Hello, <span data-dashboard-name>Student</span></h2>
+      <nav class="dashboard__nav" aria-label="Dashboard navigation">
+        <button type="button" class="dashboard__nav-link is-active" data-panel="profile" data-nav-icon="user">Profile</button>
+        <button type="button" class="dashboard__nav-link" data-panel="bookings" data-nav-icon="calendar">Bookings</button>
+        <button type="button" class="dashboard__nav-link" data-panel="favourites" data-nav-icon="heart">Favourites</button>
+        <button type="button" class="dashboard__nav-link" data-panel="compare" data-nav-icon="scale">Compare</button>
+        <button type="button" class="dashboard__nav-link" data-panel="notifications" data-nav-icon="bell">Notifications</button>
+        <button type="button" class="dashboard__nav-link" data-panel="messages" data-nav-icon="message">Messages</button>
+        <button type="button" class="dashboard__nav-link" data-panel="reviews" data-nav-icon="star">Reviews</button>
+        <button type="button" class="dashboard__nav-link" data-panel="payments" data-nav-icon="creditCard">Payments</button>
+        <button type="button" class="dashboard__nav-link" data-panel="ai-recs" data-nav-icon="sparkles">Recommendations</button>
+        <button type="button" class="dashboard__nav-link" data-panel="reports" data-nav-icon="clipboard">Reports</button>
+        <button type="button" class="dashboard__nav-link" data-panel="saved-searches" data-nav-icon="search">Saved Searches</button>
+      </nav>
+    </aside>
+    <main class="dashboard__main">
+      <div class="dashboard__panel is-active" data-panel="profile">
+        <h1>My Profile</h1>
+        <form id="student-profile-form" class="glass-panel mt-4" style="padding:var(--space-6);">
+          <div class="form-group"><label class="form-label" for="profile-first">First name</label><input id="profile-first" name="firstName" class="form-input" required></div>
+          <div class="form-group"><label class="form-label" for="profile-last">Last name</label><input id="profile-last" name="lastName" class="form-input"></div>
+          <div class="form-group"><label class="form-label" for="profile-phone">Phone</label><input id="profile-phone" name="phone" class="form-input"></div>
+          <div class="form-group"><label class="form-label" for="profile-city">City</label><input id="profile-city" name="city" class="form-input"></div>
+          <button type="submit" class="btn btn--primary">Save Changes</button>
+        </form>
+      </div>
+      <div class="dashboard__panel" data-panel="bookings" hidden><h1>My Bookings</h1><div id="dash-bookings" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="favourites" hidden><h1>Favourites</h1><div id="dash-favourites" class="grid grid--3 mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="compare" hidden><h1>Compare Properties</h1><div id="dash-compare" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="notifications" hidden><h1>Notifications</h1><div id="dash-notifications" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="messages" hidden><h1>Messages</h1><div id="dash-messages" class="glass-panel mt-4" style="padding:var(--space-6);"></div></div>
+      <div class="dashboard__panel" data-panel="reviews" hidden><h1>My Reviews</h1><div id="dash-reviews" class="glass-panel mt-4" style="padding:var(--space-6);"></div></div>
+      <div class="dashboard__panel" data-panel="payments" hidden>
+        <h1>Payments</h1>
+        <div class="glass-panel mt-4" style="padding:var(--space-6);">
+          <p class="mb-4">Pay room deposits on property pages via <strong>M-Pesa</strong>, <strong>card</strong>, or <strong>bank transfer</strong>.</p>
+          <div id="dash-payments"></div>
+        </div>
+      </div>
+      <div class="dashboard__panel" data-panel="ai-recs" hidden><h1>Recommendations</h1><p class="text-muted mb-4">Featured listings from live KampoStay inventory.</p><div id="dash-ai-recs" class="grid grid--3"></div></div>
+      <div class="dashboard__panel" data-panel="reports" hidden><h1>Reports</h1><div id="dash-reports" class="glass-panel mt-4" style="padding:var(--space-6);"></div></div>
+      <div class="dashboard__panel" data-panel="saved-searches" hidden><h1>Saved Searches</h1><div id="dash-saved-searches" class="glass-panel mt-4" style="padding:var(--space-6);"></div></div>
+    </main>
+  </div>
+  <script type="module" src="../../js/app.js"></script>
+  <script type="module" src="../../js/pages/student-dashboard.js"></script>
+</body>
+</html>

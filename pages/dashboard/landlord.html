@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="kampostay-api-base" content="https://kampostayback.onrender.com/api/v1">
+  <title>Landlord Dashboard — KampoStay</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/variables.css"><link rel="stylesheet" href="../../css/base.css"><link rel="stylesheet" href="../../css/layout.css"><link rel="stylesheet" href="../../css/components.css"><link rel="stylesheet" href="../../css/pages.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <header class="header"><div class="header__inner">
+    <a href="../../index.html" class="logo"><img src="../../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay</a>
+    <nav class="nav" aria-label="Main">
+      <a class="nav__link" href="../../pages/search.html">Search</a>
+      <div class="nav__actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+        <a href="#" data-logout class="btn btn--ghost btn--sm">Log Out</a>
+      </div>
+    </nav>
+  </div></header>
+  <div class="page dashboard">
+    <aside class="dashboard__sidebar">
+      <h2 class="font-display mb-4">Landlord Portal</h2>
+      <nav class="dashboard__nav" aria-label="Dashboard navigation">
+        <button type="button" class="dashboard__nav-link is-active" data-panel="properties" data-nav-icon="home">Properties</button>
+        <button type="button" class="dashboard__nav-link" data-panel="media" data-nav-icon="camera">Media</button>
+        <button type="button" class="dashboard__nav-link" data-panel="pricing" data-nav-icon="money">Pricing</button>
+        <button type="button" class="dashboard__nav-link" data-panel="occupancy" data-nav-icon="chart">Occupancy</button>
+        <button type="button" class="dashboard__nav-link" data-panel="bookings" data-nav-icon="calendar">Bookings</button>
+        <button type="button" class="dashboard__nav-link" data-panel="messages" data-nav-icon="message">Messages</button>
+        <button type="button" class="dashboard__nav-link" data-panel="revenue" data-nav-icon="trendUp">Revenue</button>
+        <button type="button" class="dashboard__nav-link" data-panel="calendar" data-nav-icon="calendar">Calendar</button>
+        <button type="button" class="dashboard__nav-link" data-panel="reviews" data-nav-icon="star">Reviews</button>
+        <button type="button" class="dashboard__nav-link" data-panel="analytics" data-nav-icon="trendDown">Analytics</button>
+      </nav>
+    </aside>
+    <main class="dashboard__main">
+      <div class="dashboard__panel is-active" data-panel="properties">
+        <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+          <h1>My Properties</h1>
+          <button type="button" class="btn btn--primary" data-add-property>+ Add Property</button>
+        </div>
+        <p class="text-muted mb-4">New listings stay <strong>draft</strong> until an admin verifies them.</p>
+        <div id="landlord-properties" class="grid grid--2"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="media" hidden>
+        <h1>Media</h1>
+        <p class="text-muted mt-2">Images for your listings (from live property data).</p>
+        <div id="landlord-media" class="grid grid--3 mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="pricing" hidden>
+        <h1>Pricing</h1>
+        <p class="text-muted mt-2">Update rent and deposit for a selected listing.</p>
+        <div class="glass-panel mt-4" style="padding:var(--space-6);">
+          <div class="form-group">
+            <label class="form-label" for="pricing-property">Property</label>
+            <select id="pricing-property" class="form-select"></select>
+          </div>
+          <div class="form-group"><label class="form-label" for="pricing-rent">Monthly Rent (KSh)</label><input id="pricing-rent" type="number" class="form-input" min="1000" step="100"></div>
+          <div class="form-group"><label class="form-label" for="pricing-deposit">Deposit (KSh)</label><input id="pricing-deposit" type="number" class="form-input" min="0" step="100"></div>
+          <button type="button" id="pricing-save" class="btn btn--primary">Update Pricing</button>
+        </div>
+      </div>
+      <div class="dashboard__panel" data-panel="occupancy" hidden>
+        <h1>Occupancy</h1>
+        <div class="grid grid--3 mt-4">
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="occ-rate">—</div><div class="stat-card__label">Confirmed bookings</div></div>
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="occ-active">—</div><div class="stat-card__label">Active listings</div></div>
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="occ-pending">—</div><div class="stat-card__label">Pending bookings</div></div>
+        </div>
+      </div>
+      <div class="dashboard__panel" data-panel="bookings" hidden><h1>Bookings</h1><div id="landlord-bookings" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="messages" hidden><h1>Messages</h1><div id="landlord-messages" class="glass-panel mt-4" style="padding:var(--space-6);"></div></div>
+      <div class="dashboard__panel" data-panel="revenue" hidden>
+        <h1>Revenue</h1>
+        <p class="text-muted mt-2" id="revenue-summary"></p>
+        <div class="chart-container glass-panel mt-4"><canvas id="revenue-chart"></canvas></div>
+      </div>
+      <div class="dashboard__panel" data-panel="calendar" hidden>
+        <h1>Calendar</h1>
+        <p class="text-muted mt-2">Upcoming bookings from your live schedule.</p>
+        <div id="landlord-calendar" class="mt-4"></div>
+      </div>
+      <div class="dashboard__panel" data-panel="reviews" hidden><h1>Reviews</h1><div id="landlord-reviews" class="mt-4"></div></div>
+      <div class="dashboard__panel" data-panel="analytics" hidden>
+        <h1>Analytics</h1>
+        <div class="grid grid--3 mt-4">
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="an-views">—</div><div class="stat-card__label">Total Views</div></div>
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="an-bookings">—</div><div class="stat-card__label">Bookings</div></div>
+          <div class="stat-card glass-panel"><div class="stat-card__value" id="an-rating">—</div><div class="stat-card__label">Listings</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="add-property-modal" class="modal-overlay" role="dialog" aria-labelledby="add-property-title" aria-hidden="true">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal__header">
+        <h2 id="add-property-title">Add Property</h2>
+        <button class="modal__close" data-modal-close type="button" aria-label="Close">&times;</button>
+      </div>
+      <form id="add-property-form" class="modal__body">
+        <div class="form-group">
+          <label class="form-label" for="property-title">Title</label>
+          <input id="property-title" name="title" class="form-input" required placeholder="e.g. Sunrise Hostel — Single Room">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="property-description">Description</label>
+          <textarea id="property-description" name="description" class="form-textarea" rows="3" required placeholder="Describe the room, utilities, and neighbourhood…"></textarea>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-university">Nearest university</label>
+            <select id="property-university" name="university" class="form-select" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-roomType">Room type</label>
+            <select id="property-roomType" name="roomType" class="form-select" required>
+              <option value="bedsitter">Bedsitter</option>
+              <option value="single">Single</option>
+              <option value="shared">Shared</option>
+              <option value="studio">Studio</option>
+              <option value="one_bedroom">One bedroom</option>
+              <option value="hostel_bed">Hostel bed</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-rent">Monthly rent (KSh)</label>
+            <input id="property-rent" name="rent" type="number" class="form-input" required min="1000" step="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-deposit">Deposit (KSh)</label>
+            <input id="property-deposit" name="deposit" type="number" class="form-input" min="0" step="100">
+          </div>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-estate">Estate / area</label>
+            <input id="property-estate" name="estate" class="form-input" required placeholder="e.g. Ruiru">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-address">Address</label>
+            <input id="property-address" name="address" class="form-input" required placeholder="Street / landmark">
+          </div>
+        </div>
+        <div class="grid grid--2" style="gap:var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="property-city">City</label>
+            <input id="property-city" name="city" class="form-input" placeholder="Nairobi">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="property-walk">Walking minutes to campus</label>
+            <input id="property-walk" name="walkingTimeMinutes" type="number" class="form-input" min="1" placeholder="15">
+          </div>
+        </div>
+        <input type="hidden" name="county" value="Nairobi">
+        <input type="hidden" name="lat" value="-1.2921">
+        <input type="hidden" name="lng" value="36.8219">
+        <div class="form-group">
+          <label class="form-label" for="property-image">Image URL (optional)</label>
+          <input id="property-image" name="imageUrl" type="url" class="form-input" placeholder="https://…">
+        </div>
+        <div class="form-group">
+          <span class="form-label">Amenities</span>
+          <div class="flex flex-wrap gap-4 mt-2">
+            <label class="form-checkbox"><input type="checkbox" name="wifi"> WiFi</label>
+            <label class="form-checkbox"><input type="checkbox" name="water" checked> Water</label>
+            <label class="form-checkbox"><input type="checkbox" name="furnished"> Furnished</label>
+            <label class="form-checkbox"><input type="checkbox" name="parking"> Parking</label>
+            <label class="form-checkbox"><input type="checkbox" name="laundry"> Laundry</label>
+            <label class="form-checkbox"><input type="checkbox" name="kitchen" checked> Kitchen</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="property-rules">House rules (one per line)</label>
+          <textarea id="property-rules" name="houseRules" class="form-textarea" rows="2" placeholder="e.g. No loud music after 10 PM"></textarea>
+        </div>
+      </form>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--ghost" data-modal-close>Cancel</button>
+        <button type="submit" form="add-property-form" class="btn btn--primary">Submit listing</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="../../js/app.js"></script>
+  <script type="module" src="../../js/pages/landlord-dashboard.js"></script>
+</body>
+</html>

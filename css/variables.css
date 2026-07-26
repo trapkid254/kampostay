@@ -1,0 +1,124 @@
+/* KampoStay Design Tokens — Light & Dark */
+:root {
+  /* Brand */
+  --color-brand: #0B3D2E;
+  --color-brand-light: #145A44;
+  --color-brand-dark: #062820;
+  --color-accent: #D4A017;
+  --color-accent-light: #E8B82A;
+  --color-accent-dark: #B8890F;
+
+  /* Surfaces */
+  --color-bg: #F7F9F8;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-muted: #EEF2F0;
+  --color-bg-pattern: radial-gradient(ellipse at 20% 0%, rgba(11, 61, 46, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(212, 160, 23, 0.05) 0%, transparent 50%),
+    linear-gradient(165deg, #F7F9F8 0%, #EEF4F1 50%, #F7F9F8 100%);
+
+  /* Text */
+  --color-text: #1A1F1C;
+  --color-text-muted: #5A6560;
+  --color-text-inverse: #F7F9F8;
+
+  /* Semantic */
+  --color-success: #1B7A4E;
+  --color-warning: #C47F17;
+  --color-error: #C0392B;
+  --color-info: #1A6B8A;
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(11, 61, 46, 0.08);
+  --glass-shadow: 0 8px 32px rgba(11, 61, 46, 0.08);
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.75rem;
+  --text-5xl: 3.5rem;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* Layout */
+  --container-max: 1200px;
+  --container-narrow: 720px;
+  --header-height: 72px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(11, 61, 46, 0.06);
+  --shadow-md: 0 4px 16px rgba(11, 61, 46, 0.08);
+  --shadow-lg: 0 12px 40px rgba(11, 61, 46, 0.12);
+  --shadow-glow: 0 0 24px rgba(212, 160, 23, 0.25);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-ai: 350;
+}
+
+[data-theme="dark"] {
+  --color-brand: #1A6B52;
+  --color-brand-light: #228B6A;
+  --color-brand-dark: #0B3D2E;
+  --color-accent: #E8B82A;
+  --color-accent-light: #F0C94A;
+  --color-accent-dark: #D4A017;
+
+  --color-bg: #0F1412;
+  --color-bg-elevated: #1A2220;
+  --color-bg-muted: #242E2A;
+  --color-bg-pattern: radial-gradient(ellipse at 20% 0%, rgba(26, 107, 82, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(212, 160, 23, 0.08) 0%, transparent 50%),
+    linear-gradient(165deg, #0F1412 0%, #141C19 50%, #0F1412 100%);
+
+  --color-text: #E8EDEA;
+  --color-text-muted: #9AABA3;
+  --color-text-inverse: #0F1412;
+
+  --glass-bg: rgba(26, 34, 32, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-base: 0ms;
+    --transition-slow: 0ms;
+  }
+}

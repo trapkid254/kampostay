@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="KampoStay — Kenya's trusted platform for verified student accommodation near universities. Find affordable hostels, bedsitters & shared flats in KSh.">
+  <meta name="theme-color" content="#0B3D2E">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KampoStay">
+  <meta name="kampostay-api-base" content="https://kampostayback.onrender.com/api/v1">
+  <!-- Start backend: cd backend && npm run dev  |  Seed: npm run seed -->
+  <link rel="canonical" href="https://kampostay.co.ke/">
+  <meta property="og:title" content="KampoStay — Student Housing in Kenya">
+  <meta property="og:description" content="Find verified student accommodation near Kenyan universities. Affordable, safe, and trusted.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kampostay.co.ke/">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>KampoStay — Find Student Housing in Kenya</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "KampoStay",
+    "url": "https://kampostay.co.ke",
+    "description": "Kenya's student housing platform",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://kampostay.co.ke/pages/search.html?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <a href="index.html" class="logo" aria-label="KampoStay home">
+        <img src="favicon.svg" alt="" class="logo__icon" width="36" height="36">
+        <span class="logo__text">KampoStay</span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="nav__links">
+          <a href="pages/search.html" class="nav__link">Search</a>
+          <a href="pages/how-it-works.html" class="nav__link">How It Works</a>
+          <a href="pages/roommates.html" class="nav__link">Roommates</a>
+          <a href="pages/marketplace.html" class="nav__link">Marketplace</a>
+          <a href="pages/blog/index.html" class="nav__link">Blog</a>
+          <a href="pages/download.html" class="nav__link" data-nav-download>Get App</a>
+        </div>
+        <div class="nav__actions">
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+          <a href="pages/wishlist.html" class="btn btn--ghost btn--sm btn--with-icon" aria-label="Wishlist">
+            <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.6 12 20l-7.5-7.4a4.5 4.5 0 0 1 7.1-5.5 4.5 4.5 0 0 1 7.4 5.5z"/></svg>
+            <span data-wishlist-count hidden>0</span>
+          </a>
+          <span data-auth="guest">
+            <a href="pages/auth/login.html" class="btn btn--ghost btn--sm">Log In</a>
+            <a href="pages/auth/register.html" class="btn btn--primary btn--sm">Sign Up</a>
+          </span>
+          <span data-auth="user" hidden>
+            <a href="pages/dashboard/student.html" data-dashboard-link class="btn btn--outline btn--sm">Dashboard</a>
+          </span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-brand">
+      <div class="hero__bg">
+        <div class="hero__bg-gradient"></div>
+        <div class="hero__pattern"></div>
+      </div>
+      <div class="hero__content">
+        <div class="hero__text">
+          <h1 id="hero-brand" class="hero__brand">Kampo<span>Stay</span></h1>
+          <p class="hero__headline">Your home away from campus</p>
+          <p class="hero__tagline">Find verified student accommodation near universities &amp; colleges in all 47 counties — search KUCCPS institutions, then book with confidence.</p>
+          <form id="hero-search-form" class="hero__search search-bar" role="search" aria-label="Search student housing">
+            <div class="search-bar__field">
+              <label for="hero-q" class="sr-only">Search location or university</label>
+              <input type="search" id="hero-q" name="q" class="form-input" placeholder="University, town, or area…">
+            </div>
+            <div class="search-bar__field">
+              <label for="hero-university" class="sr-only">University or college</label>
+              <select id="hero-university" name="university" class="form-select"
+                data-institution-picker="all"
+                data-placeholder="Search university or college…"
+                data-empty-label="All institutions">
+                <option value="">All institutions</option>
+              </select>
+            </div>
+            <div class="search-bar__field">
+              <label for="hero-rent" class="sr-only">Max rent</label>
+              <select id="hero-rent" name="maxRent" class="form-select">
+                <option value="">Max Rent</option>
+                <option value="7000">Up to KSh 7,000</option>
+                <option value="12000">Up to KSh 12,000</option>
+                <option value="18000">Up to KSh 18,000</option>
+                <option value="25000">Up to KSh 25,000</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn--accent btn--lg">Search Housing</button>
+          </form>
+        </div>
+        <div class="hero__visual" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80" alt="" width="600" height="450" loading="eager">
+          <div class="hero__visual-accent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED UNIVERSITIES -->
+    <section class="section section--sm reveal" aria-labelledby="universities-title">
+      <div class="container">
+        <div class="section__header--center">
+          <span class="section__eyebrow">Trusted Near Campus</span>
+          <h2 id="universities-title" class="section__title">Popular Campuses</h2>
+          <p class="section__subtitle">Quick links — or search all KUCCPS universities &amp; colleges in the form above.</p>
+        </div>
+        <div class="universities-strip">
+          <a href="pages/search.html?university=JOMO%20KENYATTA%20UNIVERSITY%20OF%20AGRICULTURE%20AND%20TECHNOLOGY" class="university-logo">JKUAT</a>
+          <a href="pages/search.html?university=UNIVERSITY%20OF%20NAIROBI" class="university-logo">UoN</a>
+          <a href="pages/search.html?university=KENYATTA%20UNIVERSITY" class="university-logo">Kenyatta</a>
+          <a href="pages/search.html?university=MOUNT%20KENYA%20UNIVERSITY" class="university-logo">MKU</a>
+          <a href="pages/search.html?university=MOI%20UNIVERSITY" class="university-logo">Moi</a>
+          <a href="pages/search.html?university=OPEN%20UNIVERSITY%20OF%20KENYA" class="university-logo">OUK</a>
+          <a href="pages/search.html" class="university-logo">Search all →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PROPERTIES -->
+    <section class="section reveal" aria-labelledby="featured-title">
+      <div class="container">
+        <div class="section__header flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <span class="section__eyebrow">Top Picks</span>
+            <h2 id="featured-title" class="section__title">Featured Properties</h2>
+          </div>
+          <a href="pages/search.html" class="btn btn--outline">View All</a>
+        </div>
+        <div id="featured-properties" class="grid grid--3"></div>
+      </div>
+    </section>
+
+    <!-- NEWLY ADDED -->
+    <section class="section reveal" style="background:var(--color-bg-muted);" aria-labelledby="new-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__eyebrow">Fresh Listings</span>
+          <h2 id="new-title" class="section__title">Newly Added</h2>
+          <p class="section__subtitle">Recently posted accommodations you won't want to miss.</p>
+        </div>
+        <div id="new-properties" class="grid grid--3"></div>
+      </div>
+    </section>
+
+    <!-- VERIFIED -->
+    <section class="section reveal" aria-labelledby="verified-title">
+      <div class="container">
+        <div class="section__header--center">
+          <span class="section__eyebrow">Safety First</span>
+          <h2 id="verified-title" class="section__title">Verified Accommodations</h2>
+          <p class="section__subtitle">Every verified listing is inspected for safety, amenities, and landlord credibility.</p>
+        </div>
+        <div id="verified-properties" class="grid grid--3"></div>
+      </div>
+    </section>
+
+    <!-- TRENDING LOCATIONS -->
+    <section class="section section--sm reveal" aria-labelledby="locations-title">
+      <div class="container">
+        <div class="section__header--center">
+          <span class="section__eyebrow">Popular Areas</span>
+          <h2 id="locations-title" class="section__title">Trending Locations</h2>
+        </div>
+        <div class="flex flex-wrap gap-4 justify-center">
+          <a href="pages/search.html?q=Ruiru" class="location-chip">Ruiru</a>
+          <a href="pages/search.html?q=Parklands" class="location-chip">Parklands</a>
+          <a href="pages/search.html?q=Kikuyu" class="location-chip">Kikuyu</a>
+          <a href="pages/search.html?q=Ngong Road" class="location-chip">Ngong Road</a>
+          <a href="pages/search.html?q=Thika" class="location-chip">Thika</a>
+          <a href="pages/search.html?q=Embu" class="location-chip">Embu</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section reveal" aria-labelledby="testimonials-title">
+      <div class="container">
+        <div class="section__header--center">
+          <span class="section__eyebrow">Student Stories</span>
+          <h2 id="testimonials-title" class="section__title">What Students Say</h2>
+        </div>
+        <div class="grid grid--3">
+          <div class="glass-panel testimonial reveal">
+            <blockquote class="testimonial__quote">"Found my hostel near JKUAT in one day. The verified badge gave my parents peace of mind."</blockquote>
+            <div class="testimonial__author">
+              <img src="https://i.pravatar.cc/48?img=12" alt="" class="testimonial__avatar" width="48" height="48">
+              <div><div class="testimonial__name">Brian M.</div><div class="testimonial__role">JKUAT, Computer Science</div></div>
+            </div>
+          </div>
+          <div class="glass-panel testimonial reveal">
+            <blockquote class="testimonial__quote">"The rent calculator helped me budget before moving to Nairobi. Saved me from overspending!"</blockquote>
+            <div class="testimonial__author">
+              <img src="https://i.pravatar.cc/48?img=5" alt="" class="testimonial__avatar" width="48" height="48">
+              <div><div class="testimonial__name">Grace W.</div><div class="testimonial__role">UoN, Medicine</div></div>
+            </div>
+          </div>
+          <div class="glass-panel testimonial reveal">
+            <blockquote class="testimonial__quote">"Matched with the perfect roommate through KampoStay. We split rent and it's been amazing."</blockquote>
+            <div class="testimonial__author">
+              <img src="https://i.pravatar.cc/48?img=32" alt="" class="testimonial__avatar" width="48" height="48">
+              <div><div class="testimonial__name">Kevin O.</div><div class="testimonial__role">KU, Engineering</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST / PAYMENTS -->
+    <section class="section section--sm reveal" aria-labelledby="trust-title">
+      <div class="container">
+        <div class="section__header--center">
+          <span class="section__eyebrow">Protected Payments</span>
+          <h2 id="trust-title" class="section__title">Pay with confidence</h2>
+          <p class="section__subtitle">Reserve rooms on KampoStay with M-Pesa, card, or bank transfer — covered by our mismatch refund.</p>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-strip__item">
+            <svg class="icon icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10"/><path d="M7 13h6"/></svg>
+            <h3>M-Pesa</h3>
+            <p class="text-muted text-sm">STK Push on your phone</p>
+          </div>
+          <div class="trust-strip__item">
+            <svg class="icon icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+            <h3>Card</h3>
+            <p class="text-muted text-sm">Visa &amp; Mastercard</p>
+          </div>
+          <div class="trust-strip__item">
+            <svg class="icon icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M3 10h18"/><path d="M12 3 2.5 9h19L12 3z"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8M2 18h20"/></svg>
+            <h3>Bank transfer</h3>
+            <p class="text-muted text-sm">Direct deposit option</p>
+          </div>
+          <div class="trust-strip__item trust-strip__item--accent">
+            <svg class="icon icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8.5 8 9.5 4.5-1 8-4.5 8-9.5V6l-8-3z"/><path d="m8.5 12 2.5 2.5L16 9.5"/></svg>
+            <h3>100% refund</h3>
+            <p class="text-muted text-sm">If the room is nothing like the listing</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLATFORM STATS (below fold) -->
+    <section class="section reveal" style="background:var(--color-brand-dark);color:var(--color-text-inverse);" aria-labelledby="stats-title">
+      <div class="container">
+        <div class="section__header--center">
+          <span class="section__eyebrow" style="color:var(--color-accent);">Our Impact</span>
+          <h2 id="stats-title" class="section__title" style="color:var(--color-text-inverse);">Platform at a Glance</h2>
+        </div>
+        <div class="grid grid--4">
+          <div class="stat-card"><div class="stat-card__value" style="color:var(--color-accent);">2,400+</div><div class="stat-card__label" style="color:rgba(247,249,248,0.7);">Listings</div></div>
+          <div class="stat-card"><div class="stat-card__value" style="color:var(--color-accent);">18</div><div class="stat-card__label" style="color:rgba(247,249,248,0.7);">Universities</div></div>
+          <div class="stat-card"><div class="stat-card__value" style="color:var(--color-accent);">12,000+</div><div class="stat-card__label" style="color:rgba(247,249,248,0.7);">Happy Students</div></div>
+          <div class="stat-card"><div class="stat-card__value" style="color:var(--color-accent);">98%</div><div class="stat-card__label" style="color:rgba(247,249,248,0.7);">Satisfaction</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section reveal" aria-labelledby="faq-title">
+      <div class="container container--narrow">
+        <div class="section__header--center">
+          <span class="section__eyebrow">Got Questions?</span>
+          <h2 id="faq-title" class="section__title">Frequently Asked Questions</h2>
+        </div>
+        <div class="accordion" role="region" aria-label="FAQ">
+          <div class="accordion__item">
+            <button class="accordion__trigger" aria-expanded="false">How do I know a listing is verified?<span>+</span></button>
+            <div class="accordion__content"><div class="accordion__content-inner">Verified listings display a green badge. Our team inspects properties for safety, amenities accuracy, and landlord identity before verification.</div></div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__trigger" aria-expanded="false">What payment methods are accepted?<span>+</span></button>
+            <div class="accordion__content"><div class="accordion__content-inner">You can pay room deposits and reservations on KampoStay via <strong>M-Pesa</strong>, <strong>Visa/Mastercard</strong>, or <strong>bank transfer</strong>. Pay securely on the property page with “Pay &amp; Reserve Room”.</div></div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__trigger" aria-expanded="false">What if the room looks nothing like the listing?<span>+</span></button>
+            <div class="accordion__content"><div class="accordion__content-inner"><strong>100% refund guarantee:</strong> if you pay on KampoStay and, when you visit, the room is completely different from the photos, amenities, or location shown on the platform, report it within 48 hours of your first visit and we refund you in full.</div></div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__trigger" aria-expanded="false">Can I book a viewing online?<span>+</span></button>
+            <div class="accordion__content"><div class="accordion__content-inner">Yes. Click “Book Viewing” on any property page to schedule a visit, or pay a deposit to reserve the room. You'll get confirmation by SMS and email.</div></div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__trigger" aria-expanded="false">Is KampoStay free for students?<span>+</span></button>
+            <div class="accordion__content"><div class="accordion__content-inner">Searching, saving favourites, comparing listings, and calculators are free. You only pay when you choose to reserve a room through the platform.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOG -->
+    <section class="section reveal" style="background:var(--color-bg-muted);" aria-labelledby="blog-title">
+      <div class="container">
+        <div class="section__header flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <span class="section__eyebrow">Student Life</span>
+            <h2 id="blog-title" class="section__title">From Our Blog</h2>
+          </div>
+          <a href="pages/blog/index.html" class="btn btn--outline">All Articles</a>
+        </div>
+        <div class="grid grid--3">
+          <article class="card card--interactive">
+            <a href="pages/blog/post.html?id=moving-checklist"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="" loading="lazy"></a>
+            <div class="card__body">
+              <time class="blog-card__date" datetime="2026-07-01">Jul 1, 2026</time>
+              <h3 class="blog-card__title"><a href="pages/blog/post.html?id=moving-checklist">First-Year Moving Checklist for Kenya</a></h3>
+              <p class="blog-card__excerpt">Everything you need before moving into your first hostel or bedsitter.</p>
+            </div>
+          </article>
+          <article class="card card--interactive">
+            <a href="pages/blog/post.html?id=rent-tips"><img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80" alt="" loading="lazy"></a>
+            <div class="card__body">
+              <time class="blog-card__date" datetime="2026-06-15">Jun 15, 2026</time>
+              <h3 class="blog-card__title"><a href="pages/blog/post.html?id=rent-tips">5 Tips to Negotiate Student Rent</a></h3>
+              <p class="blog-card__excerpt">Smart strategies to get the best deal on accommodation near campus.</p>
+            </div>
+          </article>
+          <article class="card card--interactive">
+            <a href="pages/blog/post.html?id=roommate-guide"><img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80" alt="" loading="lazy"></a>
+            <div class="card__body">
+              <time class="blog-card__date" datetime="2026-06-01">Jun 1, 2026</time>
+              <h3 class="blog-card__title"><a href="pages/blog/post.html?id=roommate-guide">Finding the Perfect Roommate</a></h3>
+              <p class="blog-card__excerpt">How KampoStay's matching helps you find compatible flatmates.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- APP CTA -->
+    <section class="section reveal" aria-labelledby="app-title">
+      <div class="container">
+        <div class="app-cta">
+          <div>
+            <h2 id="app-title" class="app-cta__title">Take KampoStay Everywhere</h2>
+            <p class="app-cta__desc">Search, save, and get alerts for new listings near your campus — right from your phone.</p>
+            <div class="app-badges">
+              <button type="button" class="app-badge app-badge--accent app-badge--with-icon" data-pwa-install aria-label="Install KampoStay app">
+                <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
+                Install App
+              </button>
+              <a href="pages/download.html" class="app-badge app-badge--with-icon" aria-label="Open download page">
+                <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+                Download page
+              </a>
+            </div>
+          </div>
+          <div class="app-cta__device" aria-hidden="true">
+            <svg class="icon icon--xl" viewBox="0 0 24 24" width="96" height="96" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <div class="footer__brand">KampoStay</div>
+          <p class="footer__desc">Kenya's trusted platform for student accommodation. Verified listings, transparent pricing, and tools built for campus life.</p>
+        </div>
+        <div>
+          <h3 class="footer__heading">Explore</h3>
+          <ul class="footer__links">
+            <li><a href="pages/search.html">Search Housing</a></li>
+            <li><a href="pages/download.html" data-footer-download>Download App</a></li>
+            <li><a href="pages/roommates.html">Find Roommates</a></li>
+            <li><a href="pages/marketplace.html">Marketplace</a></li>
+            <li><a href="pages/calculators.html">Calculators</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer__heading">Company</h3>
+          <ul class="footer__links">
+            <li><a href="pages/about.html">About Us</a></li>
+            <li><a href="pages/how-it-works.html">How It Works</a></li>
+            <li><a href="pages/safety.html">Safety</a></li>
+            <li><a href="pages/pricing.html">Pricing</a></li>
+            <li><a href="pages/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer__heading">Account</h3>
+          <ul class="footer__links">
+            <li><a href="pages/auth/login.html">Log In</a></li>
+            <li><a href="pages/auth/register.html">Sign Up</a></li>
+            <li><a href="pages/dashboard/landlord.html">List Property</a></li>
+            <li><a href="pages/compare.html">Compare</a></li>
+            <li><a href="pages/wishlist.html">Wishlist</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 KampoStay. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/pages/home.js"></script>
+</body>
+</html>

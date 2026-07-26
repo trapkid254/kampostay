@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-KE">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search verified student accommodation in Kenya with advanced filters — rent, distance, amenities, and more.">
+  <link rel="canonical" href="https://kampostay.co.ke/pages/search.html">
+  <title>Search Student Housing — KampoStay</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <a href="../index.html" class="logo"><img src="../favicon.svg" alt="" class="logo__icon" width="36" height="36">KampoStay</a>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        <div class="nav__links">
+          <a href="search.html" class="nav__link is-active">Search</a>
+          <a href="how-it-works.html" class="nav__link">How It Works</a>
+          <a href="roommates.html" class="nav__link">Roommates</a>
+          <a href="marketplace.html" class="nav__link">Marketplace</a>
+        </div>
+        <div class="nav__actions">
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
+          <a href="auth/login.html" class="btn btn--primary btn--sm">Log In</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-header__title">Find Your Perfect Student Home</h1>
+        <p class="page-header__desc">Filter by rent, distance, amenities, and more across Kenya's universities.</p>
+      </div>
+    </div>
+    <div class="container section">
+      <div class="search-layout">
+        <aside class="filters-panel glass-panel" aria-label="Search filters">
+          <form id="advanced-search-form">
+            <div class="filter-section">
+              <h2 class="filter-section__title">Location</h2>
+              <div class="form-group"><label class="form-label" for="q">Search</label><input type="search" id="q" name="q" class="form-input" placeholder="Area, town, university…"></div>
+              <div class="form-group">
+                <label class="form-label" for="university">University / College</label>
+                <select id="university" name="university" class="form-select"
+                  data-institution-picker="all"
+                  data-placeholder="Search university or college…"
+                  data-empty-label="All institutions">
+                  <option value="">All institutions</option>
+                </select>
+              </div>
+            </div>
+            <div class="filter-section">
+              <h2 class="filter-section__title">Budget & Distance</h2>
+              <div class="form-group"><label class="form-label" for="minRent">Min Rent (KSh)</label><input type="number" id="minRent" name="minRent" class="form-input" min="0" step="500"></div>
+              <div class="form-group"><label class="form-label" for="maxRent">Max Rent (KSh)</label><input type="number" id="maxRent" name="maxRent" class="form-input" min="0" step="500"></div>
+              <div class="form-group"><label class="form-label" for="maxDistance">Max Distance (km)</label><input type="number" id="maxDistance" name="maxDistance" class="form-input" min="0" step="0.1"></div>
+              <div class="form-group"><label class="form-label" for="walkingTime">Max Walking Time (min)</label><input type="number" id="walkingTime" name="walkingTime" class="form-input" min="0"></div>
+            </div>
+            <div class="filter-section">
+              <h2 class="filter-section__title">Room</h2>
+              <div class="form-group"><label class="form-label" for="roomType">Room Type</label>
+                <select id="roomType" name="roomType" class="form-select"><option value="">Any</option><option>Single</option><option>Shared</option><option>Bedsitter</option><option>Studio</option><option>En-suite</option></select>
+              </div>
+              <div class="form-group"><label class="form-label" for="roomSize">Min Room Size (sqm)</label><input type="number" id="roomSize" name="roomSize" class="form-input" min="0"></div>
+              <div class="form-group"><label class="form-label" for="bathrooms">Bathrooms</label><select id="bathrooms" name="bathrooms" class="form-select"><option value="">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option></select></div>
+              <div class="form-group"><label class="form-label" for="gender">Gender Preference</label><select id="gender" name="gender" class="form-select"><option value="">Any</option><option value="male">Male</option><option value="female">Female</option><option value="mixed">Mixed</option></select></div>
+            </div>
+            <div class="filter-section">
+              <h2 class="filter-section__title">Amenities</h2>
+              <div class="filter-chips">
+                <label class="filter-chip"><input type="checkbox" name="wifi" value="true" hidden> WiFi</label>
+                <label class="filter-chip"><input type="checkbox" name="water" value="true" hidden> Water</label>
+                <label class="filter-chip"><input type="checkbox" name="electricity" value="true" hidden> Electricity</label>
+                <label class="filter-chip"><input type="checkbox" name="furnished" value="true" hidden> Furnished</label>
+                <label class="filter-chip"><input type="checkbox" name="parking" value="true" hidden> Parking</label>
+                <label class="filter-chip"><input type="checkbox" name="laundry" value="true" hidden> Laundry</label>
+                <label class="filter-chip"><input type="checkbox" name="kitchen" value="true" hidden> Kitchen</label>
+                <label class="filter-chip"><input type="checkbox" name="pets" value="true" hidden> Pets OK</label>
+                <label class="filter-chip"><input type="checkbox" name="wheelchair" value="true" hidden> Wheelchair</label>
+              </div>
+            </div>
+            <div class="filter-section">
+              <h2 class="filter-section__title">Other</h2>
+              <div class="form-group"><label class="form-label" for="maxDeposit">Max Deposit (KSh)</label><input type="number" id="maxDeposit" name="maxDeposit" class="form-input"></div>
+              <div class="form-group"><label class="form-label" for="availability">Availability</label><input type="date" id="availability" name="availability" class="form-input"></div>
+              <label class="form-checkbox"><input type="checkbox" name="verified" value="true"> Verified only</label>
+            </div>
+            <button type="submit" class="btn btn--primary" style="width:100%;">Apply Filters</button>
+          </form>
+        </aside>
+        <div class="search-results">
+          <div class="search-results__header">
+            <p id="results-count" class="text-muted">Loading results…</p>
+            <select class="form-select" style="width:auto;" aria-label="Sort by">
+              <option>Sort: Recommended</option><option>Price: Low to High</option><option>Price: High to Low</option><option>Distance</option>
+            </select>
+          </div>
+          <div id="search-results" class="grid grid--2"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="container"><div class="footer__bottom"><p class="footer__copyright">&copy; 2026 KampoStay. All rights reserved.</p></div></div></footer>
+  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="../js/pages/search-page.js"></script>
+</body>
+</html>
