@@ -266,7 +266,7 @@ async function uploadImage(file) {
   const formData = new FormData();
   formData.append('file', file);
   try {
-    const response = await fetch(`${api.baseUrl}/upload/image`, {
+    const response = await fetch(`${api.baseUrl}/uploads/image`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('kampostay-token')}`,
