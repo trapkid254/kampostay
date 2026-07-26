@@ -21,15 +21,15 @@ function fmtDate(d) {
 let cachedProperties = [];
 let revenueChart;
 
-async function loadUniversities(select) {
-  if (!select) return;
+async function loadUniversities(input) {
+  if (!input) return;
+  const datalist = document.getElementById('university-list');
+  if (!datalist) return;
   try {
-    const data = await api.get('/universities', { limit: 100 });
-    const list = Array.isArray(data) ? data : data?.data || [];
-    select.innerHTML = '<option value="">Select university…</option>'
-      + list.map((u) => `<option value="${u._id || u.id}">${u.name}</option>`).join('');
+    const { INSTITUTIONS } = await import('../data/institutions.js');
+    datalist.innerHTML = INSTITUTIONS.map((u) => `<option value="${u.name}" data-id="${u.key}">${u.name}</option>`).join('');
   } catch {
-    select.innerHTML = '<option value="">Could not load universities — start the API</option>';
+    datalist.innerHTML = '';
   }
 }
 
@@ -261,7 +261,57 @@ async function loadRevenueChart() {
   }
 }
 
-function buildPropertyPayload(fd, extra = {}) {
+async function uploadImage(file) {
+  if (!file) return null;
+  const formData = new FormData();
+  formData.append('file', file);
+  try {
+    const response = await fetch(`${api.baseURL}/upload/image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    });
+    const data = await response.json();
+    return data.data?.url || data.data?.secure_url;
+  } catch (err) {
+    console.error('Image upload failed:', err);
+    return null;
+  }
+}
+
+async function uploadMultipleImages(files) {
+  const uploadPromises = files.map(file => uploadImage(file));
+  const urls = await Promise.all(uploadPromises);
+  return urls.filter(Boolean);
+}
+
+let imageSlotCount = 1;
+
+window.addImageSlot = function() {
+  if (imageSlotCount >= 5) {
+    showToast('Maximum 5 images allowed', 'error');
+    return;
+  }
+  imageSlotCount++;
+  const container = document.getElementById('image-upload-container');
+  const slot = document.createElement('div');
+  slot.className = 'image-upload-slot mt-2';
+  slot.innerHTML = `
+    <input id="property-image-${imageSlotCount}" name="imageFile${imageSlotCount}" type="file" class="form-input" accept="image/*">
+    <button type="button" class="btn btn--sm btn--ghost mt-2 text-danger" onclick="removeImageSlot(${imageSlotCount}, this)">Remove</button>
+  `;
+  container.appendChild(slot);
+};
+
+window.removeImageSlot = function(id, button) {
+  const slot = button.parentElement;
+  slot.remove();
+  imageSlotCount--;
+};
+
+async function buildPropertyPayload(fd, extra = {}) {
   const amenities = {
     wifi: fd.get('wifi') === 'on',
     water: fd.get('water') === 'on',
@@ -275,13 +325,41 @@ function buildPropertyPayload(fd, extra = {}) {
   };
   const lng = Number(fd.get('lng') || 36.8219);
   const lat = Number(fd.get('lat') || -1.2921);
-  const imageUrl = String(fd.get('imageUrl') || '').trim();
+
+  // Collect all image files
+  const imageFiles = [];
+  for (let i = 1; i <= 5; i++) {
+    const file = fd.get(`imageFile${i}`);
+    if (file && file.size > 0) {
+      imageFiles.push(file);
+    }
+  }
+
+  // Upload all images
+  const uploadedImageUrls = await uploadMultipleImages(imageFiles);
+
+  // Find university ID from name if needed
+  const universityName = fd.get('university');
+  const datalist = document.getElementById('university-list');
+  let universityId = universityName;
+  if (datalist) {
+    const option = Array.from(datalist.options).find(opt => opt.value === universityName);
+    if (option && option.dataset.id) {
+      universityId = option.dataset.id;
+    }
+  }
+
+  // Build media images array with first image as primary
+  const mediaImages = uploadedImageUrls.map((url, index) => ({
+    url,
+    isPrimary: index === 0
+  }));
 
   return {
     ...extra,
     title: String(fd.get('title') || '').trim(),
     description: String(fd.get('description') || '').trim(),
-    university: fd.get('university'),
+    university: universityId,
     rent: Number(fd.get('rent')),
     deposit: Number(fd.get('deposit') || fd.get('rent') || 0),
     roomType: fd.get('roomType'),
@@ -297,7 +375,7 @@ function buildPropertyPayload(fd, extra = {}) {
       coordinates: { type: 'Point', coordinates: [lng, lat] },
     },
     media: {
-      images: imageUrl ? [{ url: imageUrl, isPrimary: true }] : [],
+      images: mediaImages,
     },
     houseRules: String(fd.get('houseRules') || '').split('\n').map((r) => r.trim()).filter(Boolean),
     status: 'draft',
@@ -399,7 +477,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const fd = new FormData(form);
-    const payload = buildPropertyPayload(fd);
+    
+    // Validate at least one image is uploaded
+    let hasImage = false;
+    for (let i = 1; i <= 5; i++) {
+      const file = fd.get(`imageFile${i}`);
+      if (file && file.size > 0) {
+        hasImage = true;
+        break;
+      }
+    }
+    if (!hasImage) {
+      showToast('Please upload at least 1 image.', 'error');
+      return;
+    }
+    
+    const payload = await buildPropertyPayload(fd);
     if (!payload.title || !payload.description || !payload.university || !payload.rent || !payload.roomType) {
       showToast('Please fill in all required fields.', 'error');
       return;
@@ -413,6 +506,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       await api.post('/properties', payload);
       showToast('Property submitted! It stays draft until an admin verifies it.', 'success');
       form.reset();
+      // Reset image slots to initial state
+      resetImageSlots();
       closeModal('add-property-modal');
       await loadMyProperties();
     } catch (err) {
@@ -424,4 +519,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   });
+
+  function resetImageSlots() {
+    const container = document.getElementById('image-upload-container');
+    container.innerHTML = `
+      <div class="image-upload-slot">
+        <input id="property-image-1" name="imageFile1" type="file" class="form-input" accept="image/*" required>
+        <button type="button" class="btn btn--sm btn--ghost mt-2" onclick="addImageSlot()">+ Add another image</button>
+      </div>
+    `;
+    imageSlotCount = 1;
+  }
 });
