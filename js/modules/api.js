@@ -58,6 +58,7 @@ class ApiClient {
     const refresh = this.getRefreshToken();
     if (!refresh) return false;
 
+    console.debug('[api] refreshAccessToken: attempting refresh, hasRefresh=', Boolean(refresh));
     await this.ensureCsrfToken();
 
     try {
@@ -74,12 +75,14 @@ class ApiClient {
 
       if (!res.ok) {
         this.clearTokens();
+        console.debug('[api] refreshAccessToken: refresh failed, status=', res.status);
         return false;
       }
 
       const payload = await res.json();
       const data = this.unwrap(payload) || payload;
       this.setTokens(data.accessToken || data.token, data.refreshToken);
+      console.debug('[api] refreshAccessToken: refreshed OK, hasAccess=', Boolean(data.accessToken || data.token));
       return Boolean(data.accessToken || data.token);
     } catch {
       this.clearTokens();
@@ -119,6 +122,10 @@ class ApiClient {
         ? 'GitHub Pages cannot reach localhost. Deploy the API (e.g. Render) and set kampostay-api-base to that URL.'
         : 'Cannot reach the KampoStay API. Start it with: cd backend && npm run dev (http://localhost:5000).';
       throw new ApiError(hint, 0, { code: 'NETWORK_ERROR' });
+    }
+
+    if (response.status === 401) {
+      console.debug('[api] request received 401 for', url, 'hasToken=', Boolean(token), 'tokenLen=', token ? token.length : 0, 'hasRefresh=', Boolean(this.getRefreshToken()));
     }
 
     if (response.status === 401 && this.getRefreshToken()) {
