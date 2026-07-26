@@ -378,7 +378,8 @@ async function buildPropertyPayload(fd, extra = {}) {
       images: mediaImages,
     },
     houseRules: String(fd.get('houseRules') || '').split('\n').map((r) => r.trim()).filter(Boolean),
-    status: 'draft',
+    status: 'published',
+    publishedAt: new Date().toISOString(),
   };
 }
 
@@ -506,7 +507,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     try {
       await api.post('/properties', payload);
-      showToast('Property submitted! It stays draft until an admin verifies it.', 'success');
+      showToast('Property submitted and published! It is now visible on the site.', 'success');
       form.reset();
       // Reset image slots to initial state
       resetImageSlots();
