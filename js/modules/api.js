@@ -126,13 +126,24 @@ class ApiClient {
 
     if (response.status === 401) {
       console.debug('[api] request received 401 for', url, 'hasToken=', Boolean(token), 'tokenLen=', token ? token.length : 0, 'hasRefresh=', Boolean(this.getRefreshToken()));
-    }
 
-    if (response.status === 401 && this.getRefreshToken()) {
-      const refreshed = await this.refreshAccessToken();
-      if (refreshed) {
-        headers.Authorization = `Bearer ${this.getToken()}`;
-        response = await fetch(url, { ...options, headers, credentials: 'include' });
+      // Try to refresh access token when a refresh token exists.
+      if (this.getRefreshToken()) {
+        const refreshed = await this.refreshAccessToken();
+        if (refreshed) {
+          headers.Authorization = `Bearer ${this.getToken()}`;
+          response = await fetch(url, { ...options, headers, credentials: 'include' });
+        } else {
+          // Refresh failed: clear tokens and force login
+          this.clearTokens();
+          try { window.location.href = '/pages/auth/login.html'; } catch (e) { /* ignore when not in browser */ }
+          throw new ApiError('Not authorized. Please sign in again.', 401, { code: 'UNAUTHORIZED' });
+        }
+      } else {
+        // No refresh token available: clear tokens and force login
+        this.clearTokens();
+        try { window.location.href = '/pages/auth/login.html'; } catch (e) { /* ignore when not in browser */ }
+        throw new ApiError('Not authorized. Please sign in.', 401, { code: 'UNAUTHORIZED' });
       }
     }
 
