@@ -266,10 +266,10 @@ async function uploadImage(file) {
   const formData = new FormData();
   formData.append('file', file);
   try {
-    const response = await fetch(`${api.baseURL}/upload/image`, {
+    const response = await fetch(`${api.baseUrl}/upload/image`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('kampostay-token')}`,
       },
       body: formData,
     });
@@ -493,6 +493,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     const payload = await buildPropertyPayload(fd);
+    console.log('Property payload:', payload);
+    
     if (!payload.title || !payload.description || !payload.university || !payload.rent || !payload.roomType) {
       showToast('Please fill in all required fields.', 'error');
       return;
@@ -511,6 +513,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       closeModal('add-property-modal');
       await loadMyProperties();
     } catch (err) {
+      console.error('Property creation error:', err);
       showToast(err.message || 'Could not create property.', 'error');
     } finally {
       if (submitBtn) {
