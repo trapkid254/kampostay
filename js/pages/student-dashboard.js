@@ -132,6 +132,122 @@ async function loadSavedSearches(el) {
   }
 }
 
+async function loadReviewableStays() {
+  try {
+    const payload = await api.get('/bookings', { status: 'completed', limit: 100 }, { raw: true });
+    const list = Array.isArray(payload) ? payload : payload?.bookings || [];
+    return list
+      .filter((booking) => booking.property)
+      .map((booking) => ({
+        bookingId: booking._id || booking.id,
+        propertyId: booking.property._id || booking.property.id,
+        title: booking.property.title || 'Hostel',
+        landlordName: [booking.landlord?.profile?.firstName, booking.landlord?.profile?.lastName].filter(Boolean).join(' '),
+      }));
+  } catch {
+    return [];
+  }
+}
+
+function renderReviewableStays(items) {
+  if (!items || !items.length) {
+    return '<p class="text-muted">No completed stays found yet. Your review will appear once you have stayed at a hostel.</p>';
+  }
+  return `
+    <p class="text-muted mb-4">Select the hostel you stayed in to submit a review.</p>
+    <ul class="mt-3" style="list-style:none;padding:0;">
+      ${items.map((item) => `
+        <li class="mb-3">
+          <button type="button" class="btn btn--outline btn--sm" data-review-property-id="${item.propertyId}" data-review-property-title="${String(item.title).replace(/"/g, '&quot;')}">
+            ${item.title}${item.landlordName ? ` — ${item.landlordName}` : ''}
+          </button>
+        </li>
+      `).join('')}
+    </ul>`;
+}
+
+function filterReviewableStays(items, query) {
+  const normalized = String(query || '').trim().toLowerCase();
+  if (!normalized) return items;
+  return items.filter((item) => item.title.toLowerCase().includes(normalized));
+}
+
+async function initReviewPanel() {
+  const reviewSearch = document.getElementById('review-property-search');
+  const reviewResults = document.getElementById('review-property-results');
+  const reviewFormSection = document.getElementById('review-form-section');
+  const reviewPropertyTitle = document.getElementById('review-property-title');
+  const reviewPropertyId = document.getElementById('review-property-id');
+  const reviewText = document.getElementById('review-text');
+  const reviewRating = document.getElementById('review-rating');
+  const reviewCancelBtn = document.getElementById('review-cancel-btn');
+  const reviewForm = document.getElementById('student-review-form');
+
+  if (!reviewSearch || !reviewResults) return;
+
+  let reviewableStays = await loadReviewableStays();
+  let selectedStay = null;
+
+  const updateResults = () => {
+    const results = filterReviewableStays(reviewableStays, reviewSearch.value);
+    reviewResults.innerHTML = renderReviewableStays(results);
+  };
+
+  const resetReviewForm = () => {
+    selectedStay = null;
+    reviewPropertyId.value = '';
+    reviewPropertyTitle.textContent = 'Review selected hostel';
+    reviewText.value = '';
+    reviewRating.value = '5';
+    reviewFormSection.hidden = true;
+  };
+
+  reviewResults.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-review-property-id]');
+    if (!button) return;
+    selectedStay = {
+      propertyId: button.dataset.reviewPropertyId,
+      title: button.dataset.reviewPropertyTitle,
+    };
+    reviewPropertyId.value = selectedStay.propertyId;
+    reviewPropertyTitle.textContent = `Review ${selectedStay.title}`;
+    reviewFormSection.hidden = false;
+    reviewText.focus();
+  });
+
+  reviewSearch.addEventListener('input', updateResults);
+  reviewCancelBtn?.addEventListener('click', resetReviewForm);
+
+  reviewForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!selectedStay || !reviewPropertyId.value) {
+      showToast('Select a hostel from your completed stays first.', 'error');
+      return;
+    }
+    const payload = {
+      propertyId: reviewPropertyId.value,
+      ratings: { overall: Number(reviewRating.value) || 5 },
+      text: reviewText.value.trim(),
+      verifiedTenant: true,
+    };
+    if (!payload.text) {
+      showToast('Please write a review before submitting.', 'error');
+      return;
+    }
+    try {
+      await api.post('/reviews', payload);
+      showToast('Review submitted successfully.', 'success');
+      reviewableStays = reviewableStays.filter((item) => item.propertyId !== reviewPropertyId.value);
+      resetReviewForm();
+      updateResults();
+    } catch (err) {
+      showToast(err.message || 'Could not submit review.', 'error');
+    }
+  });
+
+  updateResults();
+}
+
 async function loadReports(el) {
   if (!el) return;
   try {
@@ -270,7 +386,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadAiRecs(document.getElementById('dash-ai-recs'));
   loadSavedSearches(document.getElementById('dash-saved-searches'));
   loadReports(document.getElementById('dash-reports'));
-
-  const reviews = document.getElementById('dash-reviews');
-  if (reviews) reviews.innerHTML = '<p class="text-muted">Write reviews from a property page after your stay. Your submitted reviews will appear against those listings.</p>';
+  await initReviewPanel();
 });

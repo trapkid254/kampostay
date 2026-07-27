@@ -64,7 +64,41 @@
       <div class="dashboard__panel" data-panel="compare" hidden><h1>Compare Properties</h1><div id="dash-compare" class="mt-4"></div></div>
       <div class="dashboard__panel" data-panel="notifications" hidden><h1>Notifications</h1><div id="dash-notifications" class="mt-4"></div></div>
       <div class="dashboard__panel" data-panel="messages" hidden><h1>Messages</h1><div id="dash-messages" class="glass-panel mt-4" style="padding:var(--space-6);"></div></div>
-      <div class="dashboard__panel" data-panel="reviews" hidden><h1>My Reviews</h1><div id="dash-reviews" class="glass-panel mt-4" style="padding:var(--space-6);"></div></div>
+      <div class="dashboard__panel" data-panel="reviews" hidden>
+        <h1>My Reviews</h1>
+        <div class="glass-panel mt-4" style="padding:var(--space-6);">
+          <p class="text-muted">Search the hostels you have stayed in and leave feedback for the places you lived in.</p>
+          <div class="form-group">
+            <label class="form-label" for="review-property-search">Search completed stays</label>
+            <input id="review-property-search" type="search" class="form-input" placeholder="Start typing a hostel name" autocomplete="off">
+          </div>
+          <div id="review-property-results" class="mt-4"></div>
+        </div>
+        <div id="review-form-section" class="glass-panel mt-4" style="padding:var(--space-6);" hidden>
+          <h2 id="review-property-title" class="mb-4">Review selected hostel</h2>
+          <form id="student-review-form">
+            <input type="hidden" id="review-property-id" name="propertyId">
+            <div class="form-group">
+              <label class="form-label" for="review-rating">Overall rating</label>
+              <select id="review-rating" name="rating" class="form-input" required>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Very good</option>
+                <option value="3">3 — Good</option>
+                <option value="2">2 — Fair</option>
+                <option value="1">1 — Poor</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="review-text">Your review</label>
+              <textarea id="review-text" name="text" class="form-input" rows="5" required placeholder="Share what you liked and what could improve"></textarea>
+            </div>
+            <div class="mt-4">
+              <button type="submit" class="btn btn--primary">Submit review</button>
+              <button type="button" id="review-cancel-btn" class="btn btn--ghost btn--sm" style="margin-left:1rem;">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
       <div class="dashboard__panel" data-panel="payments" hidden>
         <h1>Payments</h1>
         <div class="glass-panel mt-4" style="padding:var(--space-6);">
