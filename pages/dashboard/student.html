@@ -25,8 +25,7 @@
     <aside class="dashboard__sidebar">
       <h2 class="font-display mb-4">Hello, <span data-dashboard-name>Student</span></h2>
       <nav class="dashboard__nav" aria-label="Dashboard navigation">
-        <button type="button" class="dashboard__nav-link is-active" data-panel="profile" data-nav-icon="user">Profile</button>
-        <button type="button" class="dashboard__nav-link" data-panel="bookings" data-nav-icon="calendar">Bookings</button>
+        <button type="button" class="dashboard__nav-link is-active" data-panel="bookings" data-nav-icon="calendar">Bookings</button>
         <button type="button" class="dashboard__nav-link" data-panel="favourites" data-nav-icon="heart">Favourites</button>
         <button type="button" class="dashboard__nav-link" data-panel="compare" data-nav-icon="scale">Compare</button>
         <button type="button" class="dashboard__nav-link" data-panel="notifications" data-nav-icon="bell">Notifications</button>
@@ -36,17 +35,28 @@
         <button type="button" class="dashboard__nav-link" data-panel="ai-recs" data-nav-icon="sparkles">Recommendations</button>
         <button type="button" class="dashboard__nav-link" data-panel="reports" data-nav-icon="clipboard">Reports</button>
         <button type="button" class="dashboard__nav-link" data-panel="saved-searches" data-nav-icon="search">Saved Searches</button>
+        <button type="button" class="dashboard__nav-link" data-panel="profile" data-nav-icon="user">Profile</button>
       </nav>
     </aside>
     <main class="dashboard__main">
-      <div class="dashboard__panel is-active" data-panel="profile">
+      <div class="dashboard__panel" data-panel="profile" hidden>
         <h1>My Profile</h1>
-        <form id="student-profile-form" class="glass-panel mt-4" style="padding:var(--space-6);">
+        <div id="profile-view" class="glass-panel mt-4" style="padding:var(--space-6);">
+          <p><strong>Name</strong><br><span id="profile-name" class="text-lg"></span></p>
+          <p><strong>Email</strong><br><span id="profile-email" class="text-muted"></span></p>
+          <p><strong>Phone</strong><br><span id="profile-phone-display" class="text-muted"></span></p>
+          <p><strong>City</strong><br><span id="profile-city-display" class="text-muted"></span></p>
+          <button id="profile-edit-btn" type="button" class="btn btn--outline btn--sm mt-4">Edit profile</button>
+        </div>
+        <form id="student-profile-form" class="glass-panel mt-4" style="padding:var(--space-6);" hidden>
           <div class="form-group"><label class="form-label" for="profile-first">First name</label><input id="profile-first" name="firstName" class="form-input" required></div>
           <div class="form-group"><label class="form-label" for="profile-last">Last name</label><input id="profile-last" name="lastName" class="form-input"></div>
           <div class="form-group"><label class="form-label" for="profile-phone">Phone</label><input id="profile-phone" name="phone" class="form-input"></div>
           <div class="form-group"><label class="form-label" for="profile-city">City</label><input id="profile-city" name="city" class="form-input"></div>
-          <button type="submit" class="btn btn--primary">Save Changes</button>
+          <div class="mt-4">
+            <button type="submit" class="btn btn--primary">Save Changes</button>
+            <button type="button" id="profile-cancel-btn" class="btn btn--ghost btn--sm" style="margin-left:1rem;">Cancel</button>
+          </div>
         </form>
       </div>
       <div class="dashboard__panel" data-panel="bookings" hidden><h1>My Bookings</h1><div id="dash-bookings" class="mt-4"></div></div>

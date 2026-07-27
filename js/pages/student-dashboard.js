@@ -153,30 +153,89 @@ async function loadReports(el) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!requireAuth() || !requireRole('student', siteUrl('pages/auth/login.html'))) return;
-  const user = getUser();
-  document.querySelector('[data-dashboard-name]')?.textContent = user?.firstName || user?.profile?.firstName || 'Student';
+
+  let user = getUser();
+
+  const profileView = document.getElementById('profile-view');
+  const profileForm = document.getElementById('student-profile-form');
+  const editBtn = document.getElementById('profile-edit-btn');
+  const cancelBtn = document.getElementById('profile-cancel-btn');
+
+  function renderProfileDetails(currentUser) {
+    const name = [currentUser.firstName, currentUser.lastName].filter(Boolean).join(' ') || currentUser.email || 'Student';
+    document.getElementById('profile-name').textContent = name;
+    document.getElementById('profile-email').textContent = currentUser.email || 'Not provided';
+    document.getElementById('profile-phone-display').textContent = currentUser.profile?.phone || 'Not provided';
+    document.getElementById('profile-city-display').textContent = currentUser.profile?.city || 'Not provided';
+  }
+
+  function fillProfileForm(currentUser) {
+    profileForm.firstName.value = currentUser.firstName || currentUser.profile?.firstName || '';
+    profileForm.lastName.value = currentUser.lastName || currentUser.profile?.lastName || '';
+    profileForm.phone.value = currentUser.profile?.phone || '';
+    profileForm.city.value = currentUser.profile?.city || '';
+  }
+
+  function showProfileView() {
+    if (profileView) profileView.hidden = false;
+    if (profileForm) profileForm.hidden = true;
+  }
+
+  function showProfileEdit() {
+    if (profileView) profileView.hidden = true;
+    if (profileForm) profileForm.hidden = false;
+  }
+
+  async function refreshUserFromServer() {
+    try {
+      const serverUser = await api.get('/auth/me');
+      if (serverUser) {
+        user = { ...user, ...serverUser };
+        setUser(user);
+      }
+    } catch {
+      // keep local copy on failure
+    }
+    document.querySelector('[data-dashboard-name]')?.textContent = user?.firstName || user?.profile?.firstName || 'Student';
+    renderProfileDetails(user);
+    fillProfileForm(user);
+  }
 
   initDashboardNavIcons();
   bindDashboardPanels();
 
-  const form = document.getElementById('student-profile-form');
-  if (form) {
-    form.firstName.value = user?.firstName || user?.profile?.firstName || '';
-    form.lastName.value = user?.lastName || user?.profile?.lastName || '';
-    form.phone.value = user?.profile?.phone || '';
-    form.city.value = user?.profile?.city || '';
-    form.addEventListener('submit', async (e) => {
+  await refreshUserFromServer();
+
+  if (editBtn) {
+    editBtn.addEventListener('click', () => {
+      fillProfileForm(user);
+      showProfileEdit();
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      showProfileView();
+    });
+  }
+
+  if (profileForm) {
+    profileForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
         const updated = await api.patch('/auth/me', {
           profile: {
-            firstName: form.firstName.value.trim(),
-            lastName: form.lastName.value.trim(),
-            phone: form.phone.value.trim(),
-            city: form.city.value.trim(),
+            firstName: profileForm.firstName.value.trim(),
+            lastName: profileForm.lastName.value.trim(),
+            phone: profileForm.phone.value.trim(),
+            city: profileForm.city.value.trim(),
           },
         });
-        setUser({ ...user, ...updated, firstName: updated?.profile?.firstName || form.firstName.value });
+        user = { ...user, ...updated, firstName: updated?.profile?.firstName || profileForm.firstName.value.trim(), lastName: updated?.profile?.lastName || profileForm.lastName.value.trim() };
+        setUser(user);
+        document.querySelector('[data-dashboard-name]')?.textContent = user?.firstName || user?.profile?.firstName || 'Student';
+        renderProfileDetails(user);
+        showProfileView();
         showToast('Profile saved.', 'success');
       } catch (err) {
         showToast(err.message || 'Could not save profile.', 'error');
