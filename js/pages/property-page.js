@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.title = `${property.title} — KampoStay`;
-  const phone = property.landlordPhone || '+254712345678';
+  const phone = property.landlordPhone || SUPPORT_PHONE;
   const telHref = `tel:${phone.replace(/\s/g, '')}`;
 
   const images = property.images || [property.image];
