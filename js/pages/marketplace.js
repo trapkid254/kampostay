@@ -1,6 +1,7 @@
 import { openModal, closeModal, showToast } from '../modules/ui.js';
 import { isAuthenticated, requireAuth } from '../modules/auth.js';
 import api from '../modules/api.js';
+import { SUPPORT_WHATSAPP_INT } from '../config.js';
 
 const PLACEHOLDER_IMG = '../favicon.svg';
 
@@ -238,11 +239,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     const contact = btn.dataset.contact;
     if (contact) {
-      const isPhone = /^[\d+\s()-]+$/.test(contact);
-      if (isPhone) window.open(`https://wa.me/${contact.replace(/\D/g, '')}`, '_blank', 'noopener');
-      else window.location.href = `mailto:${contact}`;
+      // Always open WhatsApp chat with the platform support number
+      window.open(`https://wa.me/${SUPPORT_WHATSAPP_INT}`, '_blank', 'noopener');
     } else {
-      showToast('Seller contact not available.', 'info');
+      // Fallback to support WhatsApp when seller contact not available
+      window.open(`https://wa.me/${SUPPORT_WHATSAPP_INT}`, '_blank', 'noopener');
     }
   });
 

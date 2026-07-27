@@ -57,9 +57,9 @@ async function loadMyProperties() {
       const status = p.status || 'draft';
       const verified = p.verification?.status || 'pending';
       const img = p.primaryImage || p.media?.images?.[0]?.url || PLACEHOLDER_IMG;
-      return `
-          <div class="glass-panel" style="padding:var(--space-6);" data-property-id="${id}">
-            <img src="${img}" alt="" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:1rem;background:var(--color-bg-elevated);">
+          return `
+              <div class="glass-panel" style="padding:var(--space-6);" data-property-id="${id}">
+                <img src="${img}" alt="" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:1rem;background:var(--color-bg-elevated);">
             <h3>${p.title}</h3>
             <p class="text-muted text-sm">${formatMoney(p.rent)}/mo · ${p.roomType || 'room'}</p>
             <p class="text-sm mt-2"><span class="badge">${status}</span> <span class="badge badge--${verified === 'verified' ? 'verified' : 'new'}">${verified}</span></p>
@@ -102,9 +102,9 @@ function refreshMedia() {
     el.innerHTML = '<p class="text-muted">No media yet. Add an image URL when creating a property, or edit listings later.</p>';
     return;
   }
-  el.innerHTML = images.map((img) => `
-    <div class="glass-panel" style="padding:var(--space-3);">
-      <img src="${img.url}" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:8px;background:var(--color-bg-elevated);">
+    el.innerHTML = images.map((img) => `
+      <div class="glass-panel" style="padding:var(--space-3);">
+        <img src="${img.url}" alt="" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';" style="width:100%;height:120px;object-fit:cover;border-radius:8px;background:var(--color-bg-elevated);">
       <p class="text-sm text-muted mt-2">${img.title || ''}</p>
     </div>`).join('');
 }
@@ -275,6 +275,7 @@ async function uploadImage(file) {
       body: formData,
     });
     const data = await response.json();
+    console.debug('[landlord] upload response:', data);
     return data.data?.url || data.data?.secure_url;
   } catch (err) {
     console.error('Image upload failed:', err);

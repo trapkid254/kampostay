@@ -1,7 +1,7 @@
 import { formatCurrency } from './ui.js';
 import { toggleWishlist, isInWishlist } from './wishlist.js';
 import { toggleCompare, isInCompare } from './compare.js';
-import { ROUTES, siteUrl } from '../config.js';
+import { ROUTES, siteUrl, SUPPORT_WHATSAPP_INT } from '../config.js';
 import { normalizeProperty } from './normalize.js';
 import { icon } from './icons.js';
 
@@ -101,5 +101,7 @@ export function shareProperty(property) {
 
 export function whatsappLandlord(phone, property) {
   const msg = `Hi, I'm interested in ${property.title} listed on KampoStay (${formatCurrency(property.rent)}/month). Is it still available?`;
-  window.open(`https://wa.me/${phone?.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+  // Always direct WhatsApp chats to the platform support number
+  const target = SUPPORT_WHATSAPP_INT;
+  window.open(`https://wa.me/${target}?text=${encodeURIComponent(msg)}`, '_blank');
 }

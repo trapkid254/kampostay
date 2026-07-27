@@ -109,3 +109,8 @@ export const ROUTES = {
     return siteUrl('pages/download.html');
   },
 };
+
+// Support contact numbers (display + WhatsApp links)
+export const SUPPORT_PHONE = '0705797795';
+// WhatsApp needs international format without +, e.g. 2547xxxxxxx
+export const SUPPORT_WHATSAPP_INT = '254705797795';

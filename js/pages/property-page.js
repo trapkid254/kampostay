@@ -1,4 +1,5 @@
 import { getPropertyFromURL, loadPropertyDetail, shareProperty, whatsappLandlord } from '../modules/property.js';
+import { SUPPORT_PHONE } from '../config.js';
 import { renderMapEmbed, initDirectionsButton, getUniversityCoords } from '../modules/maps.js';
 import { formatCurrency, openModal, closeModal, showToast } from '../modules/ui.js';
 import { toggleWishlist, isInWishlist } from '../modules/wishlist.js';
@@ -135,6 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <span class="pay-chip">${icon('creditCard', 'icon--sm')} Card</span>
         <span class="pay-chip">${icon('bank', 'icon--sm')} Bank</span>
       </div>
+      <p class="text-muted" style="margin-top:0.5rem;">Paybill / Till: <strong>${SUPPORT_PHONE}</strong></p>
     </div>
     <div class="guarantee-box mt-6">
       ${icon('shield')}
