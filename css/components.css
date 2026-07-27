@@ -186,9 +186,9 @@
     background: rgba(11, 24, 20, 0.45);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
-    z-index: calc(var(--z-sticky) - 1);
+    z-index: calc(var(--z-sticky) + 1);
     opacity: 0;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.22s ease;
   }
 
   .nav__overlay.is-open {
@@ -197,32 +197,33 @@
 
   .nav__drawer {
     position: fixed;
-    top: calc(var(--header-height) + 12px);
-    left: 50%;
-    transform: translate(-50%, -108%);
-    width: min(720px, 96%);
-    max-width: 96%;
+    top: calc(var(--header-height) + 10px);
+    right: var(--space-4);
+    left: auto;
+    width: min(320px, 40vw);
+    max-width: 360px;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
     background: var(--color-bg-elevated);
     border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    box-shadow: 0 18px 40px rgba(11, 24, 20, 0.18);
+    border-radius: 16px;
+    box-shadow: 0 30px 60px rgba(11, 24, 20, 0.18);
     padding: 0;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, visibility 0.2s ease;
+    transform: translateY(-16px);
+    transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s ease;
     max-height: min(85dvh, calc(100dvh - var(--header-height) - 24px));
     overflow-x: hidden;
     overflow-y: auto;
-    z-index: var(--z-sticky);
+    z-index: calc(var(--z-sticky) + 2);
     box-sizing: border-box;
   }
 
   .nav__drawer.is-open {
-    transform: translate(-50%, 0);
+    transform: translateY(0);
     opacity: 1;
     visibility: visible;
     pointer-events: auto;

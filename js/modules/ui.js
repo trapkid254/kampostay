@@ -147,24 +147,32 @@ export function initRevealOnScroll() {
 export function initMobileNav() {
   const nav = document.querySelector('.nav');
   const toggle = document.querySelector('[data-nav-toggle]');
-  let links = document.querySelector('.nav__links');
+  const links = document.querySelector('.nav__links');
   const actions = document.querySelector('.nav__actions');
-  if (!toggle || !nav || !links) return;
+  const dashboardSidebar = document.querySelector('.dashboard__sidebar');
+  const dashboardNav = document.querySelector('.dashboard__nav');
+  if (!toggle || !nav) return;
 
-  let drawer = nav.querySelector('[data-nav-drawer]');
-  if (!drawer) {
-    drawer = document.createElement('div');
-    drawer.className = 'nav__drawer';
-    drawer.dataset.navDrawer = 'true';
-    links.parentNode.insertBefore(drawer, links);
-    drawer.appendChild(links);
-    if (actions) drawer.appendChild(actions);
+  const useDashboardSidebar = Boolean(dashboardSidebar && dashboardNav);
+  let drawer = null;
+
+  if (!useDashboardSidebar) {
+    if (!links) return;
+    drawer = nav.querySelector('[data-nav-drawer]');
+    if (!drawer) {
+      drawer = document.createElement('div');
+      drawer.className = 'nav__drawer';
+      drawer.dataset.navDrawer = 'true';
+      links.parentNode.insertBefore(drawer, links);
+      drawer.appendChild(links);
+      if (actions) drawer.appendChild(actions);
+    }
   }
 
-  // Create drawer chrome (title + close) only on small screens
   const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
 
   function ensureDrawerHead() {
+    if (!drawer) return;
     const hasHead = !!drawer.querySelector('[data-nav-drawer-head]');
     if (isMobile() && !hasHead) {
       const head = document.createElement('div');
@@ -206,16 +214,17 @@ export function initMobileNav() {
     }
   }
 
-  // initialize head based on current viewport
-  ensureDrawerHead();
-
-  // update on resize
-  window.addEventListener('resize', () => {
+  if (drawer) {
     ensureDrawerHead();
+  }
+
+  window.addEventListener('resize', () => {
+    if (drawer) ensureDrawerHead();
     if (window.innerWidth > 900) {
-      // ensure drawer is closed when moving to desktop
-      drawer.classList.remove('is-open');
-      links.classList.remove('is-open');
+      if (drawer) {
+        drawer.classList.remove('is-open');
+        links.classList.remove('is-open');
+      }
       toggle.classList.remove('is-open');
       toggle.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('nav-open');
@@ -237,8 +246,12 @@ export function initMobileNav() {
   }
 
   const close = () => {
-    drawer.classList.remove('is-open');
-    links.classList.remove('is-open');
+    if (useDashboardSidebar) {
+      dashboardSidebar.classList.remove('is-open');
+    } else {
+      drawer?.classList.remove('is-open');
+      links.classList.remove('is-open');
+    }
     toggle.classList.remove('is-open');
     toggle.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('nav-open');
@@ -247,8 +260,12 @@ export function initMobileNav() {
   };
 
   const open = () => {
-    drawer.classList.add('is-open');
-    links.classList.add('is-open');
+    if (useDashboardSidebar) {
+      dashboardSidebar.classList.add('is-open');
+    } else {
+      drawer.classList.add('is-open');
+      links.classList.add('is-open');
+    }
     toggle.classList.add('is-open');
     toggle.setAttribute('aria-expanded', 'true');
     document.body.classList.add('nav-open');
@@ -257,13 +274,28 @@ export function initMobileNav() {
   };
 
   toggle.addEventListener('click', () => {
-    if (drawer.classList.contains('is-open')) close();
-    else open();
+    if (useDashboardSidebar) {
+      if (dashboardSidebar.classList.contains('is-open')) close();
+      else open();
+    } else if (drawer && drawer.classList.contains('is-open')) {
+      close();
+    } else {
+      open();
+    }
   });
 
-  drawer.querySelector('[data-nav-close]')?.addEventListener('click', close);
+  if (drawer) {
+    drawer.querySelector('[data-nav-close]')?.addEventListener('click', close);
+    drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+  }
+
+  if (useDashboardSidebar) {
+    dashboardNav.addEventListener('click', (e) => {
+      if (e.target.closest('[data-panel]')) close();
+    });
+  }
+
   overlay.addEventListener('click', close);
-  drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
