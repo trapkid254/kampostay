@@ -20,7 +20,24 @@ export function setUser(user) {
 }
 
 export function isAuthenticated() {
-  return !!localStorage.getItem(STORAGE_KEYS.token);
+  const token = localStorage.getItem(STORAGE_KEYS.token);
+  if (!token) return false;
+  // Check if token is expired (JWT tokens have expiration)
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      // Token expired, clear it
+      localStorage.removeItem(STORAGE_KEYS.token);
+      localStorage.removeItem(STORAGE_KEYS.user);
+      return false;
+    }
+  } catch {
+    // Invalid token format, clear it
+    localStorage.removeItem(STORAGE_KEYS.token);
+    localStorage.removeItem(STORAGE_KEYS.user);
+    return false;
+  }
+  return true;
 }
 
 function normalizeUser(user) {
@@ -112,15 +129,21 @@ export function requireRole(role, redirectUrl = ROUTES.home) {
 
 export function updateAuthUI() {
   const user = getUser();
+  const isAuth = isAuthenticated();
   const authLinks = document.querySelectorAll('[data-auth="guest"]');
   const userLinks = document.querySelectorAll('[data-auth="user"]');
   const userNameEls = document.querySelectorAll('[data-user-name]');
 
+  // Clear user data if not authenticated
+  if (!isAuth && user) {
+    localStorage.removeItem(STORAGE_KEYS.user);
+  }
+
   authLinks.forEach((el) => {
-    el.hidden = isAuthenticated();
+    el.hidden = isAuth;
   });
   userLinks.forEach((el) => {
-    el.hidden = !isAuthenticated();
+    el.hidden = !isAuth;
   });
   userNameEls.forEach((el) => {
     if (user) el.textContent = user.firstName || user.name || user.email;

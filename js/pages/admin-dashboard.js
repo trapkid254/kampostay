@@ -104,12 +104,18 @@ async function loadPendingProperties() {
 
     container.innerHTML = list.map((p) => {
       const id = p._id || p.id;
+      const img = p.primaryImage || p.media?.images?.[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image';
       return `<div class="glass-panel" style="padding:var(--space-6);margin-bottom:var(--space-4);">
-        <h3>${p.title}</h3>
-        <p class="text-muted text-sm">KSh ${Number(p.rent || 0).toLocaleString()}/mo · ${p.status || 'draft'} · ${p.verification?.status || 'pending'}</p>
-        <div class="flex gap-4 mt-4">
-          <button type="button" class="btn btn--sm btn--primary" data-verify="${id}">Verify &amp; Publish</button>
-          <a class="btn btn--sm btn--outline" href="${siteUrl('pages/property.html')}?id=${id}">Preview</a>
+        <div class="flex gap-4">
+          <img src="${img}" alt="" style="width:120px;height:90px;object-fit:cover;border-radius:8px;background:var(--color-bg-elevated);">
+          <div style="flex:1;">
+            <h3>${p.title}</h3>
+            <p class="text-muted text-sm">KSh ${Number(p.rent || 0).toLocaleString()}/mo · ${p.status || 'draft'} · ${p.verification?.status || 'pending'}</p>
+            <div class="flex gap-4 mt-4">
+              <button type="button" class="btn btn--sm btn--primary" data-verify="${id}">Verify &amp; Publish</button>
+              <a class="btn btn--sm btn--outline" href="${siteUrl('pages/property.html')}?id=${id}">Preview</a>
+            </div>
+          </div>
         </div>
       </div>`;
     }).join('');

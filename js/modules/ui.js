@@ -161,36 +161,71 @@ export function initMobileNav() {
     if (actions) drawer.appendChild(actions);
   }
 
-  // Professional drawer chrome: title + close
-  if (!drawer.querySelector('[data-nav-drawer-head]')) {
-    const head = document.createElement('div');
-    head.className = 'nav__drawer-head';
-    head.dataset.navDrawerHead = 'true';
-    head.innerHTML = `
-      <div class="nav__drawer-brand">
-        <span class="nav__drawer-eyebrow">KampoStay</span>
-        <strong class="nav__drawer-title">Menu</strong>
-      </div>
-      <button type="button" class="nav__drawer-close" data-nav-close aria-label="Close menu">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    `;
-    drawer.insertBefore(head, drawer.firstChild);
+  // Create drawer chrome (title + close) only on small screens
+  const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
 
-    if (!links.querySelector('.nav__section-label')) {
-      const label = document.createElement('p');
-      label.className = 'nav__section-label';
-      label.textContent = 'Explore';
-      links.insertBefore(label, links.firstChild);
+  function ensureDrawerHead() {
+    const hasHead = !!drawer.querySelector('[data-nav-drawer-head]');
+    if (isMobile() && !hasHead) {
+      const head = document.createElement('div');
+      head.className = 'nav__drawer-head';
+      head.dataset.navDrawerHead = 'true';
+      head.innerHTML = `
+        <div class="nav__drawer-brand">
+          <span class="nav__drawer-eyebrow">KampoStay</span>
+          <strong class="nav__drawer-title">Menu</strong>
+        </div>
+        <button type="button" class="nav__drawer-close" data-nav-close aria-label="Close menu">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      `;
+      drawer.insertBefore(head, drawer.firstChild);
+
+      if (!links.querySelector('.nav__section-label')) {
+        const label = document.createElement('p');
+        label.className = 'nav__section-label';
+        label.textContent = 'Explore';
+        links.insertBefore(label, links.firstChild);
+      }
+
+      if (actions && !actions.querySelector('.nav__section-label')) {
+        const label = document.createElement('p');
+        label.className = 'nav__section-label';
+        label.textContent = 'Account';
+        actions.insertBefore(label, actions.firstChild);
+      }
     }
 
-    if (actions && !actions.querySelector('.nav__section-label')) {
-      const label = document.createElement('p');
-      label.className = 'nav__section-label';
-      label.textContent = 'Account';
-      actions.insertBefore(label, actions.firstChild);
+    if (!isMobile() && hasHead) {
+      const headEl = drawer.querySelector('[data-nav-drawer-head]');
+      headEl?.remove();
+      const label = links.querySelector('.nav__section-label');
+      label?.remove();
+      const accLabel = actions?.querySelector('.nav__section-label');
+      accLabel?.remove();
     }
   }
+
+  // initialize head based on current viewport
+  ensureDrawerHead();
+
+  // update on resize
+  window.addEventListener('resize', () => {
+    ensureDrawerHead();
+    if (window.innerWidth > 900) {
+      // ensure drawer is closed when moving to desktop
+      drawer.classList.remove('is-open');
+      links.classList.remove('is-open');
+      toggle.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('nav-open');
+      const overlay = document.querySelector('[data-nav-overlay]');
+      if (overlay) {
+        overlay.hidden = true;
+        overlay.classList.remove('is-open');
+      }
+    }
+  });
 
   let overlay = document.querySelector('[data-nav-overlay]');
   if (!overlay) {
