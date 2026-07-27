@@ -58,16 +58,17 @@ async function loadMyProperties() {
       const verified = p.verification?.status || 'pending';
       const img = p.primaryImage || p.media?.images?.[0]?.url || PLACEHOLDER_IMG;
       return `
-        <div class="glass-panel" style="padding:var(--space-6);" data-property-id="${id}">
-          <img src="${img}" alt="" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:1rem;background:var(--color-bg-elevated);">
-          <h3>${p.title}</h3>
-          <p class="text-muted text-sm">${formatMoney(p.rent)}/mo · ${p.roomType || 'room'}</p>
-          <p class="text-sm mt-2"><span class="badge">${status}</span> <span class="badge badge--${verified === 'verified' ? 'verified' : 'new'}">${verified}</span></p>
-          <div class="flex gap-4 mt-4 flex-wrap">
-            <a class="btn btn--sm btn--outline" href="${siteUrl('pages/property.html')}?id=${id}">View</a>
-            <button type="button" class="btn btn--sm btn--ghost" data-delete-property="${id}">Archive</button>
-          </div>
-        </div>`;
+          <div class="glass-panel" style="padding:var(--space-6);" data-property-id="${id}">
+            <img src="${img}" alt="" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:1rem;background:var(--color-bg-elevated);">
+            <h3>${p.title}</h3>
+            <p class="text-muted text-sm">${formatMoney(p.rent)}/mo · ${p.roomType || 'room'}</p>
+            <p class="text-sm mt-2"><span class="badge">${status}</span> <span class="badge badge--${verified === 'verified' ? 'verified' : 'new'}">${verified}</span></p>
+            <div class="flex gap-4 mt-4 flex-wrap">
+              <a class="btn btn--sm btn--outline" href="${siteUrl('pages/property.html')}?id=${id}">View</a>
+              <button type="button" class="btn btn--sm btn--ghost" data-delete-property="${id}">Archive</button>
+              <button type="button" class="btn btn--sm btn--danger" data-delete-property-permanent="${id}">Delete</button>
+            </div>
+          </div>`;
     }).join('');
   } catch (err) {
     container.innerHTML = `<p class="text-muted">Could not load properties. ${err.message || 'Is the API running on port 5000?'}</p>`;
@@ -462,6 +463,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelector('[data-add-property]')?.addEventListener('click', () => openModal('add-property-modal'));
 
   document.getElementById('landlord-properties')?.addEventListener('click', async (e) => {
+    const permBtn = e.target.closest('[data-delete-property-permanent]');
+    if (permBtn) {
+      if (!confirm('Permanently delete this property? This cannot be undone.')) return;
+      try {
+        await api.delete(`/properties/${permBtn.dataset.deletePropertyPermanent}?permanent=true`);
+        showToast('Property permanently deleted.', 'success');
+        await loadMyProperties();
+      } catch (err) {
+        showToast(err.message || 'Could not delete property.', 'error');
+      }
+      return;
+    }
+
     const btn = e.target.closest('[data-delete-property]');
     if (!btn) return;
     if (!confirm('Archive this property?')) return;
