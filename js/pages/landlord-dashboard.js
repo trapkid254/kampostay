@@ -275,10 +275,15 @@ async function uploadImage(file) {
       body: formData,
     });
     const data = await response.json();
-    console.debug('[landlord] upload response:', data);
+    console.debug('[landlord] upload response:', response.status, data);
+    if (!response.ok) {
+      const errorMessage = data?.message || data?.error || response.statusText;
+      throw new Error(errorMessage || 'Upload failed');
+    }
     return data.data?.url || data.data?.secure_url;
   } catch (err) {
     console.error('Image upload failed:', err);
+    showToast(err.message || 'Image upload failed. Please try again.', 'error');
     return null;
   }
 }
