@@ -267,20 +267,10 @@ async function uploadImage(file) {
   const formData = new FormData();
   formData.append('file', file);
   try {
-    const response = await fetch(`${api.baseUrl}/uploads/image`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('kampostay-token')}`,
-      },
-      body: formData,
-    });
-    const data = await response.json();
-    console.debug('[landlord] upload response:', response.status, data);
-    if (!response.ok) {
-      const errorMessage = data?.message || data?.error || response.statusText;
-      throw new Error(errorMessage || 'Upload failed');
-    }
-    return data.data?.url || data.data?.secure_url;
+    const data = await api.post('/uploads/image', formData, { raw: true });
+    const result = data.data || data;
+    console.debug('[landlord] upload response:', result);
+    return result?.url || result?.secure_url || result?.secureUrl || null;
   } catch (err) {
     console.error('Image upload failed:', err);
     showToast(err.message || 'Image upload failed. Please try again.', 'error');

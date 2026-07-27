@@ -1626,7 +1626,8 @@
   .table-wrap table,
   .compare-table-wrap table,
   .admin-table-wrap table {
-    min-width: 520px;
+    min-width: 100%;
+    width: 100%;
   }
 
   /* Don't force every table on the page to widen the body */

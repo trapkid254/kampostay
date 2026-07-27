@@ -170,7 +170,12 @@ class ApiClient {
     const cleaned = {};
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') cleaned[key] = value;
+        if (value !== undefined && value !== null && value !== '') {
+          if (key === 'maxDistance') cleaned.maxDistanceKm = value;
+          else if (key === 'walkingTime') cleaned.maxWalkingMinutes = value;
+          else if (key === 'gender') cleaned.genderRestriction = value;
+          else cleaned[key] = value;
+        }
       });
     }
     const query = Object.keys(cleaned).length ? `?${new URLSearchParams(cleaned)}` : '';
