@@ -40,6 +40,16 @@ export function isAuthenticated() {
   return true;
 }
 
+function getFirstName(user) {
+  if (!user) return '';
+  return (
+    user.firstName
+    || user.profile?.firstName
+    || String(user.name || '').split(' ').filter(Boolean)[0]
+    || ''
+  );
+}
+
 function normalizeUser(user) {
   if (!user) return null;
   return {
@@ -63,7 +73,8 @@ export async function login(email, password) {
   api.setTokens(data.accessToken || data.token, data.refreshToken);
   const user = normalizeUser(data.user);
   setUser(user);
-  showToast(`Karibu, ${user?.firstName || 'friend'}!`, 'success');
+  const firstName = getFirstName(user) || 'friend';
+  showToast(`Karibu, ${firstName}!`, 'success');
   return user;
 }
 
