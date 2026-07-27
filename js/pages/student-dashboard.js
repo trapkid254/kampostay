@@ -1,4 +1,4 @@
-import { requireAuth, requireRole, logout, getUser, setUser } from '../modules/auth.js';
+import { requireAuth, requireRole, logout, getUser, normalizeUser, setUser, getFirstName } from '../modules/auth.js';
 import { showToast, formatCurrency } from '../modules/ui.js';
 import { initWishlistPage, syncWishlistFromApi } from '../modules/wishlist.js';
 import { initComparePage } from '../modules/compare.js';
@@ -154,12 +154,18 @@ async function loadReports(el) {
 document.addEventListener('DOMContentLoaded', async () => {
   if (!requireAuth() || !requireRole('student', siteUrl('pages/auth/login.html'))) return;
 
-  let user = getUser();
+  let user = normalizeUser(getUser()) || {};
 
   const profileView = document.getElementById('profile-view');
   const profileForm = document.getElementById('student-profile-form');
   const editBtn = document.getElementById('profile-edit-btn');
   const cancelBtn = document.getElementById('profile-cancel-btn');
+  const dashboardNameEl = document.querySelector('[data-dashboard-name]');
+
+  function updateDashboardGreeting(currentUser) {
+    if (!dashboardNameEl) return;
+    dashboardNameEl.textContent = getFirstName(currentUser) || 'Student';
+  }
 
   function renderProfileDetails(currentUser) {
     const name = [currentUser.firstName, currentUser.lastName].filter(Boolean).join(' ') || currentUser.email || 'Student';
@@ -190,16 +196,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const serverUser = await api.get('/auth/me');
       if (serverUser) {
-        user = { ...user, ...serverUser };
+        user = normalizeUser({ ...user, ...serverUser });
         setUser(user);
       }
     } catch {
       // keep local copy on failure
     }
-    const dashboardNameEl = document.querySelector('[data-dashboard-name]');
-    if (dashboardNameEl) {
-      dashboardNameEl.textContent = user?.firstName || user?.profile?.firstName || 'Student';
-    }
+    updateDashboardGreeting(user);
     renderProfileDetails(user);
     fillProfileForm(user);
   }
@@ -207,6 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initDashboardNavIcons();
   bindDashboardPanels();
 
+  updateDashboardGreeting(user);
   await refreshUserFromServer();
 
   if (editBtn) {
@@ -234,9 +238,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             city: profileForm.city.value.trim(),
           },
         });
-        user = { ...user, ...updated, firstName: updated?.profile?.firstName || profileForm.firstName.value.trim(), lastName: updated?.profile?.lastName || profileForm.lastName.value.trim() };
+        user = normalizeUser({
+          ...user,
+          ...updated,
+          firstName: updated?.profile?.firstName || profileForm.firstName.value.trim(),
+          lastName: updated?.profile?.lastName || profileForm.lastName.value.trim(),
+        });
         setUser(user);
-        document.querySelector('[data-dashboard-name]')?.textContent = user?.firstName || user?.profile?.firstName || 'Student';
+        updateDashboardGreeting(user);
         renderProfileDetails(user);
         showProfileView();
         showToast('Profile saved.', 'success');
@@ -246,7 +255,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  document.querySelector('[data-logout]')?.addEventListener('click', (e) => { e.preventDefault(); logout(); });
+  document.querySelector('[data-logout]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    logout();
+  });
 
   await syncWishlistFromApi();
   initWishlistPage(document.getElementById('dash-favourites'));

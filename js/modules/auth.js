@@ -40,7 +40,7 @@ export function isAuthenticated() {
   return true;
 }
 
-function getFirstName(user) {
+export function getFirstName(user) {
   if (!user) return '';
   return (
     user.firstName
@@ -50,7 +50,7 @@ function getFirstName(user) {
   );
 }
 
-function normalizeUser(user) {
+export function normalizeUser(user) {
   if (!user) return null;
   return {
     ...user,
@@ -157,7 +157,7 @@ export function updateAuthUI() {
     el.hidden = !isAuth;
   });
   userNameEls.forEach((el) => {
-    if (user) el.textContent = user.firstName || user.name || user.email;
+    if (user) el.textContent = getFirstName(user) || user.name || user.email;
   });
 
   const dashHref = user?.role ? dashboardForRole(user.role) : ROUTES.studentDashboard;
