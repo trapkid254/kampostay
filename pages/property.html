@@ -119,16 +119,11 @@
         <button class="modal__close" data-modal-close aria-label="Close" type="button">&times;</button>
       </div>
       <form id="payment-form" class="modal__body">
-        <p class="text-muted mb-4">Reserving <strong id="pay-property-title">this room</strong>. Amount due today: <strong id="pay-amount">—</strong> (deposit).</p>
-        <fieldset class="form-group">
-          <legend class="form-label">Payment method</legend>
-          <label class="pay-option"><input type="radio" name="method" value="mpesa" checked> <span>M-Pesa STK Push</span></label>
-          <label class="pay-option"><input type="radio" name="method" value="card"> <span>Visa / Mastercard</span></label>
-          <label class="pay-option"><input type="radio" name="method" value="bank"> <span>Bank transfer</span></label>
-        </fieldset>
-        <div class="form-group" id="mpesa-phone-group">
-          <label class="form-label" for="pay-phone">M-Pesa phone number</label>
-          <input type="tel" id="pay-phone" name="phone" class="form-input" placeholder="07XX XXX XXX" autocomplete="tel">
+        <p class="text-muted mb-4">To reserve <strong id="pay-property-title">this room</strong>, send <strong id="pay-amount">—</strong> to <strong>0705797795</strong> via M-Pesa.</p>
+        <p class="text-muted mb-4">After sending the payment, click Confirm to save your reservation and notify KampoStay.</p>
+        <div class="form-group">
+          <label class="form-label" for="pay-notes">Payment note</label>
+          <textarea id="pay-notes" name="notes" class="form-textarea" rows="3" placeholder="Enter your name or booking reference"></textarea>
         </div>
         <div class="guarantee-box">
           <div>

@@ -205,43 +205,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   paymentForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const fd = new FormData(paymentForm);
-    const method = fd.get('method');
-    const phoneInput = String(fd.get('phone') || '').trim();
-    if (method === 'mpesa' && phoneInput.length < 9) {
-      showToast('Enter a valid M-Pesa phone number.', 'error');
-      return;
-    }
+    const notes = String(fd.get('notes') || `Offline payment to ${SUPPORT_PHONE}`);
     try {
-      const booking = await api.post('/bookings', {
+      await api.post('/bookings', {
         propertyId: property.id,
         type: 'reservation',
         scheduledDate: new Date(Date.now() + 2 * 86400000).toISOString(),
         amount: deposit,
-        notes: `Reserve via ${method}`,
+        notes,
       });
-      const bookingId = booking?._id || booking?.id || booking?.data?._id;
-      if (method === 'mpesa' || !method) {
-        await api.post('/payments/stk-push', {
-          phoneNumber: phoneInput || phone,
-          amount: deposit,
-          bookingId,
-          description: `Deposit for ${property.title}`,
-        });
-        showToast('M-Pesa payment initiated. In demo/sandbox it may auto-complete — check Payments in your dashboard.', 'success');
-      } else {
-        showToast(`${method === 'card' ? 'Card' : 'Bank'} reservation recorded. Complete payment instructions will be emailed. Covered by 100% mismatch refund.`, 'success');
-      }
+      showToast(`Reservation recorded. Please send money to ${SUPPORT_PHONE} via M-Pesa.`, 'success');
       closeModal('payment-modal');
       paymentForm.reset();
     } catch (err) {
-      showToast(err.message || 'Payment could not start. Log in as a student and try again.', 'error');
+      showToast(err.message || 'Could not save reservation. Log in as a student and try again.', 'error');
     }
-  });
-
-  paymentForm?.addEventListener('change', (e) => {
-    if (e.target.name !== 'method') return;
-    const mpesaField = document.getElementById('mpesa-phone-group');
-    if (mpesaField) mpesaField.hidden = e.target.value !== 'mpesa';
   });
 
   if (window.QRCode) {
