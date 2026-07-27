@@ -196,7 +196,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch {
       // keep local copy on failure
     }
-    document.querySelector('[data-dashboard-name]')?.textContent = user?.firstName || user?.profile?.firstName || 'Student';
+    const dashboardNameEl = document.querySelector('[data-dashboard-name]');
+    if (dashboardNameEl) {
+      dashboardNameEl.textContent = user?.firstName || user?.profile?.firstName || 'Student';
+    }
     renderProfileDetails(user);
     fillProfileForm(user);
   }
