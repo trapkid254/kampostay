@@ -188,11 +188,13 @@
     -webkit-backdrop-filter: blur(2px);
     z-index: calc(var(--z-sticky) + 1);
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.22s ease;
   }
 
   .nav__overlay.is-open {
     opacity: 1;
+    pointer-events: auto;
   }
 
   .nav__drawer {
@@ -218,8 +220,27 @@
     max-height: min(85dvh, calc(100dvh - var(--header-height) - 24px));
     overflow-x: hidden;
     overflow-y: auto;
-    z-index: calc(var(--z-sticky) + 2);
+    z-index: calc(var(--z-sticky) + 3);
     box-sizing: border-box;
+  }
+
+  .nav__drawer.is-open {
+    pointer-events: auto;
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-shrink: 0;
+    margin-top: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .nav__actions .btn,
+  .nav__actions .theme-toggle {
+    width: auto;
   }
 
   .nav__drawer.is-open {
@@ -319,7 +340,7 @@
     background: rgba(26, 107, 82, 0.18);
   }
 
-  .nav__actions {
+  .nav__drawer .nav__actions {
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-3);
@@ -330,22 +351,22 @@
     background: var(--color-bg-muted);
   }
 
-  .nav__actions .btn,
-  .nav__actions .theme-toggle {
+  .nav__drawer .nav__actions .btn,
+  .nav__drawer .nav__actions .theme-toggle {
     width: 100%;
     justify-content: center;
     min-height: 48px;
     border-radius: var(--radius-md);
   }
 
-  .nav__actions .theme-toggle {
+  .nav__drawer .nav__actions .theme-toggle {
     border: 1px solid var(--glass-border);
     background: var(--color-bg-elevated);
   }
 
   .nav__actions > span[data-auth] {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--space-3);
     width: 100%;
   }

@@ -163,9 +163,8 @@ export function initMobileNav() {
       drawer = document.createElement('div');
       drawer.className = 'nav__drawer';
       drawer.dataset.navDrawer = 'true';
-      links.parentNode.insertBefore(drawer, links);
+      document.body.appendChild(drawer);
       drawer.appendChild(links);
-      if (actions) drawer.appendChild(actions);
     }
   }
 
