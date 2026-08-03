@@ -8,7 +8,7 @@ export function normalizeProperty(raw) {
   const mediaImages = raw.media?.images || [];
   const rawImages = Array.isArray(raw.images) ? raw.images : mediaImages;
   const images = rawImages
-    .map((img) => (typeof img === 'string' ? img : img?.url || img?.secure_url))
+    .map((img) => (typeof img === 'string' ? img : img?.url || img?.secure_url || img?.secureUrl))
     .filter(Boolean);
   const cover = raw.image || raw.primaryImage || images[0] || '';
   const university =
