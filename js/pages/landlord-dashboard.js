@@ -270,7 +270,12 @@ async function uploadImage(file) {
     const data = await api.post('/uploads/image', formData, { raw: true });
     const result = data.data || data;
     console.debug('[landlord] upload response:', result);
-    return result?.url || result?.secure_url || result?.secureUrl || null;
+    console.debug('[landlord] upload response url:', result?.url);
+    console.debug('[landlord] upload response secure_url:', result?.secure_url);
+    console.debug('[landlord] upload response secureUrl:', result?.secureUrl);
+    const imageUrl = result?.url || result?.secure_url || result?.secureUrl || null;
+    console.debug('[landlord] final image URL:', imageUrl);
+    return imageUrl;
   } catch (err) {
     console.error('Image upload failed:', err);
     showToast(err.message || 'Image upload failed. Please try again.', 'error');
