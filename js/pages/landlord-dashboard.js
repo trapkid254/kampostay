@@ -56,7 +56,8 @@ async function loadMyProperties() {
       const id = p._id || p.id;
       const status = p.status || 'draft';
       const verified = p.verification?.status || 'pending';
-      const img = p.primaryImage || p.media?.images?.[0]?.url || PLACEHOLDER_IMG;
+      const firstMedia = p.media?.images?.[0] || {};
+      const img = p.primaryImage || firstMedia.url || firstMedia.secure_url || firstMedia.secureUrl || PLACEHOLDER_IMG;
           return `
               <div class="glass-panel" style="padding:var(--space-6);" data-property-id="${id}">
                 <img src="${img}" alt="" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:1rem;background:var(--color-bg-elevated);">
@@ -93,10 +94,10 @@ function refreshMedia() {
   if (!el) return;
   const images = cachedProperties.flatMap((p) => {
     const imgs = p.media?.images || [];
-    if (!imgs.length && (p.primaryImage || imgs[0]?.url)) {
+    if (!imgs.length && (p.primaryImage || imgs[0]?.url || imgs[0]?.secure_url || imgs[0]?.secureUrl)) {
       return [{ url: p.primaryImage || PLACEHOLDER_IMG, title: p.title }];
     }
-    return imgs.map((img) => ({ url: img.url || PLACEHOLDER_IMG, title: p.title }));
+    return imgs.map((img) => ({ url: img.url || img.secure_url || img.secureUrl || PLACEHOLDER_IMG, title: p.title }));
   });
   if (!images.length) {
     el.innerHTML = '<p class="text-muted">No media yet. Add an image URL when creating a property, or edit listings later.</p>';
@@ -270,6 +271,11 @@ async function uploadImage(file) {
     const data = await api.post('/uploads/image', formData, { raw: true });
     const result = data.data || data;
     const imageUrl = result?.url || result?.secure_url || result?.secureUrl || null;
+    if (!imageUrl) {
+      console.error('[landlord] upload response missing URL', result);
+    }
+    console.debug('[landlord] upload response result:', result);
+    console.debug('[landlord] upload final image URL:', imageUrl);
     return imageUrl;
   } catch (err) {
     console.error('Image upload failed:', err);

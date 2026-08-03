@@ -104,7 +104,8 @@ async function loadPendingProperties() {
 
     container.innerHTML = list.map((p) => {
       const id = p._id || p.id;
-      const img = p.primaryImage || p.media?.images?.[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image';
+      const firstMedia = p.media?.images?.[0] || {};
+      const img = p.primaryImage || firstMedia.url || firstMedia.secure_url || firstMedia.secureUrl || 'https://via.placeholder.com/400x300?text=No+Image';
       return `<div class="glass-panel" style="padding:var(--space-6);margin-bottom:var(--space-4);">
         <div class="flex gap-4">
           <img src="${img}" alt="" style="width:120px;height:90px;object-fit:cover;border-radius:8px;background:var(--color-bg-elevated);">
