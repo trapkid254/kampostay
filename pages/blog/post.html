@@ -10,25 +10,9 @@
 <body>
   <header class="header"><div class="header__inner"><a href="../../index.html" class="logo"><img src="../../icons/logo.png" alt="" class="logo__icon" width="36" height="36">KampoStay</a><nav class="nav"><a href="../../pages/blog/index.html" class="btn btn--ghost btn--sm">â† Blog</a></nav></div></header>
   <main class="page"><article class="container container--narrow section" id="blog-post">
-    <time class="blog-card__date" id="post-date">Jul 1, 2026</time>
-    <h1 id="post-title">First-Year Moving Checklist for Kenya</h1>
-    <img id="post-image" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" alt="" style="border-radius:var(--radius-lg);margin:var(--space-8) 0;" width="720" height="400">
-    <div id="post-content"><p>Moving into your first student accommodation is exciting â€” but preparation makes all the difference. Here's what every Kenyan first-year should pack and plan for.</p><h2>Essentials</h2><ul style="padding-left:var(--space-6);list-style:disc;"><li>Bedding (mattress cover, sheets, pillow)</li><li>Toiletries and towel set</li><li>Extension cable and power strip</li><li>Padlock for your room</li><li>Basic kitchenware if self-catering</li></ul><h2>Budget Planning</h2><p>Use KampoStay's rent affordability calculator to ensure your housing fits within your HELB or family budget. Factor in deposit, utilities, and transport costs.</p></div>
+    <div id="blog-content"></div>
   </article></main>
   <footer class="footer"><div class="container"><div class="footer__bottom"><p class="footer__copyright">&copy; 2026 KampoStay. All rights reserved.</p></div></div></footer>
   <script type="module" src="../../js/app.js"></script>
-  <script type="module">
-    const posts = {
-      'moving-checklist': { title: 'First-Year Moving Checklist for Kenya', date: 'Jul 1, 2026', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80' },
-      'rent-tips': { title: '5 Tips to Negotiate Student Rent', date: 'Jun 15, 2026', image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80' },
-      'roommate-guide': { title: 'Finding the Perfect Roommate', date: 'Jun 1, 2026', image: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80' },
-    };
-    const id = new URLSearchParams(location.search).get('id') || 'moving-checklist';
-    const post = posts[id] || posts['moving-checklist'];
-    document.title = `${post.title} â€” KampoStay`;
-    document.getElementById('post-title').textContent = post.title;
-    document.getElementById('post-date').textContent = post.date;
-    document.getElementById('post-image').src = post.image;
-  </script>
 </body>
 </html>
