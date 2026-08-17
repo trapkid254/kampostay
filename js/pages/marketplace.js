@@ -3,7 +3,7 @@ import { isAuthenticated, requireAuth } from '../modules/auth.js';
 import api from '../modules/api.js';
 import { SUPPORT_WHATSAPP_INT } from '../config.js';
 
-const PLACEHOLDER_IMG = '../favicon.svg';
+const PLACEHOLDER_IMG = '../icons/logo.png';
 
 const CATEGORY_IMAGES = {
   books: PLACEHOLDER_IMG,

@@ -5,7 +5,7 @@ import { ROUTES, siteUrl, SUPPORT_WHATSAPP_INT } from '../config.js';
 import { normalizeProperty } from './normalize.js';
 import { icon } from './icons.js';
 
-const PLACEHOLDER = siteUrl('favicon.svg');
+const PLACEHOLDER = siteUrl('icons/logo.png');
 
 export function renderPropertyCard(property) {
   property = normalizeProperty(property) || property;

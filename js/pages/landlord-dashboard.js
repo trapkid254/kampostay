@@ -4,7 +4,7 @@ import { initDashboardNavIcons, bindDashboardPanels } from '../modules/dashboard
 import api from '../modules/api.js';
 import { siteUrl } from '../config.js';
 
-const PLACEHOLDER_IMG = `${siteUrl('favicon.svg')}`;
+const PLACEHOLDER_IMG = `${siteUrl('icons/logo.png')}`;
 
 function formatMoney(n) {
   return `KSh ${Number(n || 0).toLocaleString('en-KE')}`;

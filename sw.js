@@ -12,7 +12,7 @@ const PRECACHE = [
   './index.html',
   './404.html',
   './manifest.json',
-  './favicon.svg',
+  './icons/logo.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/splash-192.png',
