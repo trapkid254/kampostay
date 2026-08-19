@@ -1,12 +1,11 @@
-import { requireAuth, requireRole, logout, getUser, normalizeUser, setUser, getFirstName } from '../modules/auth.js';
-import { showToast, formatCurrency } from '../modules/ui.js';
-import { initWishlistPage, syncWishlistFromApi } from '../modules/wishlist.js';
-import { initComparePage } from '../modules/compare.js';
-import { renderPropertyCards } from '../modules/property.js';
-import { normalizeProperties } from '../modules/normalize.js';
-import { initDashboardNavIcons, bindDashboardPanels } from '../modules/dashboard-nav.js';
+import { requireAuth, requireRole, logout } from '../modules/auth.js';
+import { showToast } from '../modules/ui.js';
 import api from '../modules/api.js';
 import { siteUrl } from '../config.js';
+
+function formatMoney(n) {
+  return `KSh ${Number(n || 0).toLocaleString('en-KE')}`;
+}
 
 function fmtDate(d) {
   try {
@@ -16,375 +15,350 @@ function fmtDate(d) {
   }
 }
 
-async function loadBookings(el) {
-  if (!el) return;
-  el.innerHTML = '<p class="text-muted">Loading bookings…</p>';
+// Sidebar navigation
+function initSidebarNavigation() {
+  const sidebarLinks = document.querySelectorAll('.student-sidebar__link');
+  const sections = document.querySelectorAll('.student-section');
+  const sidebar = document.getElementById('studentSidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const main = document.querySelector('.student-main');
+
+  // Handle section switching
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const section = link.dataset.section;
+      
+      // Update active link
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      
+      // Show corresponding section
+      sections.forEach(s => s.classList.remove('active'));
+      const targetSection = document.getElementById(`section-${section}`);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+    });
+  });
+
+  // Handle sidebar toggle
+  sidebarToggle?.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    main.classList.toggle('expanded');
+  });
+
+  // Mobile sidebar toggle
+  if (window.innerWidth <= 1024) {
+    sidebar.classList.add('collapsed');
+    main.classList.add('expanded');
+  }
+}
+
+// Mobile navigation
+function initMobileNavigation() {
+  const mobileLinks = document.querySelectorAll('.student-mobile-nav__link');
+  const sections = document.querySelectorAll('.student-section');
+
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const section = link.dataset.section;
+      
+      // Update active link
+      mobileLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      
+      // Show corresponding section
+      sections.forEach(s => s.classList.remove('active'));
+      const targetSection = document.getElementById(`section-${section}`);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+    });
+  });
+}
+
+// Load properties for discovery
+async function loadProperties() {
+  const container = document.getElementById('propertyList');
+  if (!container) return;
+
+  try {
+    const data = await api.get('/properties', { limit: 20 });
+    const list = Array.isArray(data) ? data : data?.properties || data?.data || [];
+    
+    if (!list.length) {
+      container.innerHTML = '<div class="student-placeholder"><p>No properties found.</p></div>';
+      return;
+    }
+
+    container.innerHTML = list.map((p) => {
+      const id = p._id || p.id;
+      const verified = p.verification?.status === 'verified';
+      const firstMedia = p.media?.images?.[0] || {};
+      const img = p.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
+      
+      return `<div class="student-property-card">
+        <div class="student-property-card__image">
+          <img src="${img}" alt="${p.title}" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop'">
+        </div>
+        <div class="student-property-card__content">
+          <h3 class="student-property-card__title">${p.title}</h3>
+          <p class="student-property-card__location">📍 ${p.location?.city || 'Location'} · 🚶 ${p.walkingTimeMinutes || 10} min walk to ${p.university?.name || 'University'}</p>
+          <div class="student-property-card__price">${formatMoney(p.rent)}/month</div>
+          <div class="student-property-card__rating">★★★★★ 4.8</div>
+          ${verified ? '<span class="badge badge--verified">✓ Verified Property</span>' : ''}
+          <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View Details</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<div class="student-placeholder"><p>${err.message || 'Could not load properties.'}</p></div>`;
+  }
+}
+
+// Load recommended properties
+async function loadRecommended() {
+  const container = document.getElementById('recommendedGrid');
+  if (!container) return;
+
+  try {
+    const data = await api.get('/properties/featured', { limit: 6 });
+    const list = Array.isArray(data) ? data : data?.data || [];
+    
+    if (!list.length) {
+      container.innerHTML = '<div class="student-placeholder"><p>No recommendations yet.</p></div>';
+      return;
+    }
+
+    container.innerHTML = list.map((p) => {
+      const id = p._id || p.id;
+      const firstMedia = p.media?.images?.[0] || {};
+      const img = p.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
+      
+      return `<div class="student-property-card">
+        <div class="student-property-card__image">
+          <img src="${img}" alt="${p.title}">
+          <button class="student-property-card__favorite" data-action="favorite" data-id="${id}">♡</button>
+        </div>
+        <div class="student-property-card__content">
+          <h3 class="student-property-card__title">${p.title}</h3>
+          <p class="student-property-card__location">📍 ${p.location?.city || 'Location'}</p>
+          <div class="student-property-card__price">${formatMoney(p.rent)}/month</div>
+          <div class="student-property-card__rating">★★★★★ 4.8</div>
+          <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View Details</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<div class="student-placeholder"><p>${err.message || 'Could not load recommendations.'}</p></div>`;
+  }
+}
+
+// Load saved properties
+async function loadSaved() {
+  const container = document.getElementById('savedGrid');
+  if (!container) return;
+
+  try {
+    const data = await api.get('/favorites');
+    const list = Array.isArray(data) ? data : data?.data || [];
+    
+    if (!list.length) {
+      container.innerHTML = '<div class="student-placeholder"><p>No saved homes yet.</p></div>';
+      return;
+    }
+
+    container.innerHTML = list.map((p) => {
+      const id = p._id || p.id;
+      const firstMedia = p.media?.images?.[0] || {};
+      const img = p.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
+      
+      return `<div class="student-property-card">
+        <div class="student-property-card__image">
+          <img src="${img}" alt="${p.title}">
+          <button class="student-property-card__favorite student-property-card__favorite--active" data-action="unfavorite" data-id="${id}">♥</button>
+        </div>
+        <div class="student-property-card__content">
+          <h3 class="student-property-card__title">${p.title}</h3>
+          <p class="student-property-card__location">📍 ${p.location?.city || 'Location'}</p>
+          <div class="student-property-card__price">${formatMoney(p.rent)}/month</div>
+          <div class="student-property-card__rating">★★★★★ 4.8</div>
+          <div class="student-property-card__actions">
+            <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View</button>
+            <button class="btn btn--outline btn--sm" data-action="remove" data-id="${id}">Remove</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<div class="student-placeholder"><p>${err.message || 'Could not load saved homes.'}</p></div>`;
+  }
+}
+
+// Load applications
+async function loadApplications() {
+  const container = document.getElementById('applicationList');
+  if (!container) return;
+
+  try {
+    const data = await api.get('/applications');
+    const list = Array.isArray(data) ? data : data?.data || [];
+    
+    if (!list.length) {
+      container.innerHTML = '<div class="student-placeholder"><p>No applications yet.</p></div>';
+      return;
+    }
+
+    container.innerHTML = list.map((app) => {
+      const id = app._id || app.id;
+      const property = app.property || {};
+      
+      return `<div class="student-application-card">
+        <div class="student-application-card__property">
+          <h3>${property.title || 'Property'}</h3>
+          <p>${property.roomType || 'Single Room'} · ${formatMoney(property.rent || 0)}/month</p>
+          <p>Applied: ${fmtDate(app.createdAt)}</p>
+        </div>
+        <div class="student-application-card__status badge badge--${app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'danger' : 'pending'}">${app.status || 'Pending'}</div>
+        <div class="student-application-card__actions">
+          <button class="btn btn--ghost btn--sm" data-action="view" data-id="${id}">View Application</button>
+          <button class="btn btn--outline btn--sm" data-action="message" data-id="${id}">Message Landlord</button>
+          ${app.status === 'pending' ? '<button class="btn btn--danger btn--sm" data-action="cancel" data-id="${id}">Cancel</button>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<div class="student-placeholder"><p>${err.message || 'Could not load applications.'}</p></div>`;
+  }
+}
+
+// Load bookings
+async function loadBookings() {
+  const container = document.getElementById('bookingList');
+  if (!container) return;
+
   try {
     const payload = await api.get('/bookings', { limit: 20 }, { raw: true });
     const list = payload.bookings || payload.data || [];
+    
     if (!list.length) {
-      el.innerHTML = `<div class="glass-panel" style="padding:var(--space-6);"><p class="text-muted">No bookings yet.</p><a class="btn btn--primary btn--sm mt-4" href="${siteUrl('pages/search.html')}">Find a room</a></div>`;
+      container.innerHTML = '<div class="student-placeholder"><p>No upcoming bookings.</p></div>';
       return;
     }
-    el.innerHTML = list.map((b) => `
-      <div class="glass-panel mb-4" style="padding:var(--space-6);">
-        <p><strong>${b.property?.title || 'Property'}</strong> — ${b.type || 'booking'}</p>
-        <p class="text-muted text-sm mt-2">${fmtDate(b.scheduledDate)} · ${formatCurrency(b.amount || 0)}</p>
-        <span class="badge badge--verified mt-4">${b.status || 'pending'}</span>
-      </div>`).join('');
+
+    container.innerHTML = list.map((b) => {
+      const id = b._id || b.id;
+      const property = b.property || {};
+      
+      return `<div class="student-booking-card">
+        <h3>${property.title || 'Property'}</h3>
+        <p>Room: ${b.room || 'TBD'}</p>
+        <p>Viewing: ${fmtDate(b.scheduledDate)}</p>
+        <p>Location: ${property.location?.city || 'Location'}</p>
+        <div class="student-booking-card__actions">
+          <button class="btn btn--primary btn--sm">Get Directions</button>
+          <button class="btn btn--outline btn--sm">Message Landlord</button>
+          <button class="btn btn--ghost btn--sm">Reschedule</button>
+        </div>
+      </div>`;
+    }).join('');
   } catch (err) {
-    el.innerHTML = `<p class="text-muted">${err.message || 'Could not load bookings.'}</p>`;
+    container.innerHTML = `<div class="student-placeholder"><p>${err.message || 'Could not load bookings.'}</p></div>`;
   }
 }
 
-async function loadPayments(el) {
-  if (!el) return;
-  el.innerHTML = '<p class="text-muted">Loading payments…</p>';
-  try {
-    const data = await api.get('/payments');
-    const list = Array.isArray(data) ? data : data?.payments || data?.data || [];
-    if (!list.length) {
-      el.innerHTML = '<p class="text-muted">No payments recorded yet. Reserve a room from a property page.</p>';
-      return;
-    }
-    el.innerHTML = `<ul style="list-style:none;padding:0;">${list.map((p) => `
-      <li style="padding:var(--space-3) 0;border-bottom:1px solid var(--glass-border);">
-        <strong>${formatCurrency(p.amount)}</strong> · ${p.method || 'payment'} · <span class="text-muted">${p.status}</span>
-        <div class="text-sm text-muted">${fmtDate(p.createdAt)}</div>
-      </li>`).join('')}</ul>`;
-  } catch (err) {
-    el.innerHTML = `<p class="text-muted">${err.message || 'Could not load payments.'}</p>`;
-  }
-}
-
-async function loadMessages(el) {
-  if (!el) return;
-  el.innerHTML = '<p class="text-muted">Loading…</p>';
-  try {
-    const data = await api.get('/messages');
-    const list = Array.isArray(data) ? data : data?.conversations || data?.data || [];
-    el.innerHTML = list.length
-      ? list.map((c) => {
-        const name = c.participant?.profile?.firstName
-          || c.otherUser?.profile?.firstName
-          || c.lastMessage?.sender?.profile?.firstName
-          || 'User';
-        const text = c.lastMessage?.content || c.lastMessage?.text || 'Conversation';
-        return `<p class="mb-4"><strong>${name}</strong><br><span class="text-muted text-sm">${text}</span></p>`;
-      }).join('')
-      : '<p class="text-muted">No messages yet. Contact a landlord from a property page.</p>';
-  } catch (err) {
-    el.innerHTML = `<p class="text-muted">${err.message || 'Could not load messages.'}</p>`;
-  }
-}
-
-async function loadNotifications(el) {
-  if (!el) return;
-  el.innerHTML = '<p class="text-muted">Loading…</p>';
-  try {
-    const data = await api.get('/notifications');
-    const list = Array.isArray(data) ? data : data?.data || [];
-    if (!list.length) {
-      el.innerHTML = '<p class="text-muted">No notifications yet.</p>';
-      return;
-    }
-    el.innerHTML = list.map((n) => `
-      <div class="glass-panel mb-4" style="padding:var(--space-4);">
-        <strong>${n.title || 'Notice'}</strong>
-        <p class="text-muted text-sm mt-2">${n.body || n.message || ''}</p>
-        <time class="text-sm text-muted">${fmtDate(n.createdAt)}</time>
-      </div>`).join('');
-  } catch (err) {
-    el.innerHTML = `<p class="text-muted">${err.message || 'Could not load notifications.'}</p>`;
-  }
-}
-
-async function loadAiRecs(el) {
-  if (!el) return;
-  el.innerHTML = '<p class="text-muted">Loading…</p>';
-  try {
-    const data = await api.get('/properties/featured', { limit: 6 });
-    const list = normalizeProperties(Array.isArray(data) ? data : data?.data || data || []);
-    if (!list.length) {
-      el.innerHTML = `<p class="text-muted">No featured listings yet.</p><a class="btn btn--sm btn--outline mt-4" href="${siteUrl('pages/search.html')}">Browse search</a>`;
-      return;
-    }
-    renderPropertyCards(el, list.slice(0, 6));
-  } catch (err) {
-    el.innerHTML = `<p class="text-muted">${err.message || 'Could not load recommendations. Is the API running?'}</p>`;
-  }
-}
-
-async function loadSavedSearches(el) {
-  if (!el) return;
-  try {
-    const data = await api.get('/saved-searches');
-    const list = Array.isArray(data) ? data : data?.data || [];
-    if (!list.length) {
-      el.innerHTML = `<p class="text-muted">No saved searches yet.</p><a class="btn btn--sm btn--outline mt-4" href="${siteUrl('pages/search.html')}">Search housing</a>`;
-      return;
-    }
-    el.innerHTML = list.map((s) => `
-      <p class="mb-4"><strong>${s.name || 'Saved search'}</strong>
-      <a class="btn btn--sm btn--outline mt-2" href="${siteUrl('pages/search.html')}">Run</a></p>`).join('');
-  } catch (err) {
-    el.innerHTML = `<p class="text-muted">${err.message || 'Could not load saved searches.'}</p>`;
-  }
-}
-
-async function loadReviewableStays() {
-  try {
-    const payload = await api.get('/bookings', { status: 'completed', limit: 100 }, { raw: true });
-    const list = Array.isArray(payload) ? payload : payload?.bookings || [];
-    return list
-      .filter((booking) => booking.property)
-      .map((booking) => ({
-        bookingId: booking._id || booking.id,
-        propertyId: booking.property._id || booking.property.id,
-        title: booking.property.title || 'Hostel',
-        landlordName: [booking.landlord?.profile?.firstName, booking.landlord?.profile?.lastName].filter(Boolean).join(' '),
-      }));
-  } catch {
-    return [];
-  }
-}
-
-function renderReviewableStays(items) {
-  if (!items || !items.length) {
-    return '<p class="text-muted">No completed stays found yet. Your review will appear once you have stayed at a hostel.</p>';
-  }
-  return `
-    <p class="text-muted mb-4">Select the hostel you stayed in to submit a review.</p>
-    <ul class="mt-3" style="list-style:none;padding:0;">
-      ${items.map((item) => `
-        <li class="mb-3">
-          <button type="button" class="btn btn--outline btn--sm" data-review-property-id="${item.propertyId}" data-review-property-title="${String(item.title).replace(/"/g, '&quot;')}">
-            ${item.title}${item.landlordName ? ` — ${item.landlordName}` : ''}
-          </button>
-        </li>
-      `).join('')}
-    </ul>`;
-}
-
-function filterReviewableStays(items, query) {
-  const normalized = String(query || '').trim().toLowerCase();
-  if (!normalized) return items;
-  return items.filter((item) => item.title.toLowerCase().includes(normalized));
-}
-
-async function initReviewPanel() {
-  const reviewSearch = document.getElementById('review-property-search');
-  const reviewResults = document.getElementById('review-property-results');
-  const reviewFormSection = document.getElementById('review-form-section');
-  const reviewPropertyTitle = document.getElementById('review-property-title');
-  const reviewPropertyId = document.getElementById('review-property-id');
-  const reviewText = document.getElementById('review-text');
-  const reviewRating = document.getElementById('review-rating');
-  const reviewCancelBtn = document.getElementById('review-cancel-btn');
-  const reviewForm = document.getElementById('student-review-form');
-
-  if (!reviewSearch || !reviewResults) return;
-
-  let reviewableStays = await loadReviewableStays();
-  let selectedStay = null;
-
-  const updateResults = () => {
-    const results = filterReviewableStays(reviewableStays, reviewSearch.value);
-    reviewResults.innerHTML = renderReviewableStays(results);
-  };
-
-  const resetReviewForm = () => {
-    selectedStay = null;
-    reviewPropertyId.value = '';
-    reviewPropertyTitle.textContent = 'Review selected hostel';
-    reviewText.value = '';
-    reviewRating.value = '5';
-    reviewFormSection.hidden = true;
-  };
-
-  reviewResults.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-review-property-id]');
-    if (!button) return;
-    selectedStay = {
-      propertyId: button.dataset.reviewPropertyId,
-      title: button.dataset.reviewPropertyTitle,
-    };
-    reviewPropertyId.value = selectedStay.propertyId;
-    reviewPropertyTitle.textContent = `Review ${selectedStay.title}`;
-    reviewFormSection.hidden = false;
-    reviewText.focus();
-  });
-
-  reviewSearch.addEventListener('input', updateResults);
-  reviewCancelBtn?.addEventListener('click', resetReviewForm);
-
-  reviewForm?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    if (!selectedStay || !reviewPropertyId.value) {
-      showToast('Select a hostel from your completed stays first.', 'error');
-      return;
-    }
-    const payload = {
-      propertyId: reviewPropertyId.value,
-      ratings: { overall: Number(reviewRating.value) || 5 },
-      text: reviewText.value.trim(),
-      verifiedTenant: true,
-    };
-    if (!payload.text) {
-      showToast('Please write a review before submitting.', 'error');
-      return;
-    }
-    try {
-      await api.post('/reviews', payload);
-      showToast('Review submitted successfully.', 'success');
-      reviewableStays = reviewableStays.filter((item) => item.propertyId !== reviewPropertyId.value);
-      resetReviewForm();
-      updateResults();
-    } catch (err) {
-      showToast(err.message || 'Could not submit review.', 'error');
-    }
-  });
-
-  updateResults();
-}
-
-async function loadReports(el) {
-  if (!el) return;
-  try {
-    const data = await api.get('/reports');
-    const list = Array.isArray(data) ? data : data?.data || [];
-    if (!list.length) {
-      el.innerHTML = `<p class="text-muted mb-4">You have not filed any reports yet.</p>
-        <a class="btn btn--outline" href="${siteUrl('pages/safety.html')}">Safety &amp; refunds</a>`;
-      return;
-    }
-    el.innerHTML = list.map((r) => `
-      <div class="mb-4"><strong>${r.type || 'report'}</strong> — <span class="text-muted">${r.status || 'open'}</span>
-      <p class="text-sm text-muted">${r.description || ''}</p></div>`).join('');
-  } catch {
-    el.innerHTML = `<p class="text-muted mb-4">Report a listing mismatch from a property page or safety hub.</p>
-      <a class="btn btn--outline" href="${siteUrl('pages/safety.html')}">Safety &amp; refunds</a>`;
-  }
-}
-
+// Initialize dashboard
 document.addEventListener('DOMContentLoaded', async () => {
   if (!requireAuth() || !requireRole('student', siteUrl('pages/auth/login.html'))) return;
 
-  let user = normalizeUser(getUser()) || {};
+  // Initialize navigation
+  initSidebarNavigation();
+  initMobileNavigation();
+  
+  // Load data
+  await loadProperties();
+  await loadRecommended();
+  await loadSaved();
+  await loadApplications();
+  await loadBookings();
 
-  const profileView = document.getElementById('profile-view');
-  const profileForm = document.getElementById('student-profile-form');
-  const editBtn = document.getElementById('profile-edit-btn');
-  const cancelBtn = document.getElementById('profile-cancel-btn');
-  const dashboardNameEl = document.querySelector('[data-dashboard-name]');
-
-  function updateDashboardGreeting(currentUser) {
-    if (!dashboardNameEl) return;
-    dashboardNameEl.textContent = getFirstName(currentUser) || 'Student';
-  }
-
-  function renderProfileDetails(currentUser) {
-    const name = [currentUser.firstName, currentUser.lastName].filter(Boolean).join(' ') || currentUser.email || 'Student';
-    document.getElementById('profile-name').textContent = name;
-    document.getElementById('profile-email').textContent = currentUser.email || 'Not provided';
-    document.getElementById('profile-phone-display').textContent = currentUser.profile?.phone || 'Not provided';
-    document.getElementById('profile-city-display').textContent = currentUser.profile?.city || 'Not provided';
-  }
-
-  function fillProfileForm(currentUser) {
-    profileForm.firstName.value = currentUser.firstName || currentUser.profile?.firstName || '';
-    profileForm.lastName.value = currentUser.lastName || currentUser.profile?.lastName || '';
-    profileForm.phone.value = currentUser.profile?.phone || '';
-    profileForm.city.value = currentUser.profile?.city || '';
-  }
-
-  function showProfileView() {
-    if (profileView) profileView.hidden = false;
-    if (profileForm) profileForm.hidden = true;
-  }
-
-  function showProfileEdit() {
-    if (profileView) profileView.hidden = true;
-    if (profileForm) profileForm.hidden = false;
-  }
-
-  async function refreshUserFromServer() {
-    try {
-      const serverUser = await api.get('/auth/me');
-      if (serverUser) {
-        user = normalizeUser({ ...user, ...serverUser });
-        setUser(user);
-      }
-    } catch {
-      // keep local copy on failure
-    }
-    updateDashboardGreeting(user);
-    renderProfileDetails(user);
-    fillProfileForm(user);
-  }
-
-  initDashboardNavIcons();
-  bindDashboardPanels();
-
-  updateDashboardGreeting(user);
-  await refreshUserFromServer();
-
-  if (editBtn) {
-    editBtn.addEventListener('click', () => {
-      fillProfileForm(user);
-      showProfileEdit();
-    });
-  }
-
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', () => {
-      showProfileView();
-    });
-  }
-
-  if (profileForm) {
-    profileForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      try {
-        const updated = await api.patch('/auth/me', {
-          profile: {
-            firstName: profileForm.firstName.value.trim(),
-            lastName: profileForm.lastName.value.trim(),
-            phone: profileForm.phone.value.trim(),
-            city: profileForm.city.value.trim(),
-          },
-        });
-        user = normalizeUser({
-          ...user,
-          ...updated,
-          firstName: updated?.profile?.firstName || profileForm.firstName.value.trim(),
-          lastName: updated?.profile?.lastName || profileForm.lastName.value.trim(),
-        });
-        setUser(user);
-        updateDashboardGreeting(user);
-        renderProfileDetails(user);
-        showProfileView();
-        showToast('Profile saved.', 'success');
-      } catch (err) {
-        showToast(err.message || 'Could not save profile.', 'error');
-      }
-    });
-  }
-
+  // Handle logout
   document.querySelector('[data-logout]')?.addEventListener('click', (e) => {
     e.preventDefault();
     logout();
   });
 
-  await syncWishlistFromApi();
-  initWishlistPage(document.getElementById('dash-favourites'));
-  initComparePage(document.getElementById('dash-compare'));
-  loadNotifications(document.getElementById('dash-notifications'));
-  loadBookings(document.getElementById('dash-bookings'));
-  loadPayments(document.getElementById('dash-payments'));
-  loadMessages(document.getElementById('dash-messages'));
-  loadAiRecs(document.getElementById('dash-ai-recs'));
-  loadSavedSearches(document.getElementById('dash-saved-searches'));
-  loadReports(document.getElementById('dash-reports'));
-  await initReviewPanel();
+  // Handle search
+  document.getElementById('searchButton')?.addEventListener('click', async () => {
+    const university = document.getElementById('universityFilter').value;
+    const budget = document.getElementById('budgetFilter').value;
+    const distance = document.getElementById('distanceFilter').value;
+    const query = document.getElementById('globalSearch').value;
+    
+    showToast('Searching properties...', 'info');
+    // Implement search logic
+  });
+
+  // Handle AI assistant
+  document.querySelector('.student-ai-assistant__button')?.addEventListener('click', () => {
+    const input = document.querySelector('.student-ai-assistant__input').value;
+    if (!input) {
+      showToast('Please describe what you\'re looking for', 'error');
+      return;
+    }
+    showToast('AI recommendations coming soon!', 'info');
+  });
+
+  // Handle property actions
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+    
+    switch (action) {
+      case 'view':
+        window.location.href = `${siteUrl('pages/property.html')}?id=${id}`;
+        break;
+      case 'favorite':
+        try {
+          await api.post(`/favorites/${id}`);
+          showToast('Added to favorites', 'success');
+          await loadRecommended();
+        } catch (err) {
+          showToast(err.message || 'Could not add to favorites', 'error');
+        }
+        break;
+      case 'unfavorite':
+        try {
+          await api.delete(`/favorites/${id}`);
+          showToast('Removed from favorites', 'success');
+          await loadSaved();
+        } catch (err) {
+          showToast(err.message || 'Could not remove from favorites', 'error');
+        }
+        break;
+      case 'remove':
+        try {
+          await api.delete(`/favorites/${id}`);
+          showToast('Removed from favorites', 'success');
+          await loadSaved();
+        } catch (err) {
+          showToast(err.message || 'Could not remove from favorites', 'error');
+        }
+        break;
+      case 'cancel':
+        try {
+          await api.patch(`/applications/${id}`, { status: 'cancelled' });
+          showToast('Application cancelled', 'success');
+          await loadApplications();
+        } catch (err) {
+          showToast(err.message || 'Could not cancel application', 'error');
+        }
+        break;
+    }
+  });
 });
