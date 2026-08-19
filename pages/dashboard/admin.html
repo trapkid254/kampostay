@@ -1,285 +1,719 @@
 <!DOCTYPE html>
 <html lang="en-KE">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="kampostay-api-base" content="https://kampostayback.onrender.com/api/v1">
   <title>Admin Dashboard — KampoStay</title>
-  <link rel="icon" href="../../icons/logo.png" type="image/svg+xml">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../css/variables.css"><link rel="stylesheet" href="../../css/base.css"><link rel="stylesheet" href="../../css/layout.css"><link rel="stylesheet" href="../../css/components.css"><link rel="stylesheet" href="../../css/pages.css">
+  <link rel="icon" href="../../icons/logo.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/variables.css">
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/pages.css">
+  <link rel="stylesheet" href="../../css/dashboard.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
 </head>
-<body>
-  <header class="header"><div class="header__inner">
-    <a href="../../index.html" class="logo"><img src="../../icons/logo.png" alt="" class="logo__icon" width="36" height="36">KampoStay</a>
-    <nav class="nav" aria-label="Main">
-      <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-      <a class="nav__link" href="../../pages/search.html">Search</a>
-      <a class="nav__link" href="../../pages/blog/index.html">Blog</a>
-      <div class="nav__actions">
-        <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span data-theme-icon></span></button>
-        <a href="#" data-logout class="btn btn--ghost btn--sm">Log Out</a>
+<body class="admin-dashboard">
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar__header">
+        <a href="../../index.html" class="admin-logo">
+          <img src="../../icons/logo.png" alt="KampoStay" class="admin-logo__icon">
+          <span class="admin-logo__text">KampoStay</span>
+        </a>
+        <button class="admin-sidebar__toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
       </div>
-    </nav>
-  </div></header>
-  <div class="page dashboard">
-    <aside class="dashboard__sidebar">
-      <h2 class="font-display mb-4">Admin Panel</h2>
-      <nav class="dashboard__nav" aria-label="Dashboard navigation">
-        <button type="button" class="dashboard__nav-link is-active" data-panel="overview" data-nav-icon="chart">Overview</button>
-        <button type="button" class="dashboard__nav-link" data-panel="users" data-nav-icon="users">Users</button>
-        <button type="button" class="dashboard__nav-link" data-panel="landlords" data-nav-icon="building">Landlords</button>
-        <button type="button" class="dashboard__nav-link" data-panel="properties" data-nav-icon="home">Properties</button>
-        <button type="button" class="dashboard__nav-link" data-panel="universities" data-nav-icon="graduation">Universities</button>
-        <button type="button" class="dashboard__nav-link" data-panel="bookings" data-nav-icon="calendar">Bookings</button>
-        <button type="button" class="dashboard__nav-link" data-panel="payments" data-nav-icon="creditCard">Payments</button>
-        <button type="button" class="dashboard__nav-link" data-panel="reviews" data-nav-icon="star">Reviews</button>
-        <button type="button" class="dashboard__nav-link" data-panel="reports" data-nav-icon="clipboard">Reports</button>
-        <button type="button" class="dashboard__nav-link" data-panel="blogs" data-nav-icon="fileText">Blogs</button>
-        <button type="button" class="dashboard__nav-link" data-panel="ads" data-nav-icon="megaphone">Ads</button>
-        <button type="button" class="dashboard__nav-link" data-panel="notifications" data-nav-icon="bell">Notifications</button>
-        <button type="button" class="dashboard__nav-link" data-panel="faqs" data-nav-icon="help">FAQs</button>
-        <button type="button" class="dashboard__nav-link" data-panel="coupons" data-nav-icon="ticket">Coupons</button>
-        <button type="button" class="dashboard__nav-link" data-panel="campaigns" data-nav-icon="megaphone">Campaigns</button>
-        <button type="button" class="dashboard__nav-link" data-panel="fraud" data-nav-icon="shield">Fraud</button>
-        <button type="button" class="dashboard__nav-link" data-panel="audit" data-nav-icon="clipboard">Audit Logs</button>
-        <button type="button" class="dashboard__nav-link" data-panel="settings" data-nav-icon="settings">Settings</button>
+      
+      <nav class="admin-sidebar__nav">
+        <a href="#dashboard" class="admin-sidebar__link active" data-section="dashboard">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="#properties" class="admin-sidebar__link" data-section="properties">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Properties
+        </a>
+        <a href="#landlords" class="admin-sidebar__link" data-section="landlords">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Landlords
+        </a>
+        <a href="#tenants" class="admin-sidebar__link" data-section="tenants">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Tenants
+        </a>
+        <a href="#universities" class="admin-sidebar__link" data-section="universities">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+          Universities
+        </a>
+        <a href="#bookings" class="admin-sidebar__link" data-section="bookings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          Bookings
+        </a>
+        <a href="#verification" class="admin-sidebar__link" data-section="verification">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+          Verification
+        </a>
+        <a href="#reports" class="admin-sidebar__link" data-section="reports">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Reports
+        </a>
+        <a href="#payments" class="admin-sidebar__link" data-section="payments">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+          Payments
+        </a>
+        <a href="#reviews" class="admin-sidebar__link" data-section="reviews">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Reviews
+        </a>
+        <a href="#messages" class="admin-sidebar__link" data-section="messages">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Messages
+        </a>
+        <a href="#notifications" class="admin-sidebar__link" data-section="notifications">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Notifications
+        </a>
+        <a href="#analytics" class="admin-sidebar__link" data-section="analytics">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          Analytics
+        </a>
+        <a href="#settings" class="admin-sidebar__link" data-section="settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Settings
+        </a>
       </nav>
-    </aside>
-    <main class="dashboard__main">
-      <div class="dashboard__panel is-active" data-panel="overview">
-        <h1>Platform Overview</h1>
-        <div class="chart-container glass-panel mt-4"><canvas id="admin-analytics-chart"></canvas></div>
-        <div class="grid grid--4 mt-8">
-          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-users">—</div><div class="stat-card__label">Users</div></div>
-          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-landlords">—</div><div class="stat-card__label">Landlords</div></div>
-          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-properties">—</div><div class="stat-card__label">Properties</div></div>
-          <div class="stat-card glass-panel"><div class="stat-card__value" id="stat-bookings">—</div><div class="stat-card__label">Bookings</div></div>
-        </div>
-      </div>
-      <div class="dashboard__panel" data-panel="users" hidden>
-        <div class="flex items-center justify-between flex-wrap gap-4">
-          <h1>Registered Users</h1>
-          <span id="admin-users-count" class="text-muted"></span>
-        </div>
-        <div class="form-group mt-4" style="max-width:220px;">
-          <label class="form-label" for="filter-role">Filter by role</label>
-          <select id="filter-role" class="form-select">
-            <option value="">All roles</option>
-            <option value="student">Students</option>
-            <option value="landlord">Landlords</option>
-            <option value="admin">Admins</option>
-          </select>
-        </div>
-        <table class="compare-table mt-4" id="admin-users-table">
-          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="dashboard__panel" data-panel="landlords" hidden>
-        <h1>Landlords</h1>
-        <p class="text-muted mt-2">Landlord accounts from the live database.</p>
-        <table class="compare-table mt-4" id="admin-landlords-table">
-          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="dashboard__panel" data-panel="properties" hidden>
-        <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
-          <h1>Properties</h1>
-          <button type="button" class="btn btn--primary" data-add-property>+ Add Property</button>
-        </div>
-        <p class="text-muted mb-4">Verify draft listings or add a house on behalf of a landlord.</p>
-        <div id="admin-properties-list"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="universities" hidden>
-        <h1>Universities</h1>
-        <form id="admin-uni-form" class="glass-panel mt-4" style="padding:var(--space-6);">
-          <div class="form-group"><label class="form-label" for="uni-name">Name</label><input id="uni-name" name="name" class="form-input" required placeholder="e.g. Jomo Kenyatta University"></div>
-          <div class="form-group"><label class="form-label" for="uni-city">City</label><input id="uni-city" name="city" class="form-input" placeholder="Juja"></div>
-          <button type="submit" class="btn btn--primary btn--sm">+ Add University</button>
-        </form>
-        <div id="admin-universities" class="flex flex-wrap gap-4 mt-4"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="bookings" hidden><h1>Bookings</h1><div id="admin-bookings" class="mt-4"></div></div>
-      <div class="dashboard__panel" data-panel="payments" hidden><h1>Payments</h1><div id="admin-payments" class="mt-4"></div></div>
-      <div class="dashboard__panel" data-panel="reviews" hidden><h1>Reviews</h1><div id="admin-reviews" class="mt-4"></div></div>
-      <div class="dashboard__panel" data-panel="reports" hidden><h1>Reports</h1><div id="admin-reports" class="mt-4"></div></div>
-      <div class="dashboard__panel" data-panel="blogs" hidden>
-        <h1>Blog Management</h1>
-        <div id="admin-blogs" class="mt-4"></div>
-        <a href="../../pages/blog/index.html" class="btn btn--outline mt-4">View public blog</a>
-      </div>
-      <div class="dashboard__panel" data-panel="ads" hidden>
-        <h1>Advertisements</h1>
-        <form id="admin-ad-form" class="glass-panel mt-4" style="padding:var(--space-6);">
-          <div class="form-group"><label class="form-label" for="ad-title">Title</label><input id="ad-title" name="title" class="form-input" required></div>
-          <div class="form-group">
-            <label class="form-label" for="ad-placement">Placement</label>
-            <select id="ad-placement" name="placement" class="form-select" required>
-              <option value="homepage_banner">Homepage banner</option>
-              <option value="search_sidebar">Search sidebar</option>
-              <option value="property_detail">Property detail</option>
-              <option value="footer">Footer</option>
-              <option value="popup">Popup</option>
-            </select>
+      
+      <div class="admin-sidebar__footer">
+        <div class="admin-profile">
+          <div class="admin-profile__avatar">
+            <img src="https://ui-avatars.com/api/?name=Admin&background=0B3D2E&color=fff" alt="Admin">
           </div>
-          <div class="form-group"><label class="form-label" for="ad-link">Link URL</label><input id="ad-link" name="linkUrl" type="url" class="form-input"></div>
-          <button type="submit" class="btn btn--primary">Create Ad</button>
-        </form>
-        <div id="admin-ads" class="mt-4"></div>
+          <div class="admin-profile__info">
+            <div class="admin-profile__name">Administrator</div>
+            <div class="admin-profile__role">Super Admin</div>
+          </div>
+          <button class="admin-profile__logout" data-logout aria-label="Logout">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
       </div>
-      <div class="dashboard__panel" data-panel="notifications" hidden>
-        <h1>Platform Notifications</h1>
-        <p class="text-muted mt-2">Recent notifications stored for the signed-in admin account.</p>
-        <div id="admin-notifications" class="mt-4"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="faqs" hidden>
-        <h1>FAQ Management</h1>
-        <form id="admin-faq-form" class="glass-panel mt-4" style="padding:var(--space-6);">
-          <div class="form-group"><label class="form-label" for="faq-q">Question</label><input id="faq-q" name="question" class="form-input" required></div>
-          <div class="form-group"><label class="form-label" for="faq-a">Answer</label><textarea id="faq-a" name="answer" class="form-textarea" rows="3" required></textarea></div>
-          <button type="submit" class="btn btn--primary">+ Add FAQ</button>
-        </form>
-        <div id="admin-faqs" class="mt-4"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="coupons" hidden>
-        <h1>Coupons</h1>
-        <form id="admin-coupon-form" class="glass-panel mt-4" style="padding:var(--space-6);">
-          <div class="form-group"><label class="form-label" for="coupon-code">Code</label><input id="coupon-code" name="code" class="form-input" required placeholder="STUDENT10"></div>
-          <div class="grid grid--2" style="gap:var(--space-4);">
-            <div class="form-group">
-              <label class="form-label" for="coupon-type">Type</label>
-              <select id="coupon-type" name="discountType" class="form-select">
-                <option value="percentage">Percentage</option>
-                <option value="fixed">Fixed (KES)</option>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+      <!-- Top Header -->
+      <header class="admin-header">
+        <div class="admin-header__search">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" placeholder="Search properties, landlords, tenants..." id="globalSearch">
+        </div>
+        <div class="admin-header__actions">
+          <button class="admin-header__action" aria-label="Messages">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span class="admin-header__badge">3</span>
+          </button>
+          <button class="admin-header__action" aria-label="Notifications">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="admin-header__badge">5</span>
+          </button>
+          <div class="admin-header__user">
+            <img src="https://ui-avatars.com/api/?name=Admin&background=0B3D2E&color=fff" alt="Admin">
+            <span>Good morning, Admin 👋</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="admin-content">
+        <!-- Dashboard Overview Section -->
+        <section class="admin-section active" id="section-dashboard">
+          <div class="admin-section__header">
+            <div>
+              <h1 class="admin-section__title">Good morning, Admin 👋</h1>
+              <p class="admin-section__subtitle">Here's what's happening across KampoStay today.</p>
+            </div>
+            <div class="admin-section__actions">
+              <button class="btn btn--primary" data-action="add-property">+ Add Property</button>
+              <button class="btn btn--outline" data-action="view-reports">View Reports</button>
+            </div>
+          </div>
+
+          <!-- Stats Cards -->
+          <div class="admin-stats">
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__value">12,482</div>
+                <div class="admin-stat-card__label">Total Properties</div>
+                <div class="admin-stat-card__change admin-stat-card__change--positive">+12.5% <span>vs last month</span></div>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--green">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__value">9,856</div>
+                <div class="admin-stat-card__label">Verified Properties</div>
+                <div class="admin-stat-card__change admin-stat-card__change--positive">+8.3% <span>vs last month</span></div>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--purple">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__value">28,640</div>
+                <div class="admin-stat-card__label">Total Students</div>
+                <div class="admin-stat-card__change admin-stat-card__change--positive">+15.2% <span>vs last month</span></div>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--orange">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__value">3,284</div>
+                <div class="admin-stat-card__label">Registered Landlords</div>
+                <div class="admin-stat-card__change admin-stat-card__change--positive">+6.8% <span>vs last month</span></div>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--teal">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__value">1,246</div>
+                <div class="admin-stat-card__label">Active Bookings</div>
+                <div class="admin-stat-card__change admin-stat-card__change--positive">+18.4% <span>vs last month</span></div>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-card__icon admin-stat-card__icon--pink">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+              <div class="admin-stat-card__content">
+                <div class="admin-stat-card__value">KSh 4.82M</div>
+                <div class="admin-stat-card__label">Platform Revenue</div>
+                <div class="admin-stat-card__change admin-stat-card__change--positive">+22.1% <span>vs last month</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Verification Center -->
+          <div class="admin-verification">
+            <h2 class="admin-section__heading">Verification Center</h2>
+            <div class="admin-verification__grid">
+              <div class="admin-verification-card admin-verification-card--pending">
+                <div class="admin-verification-card__icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div class="admin-verification-card__content">
+                  <div class="admin-verification-card__value">24</div>
+                  <div class="admin-verification-card__label">Pending Property Verification</div>
+                </div>
+                <button class="btn btn--primary btn--sm" data-action="review">Review</button>
+              </div>
+              <div class="admin-verification-card admin-verification-card--pending">
+                <div class="admin-verification-card__icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                <div class="admin-verification-card__content">
+                  <div class="admin-verification-card__value">12</div>
+                  <div class="admin-verification-card__label">Pending Landlord Verification</div>
+                </div>
+                <button class="btn btn--primary btn--sm" data-action="verify">Verify</button>
+              </div>
+              <div class="admin-verification-card admin-verification-card--warning">
+                <div class="admin-verification-card__icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </div>
+                <div class="admin-verification-card__content">
+                  <div class="admin-verification-card__value">8</div>
+                  <div class="admin-verification-card__label">Reported Listings</div>
+                </div>
+                <button class="btn btn--danger btn--sm" data-action="investigate">Investigate</button>
+              </div>
+              <div class="admin-verification-card admin-verification-card--danger">
+                <div class="admin-verification-card__icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                  </svg>
+                </div>
+                <div class="admin-verification-card__content">
+                  <div class="admin-verification-card__value">3</div>
+                  <div class="admin-verification-card__label">Suspended Accounts</div>
+                </div>
+                <button class="btn btn--outline btn--sm" data-action="review">Review</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="admin-activity">
+            <h2 class="admin-section__heading">Recent Activity</h2>
+            <div class="admin-activity__feed" id="activityFeed">
+              <div class="admin-activity-item">
+                <div class="admin-activity-item__icon admin-activity-item__icon--success">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                  </svg>
+                </div>
+                <div class="admin-activity-item__content">
+                  <div class="admin-activity-item__text">New landlord registered</div>
+                  <div class="admin-activity-item__time">2 minutes ago</div>
+                </div>
+                <span class="badge badge--success">New</span>
+              </div>
+              <div class="admin-activity-item">
+                <div class="admin-activity-item__icon admin-activity-item__icon--info">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  </svg>
+                </div>
+                <div class="admin-activity-item__content">
+                  <div class="admin-activity-item__text">New property submitted</div>
+                  <div class="admin-activity-item__time">15 minutes ago</div>
+                </div>
+                <span class="badge badge--pending">Pending</span>
+              </div>
+              <div class="admin-activity-item">
+                <div class="admin-activity-item__icon admin-activity-item__icon--success">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4"></path>
+                    <circle cx="12" cy="12" r="10"></circle>
+                  </svg>
+                </div>
+                <div class="admin-activity-item__content">
+                  <div class="admin-activity-item__text">Property verified</div>
+                  <div class="admin-activity-item__time">1 hour ago</div>
+                </div>
+                <span class="badge badge--verified">Verified</span>
+              </div>
+              <div class="admin-activity-item">
+                <div class="admin-activity-item__icon admin-activity-item__icon--warning">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </div>
+                <div class="admin-activity-item__content">
+                  <div class="admin-activity-item__text">Student reported a listing</div>
+                  <div class="admin-activity-item__time">2 hours ago</div>
+                </div>
+                <span class="badge badge--warning">Reported</span>
+              </div>
+              <div class="admin-activity-item">
+                <div class="admin-activity-item__icon admin-activity-item__icon--success">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </div>
+                <div class="admin-activity-item__content">
+                  <div class="admin-activity-item__text">Booking completed</div>
+                  <div class="admin-activity-item__time">3 hours ago</div>
+                </div>
+                <span class="badge badge--success">Completed</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Properties Section -->
+        <section class="admin-section" id="section-properties">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Property Management</h1>
+            <button class="btn btn--primary" data-action="add-property">+ Add Property</button>
+          </div>
+          
+          <div class="admin-filters">
+            <div class="admin-filter">
+              <input type="text" placeholder="Search properties..." id="propertySearch">
+            </div>
+            <div class="admin-filter">
+              <select id="universityFilter">
+                <option value="">All Universities</option>
+                <option value="JKUAT">JKUAT</option>
+                <option value="UoN">UoN</option>
+                <option value="Kenyatta">Kenyatta</option>
+                <option value="Strathmore">Strathmore</option>
+                <option value="MKU">MKU</option>
               </select>
             </div>
-            <div class="form-group"><label class="form-label" for="coupon-value">Value</label><input id="coupon-value" name="discountValue" type="number" class="form-input" required min="1"></div>
+            <div class="admin-filter">
+              <select id="locationFilter">
+                <option value="">All Locations</option>
+                <option value="Juja">Juja</option>
+                <option value="Nairobi">Nairobi</option>
+                <option value="Kahawa">Kahawa</option>
+                <option value="Ruiru">Ruiru</option>
+                <option value="Thika">Thika</option>
+              </select>
+            </div>
+            <div class="admin-filter">
+              <select id="verificationFilter">
+                <option value="">All Status</option>
+                <option value="verified">Verified</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
           </div>
-          <button type="submit" class="btn btn--primary">Create Coupon</button>
-        </form>
-        <div id="admin-coupons" class="mt-4"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="campaigns" hidden>
-        <h1>Marketing Campaigns</h1>
-        <p class="text-muted mt-2">Active ads used as campaign placements.</p>
-        <div id="admin-campaigns" class="mt-4"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="fraud" hidden>
-        <h1>Fraud Detection</h1>
-        <p class="text-muted mt-2">Listings with elevated fraud scores.</p>
-        <div id="admin-fraud" class="mt-4"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="audit" hidden>
-        <h1>Audit Logs</h1>
-        <div id="admin-audit" class="mt-4"></div>
-      </div>
-      <div class="dashboard__panel" data-panel="settings" hidden>
-        <h1>Platform Settings</h1>
-        <form id="admin-settings-form" class="glass-panel mt-4" style="padding:var(--space-6);">
-          <div class="form-group"><label class="form-label" for="setting-platform">Platform Name</label><input id="setting-platform" name="platformName" class="form-input" placeholder="KampoStay"></div>
-          <button type="submit" class="btn btn--primary">Save Settings</button>
-        </form>
-        <div id="admin-settings-list" class="mt-4 text-muted text-sm"></div>
-      </div>
-    </main>
-  </div>
-  <div id="add-property-modal" class="modal-overlay" role="dialog" aria-labelledby="add-property-title" aria-hidden="true">
-    <div class="modal" style="max-width:640px;">
-      <div class="modal__header">
-        <h2 id="add-property-title">Add Property</h2>
-        <button class="modal__close" data-modal-close type="button" aria-label="Close">&times;</button>
-      </div>
-      <form id="add-property-form" class="modal__body">
-        <div class="form-group">
-          <label class="form-label" for="property-landlord">Assign to landlord</label>
-          <select id="property-landlord" name="landlord" class="form-select" required></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="property-title">Title</label>
-          <input id="property-title" name="title" class="form-input" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="property-description">Description</label>
-          <textarea id="property-description" name="description" class="form-textarea" rows="3" required></textarea>
-        </div>
-        <div class="grid grid--2" style="gap:var(--space-4);">
-          <div class="form-group">
-            <label class="form-label" for="property-university">University</label>
-            <select id="property-university" name="university" class="form-select" required></select>
+
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Landlord</th>
+                  <th>University</th>
+                  <th>Location</th>
+                  <th>Monthly Rent</th>
+                  <th>Rooms</th>
+                  <th>Verification</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="propertiesTableBody">
+                <tr>
+                  <td>
+                    <div class="admin-table__property">
+                      <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=60&h=60&fit=crop" alt="Property">
+                      <span>Green View Hostel</span>
+                    </div>
+                  </td>
+                  <td>James Mwangi</td>
+                  <td>JKUAT</td>
+                  <td>Juja</td>
+                  <td>KSh 6,500</td>
+                  <td>48 rooms</td>
+                  <td><span class="badge badge--verified">Verified</span></td>
+                  <td><span class="badge badge--active">Active</span></td>
+                  <td>
+                    <div class="admin-table__actions">
+                      <button class="btn btn--ghost btn--sm" data-action="view">View</button>
+                      <button class="btn btn--ghost btn--sm" data-action="edit">Edit</button>
+                      <button class="btn btn--ghost btn--sm" data-action="suspend">Suspend</button>
+                      <button class="btn btn--ghost btn--sm" data-action="delete">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="property-roomType">Room type</label>
-            <select id="property-roomType" name="roomType" class="form-select" required>
-              <option value="bedsitter">Bedsitter</option>
-              <option value="single">Single</option>
-              <option value="shared">Shared</option>
-              <option value="studio">Studio</option>
-              <option value="one_bedroom">One bedroom</option>
-              <option value="hostel_bed">Hostel bed</option>
-            </select>
+        </section>
+
+        <!-- Analytics Section -->
+        <section class="admin-section" id="section-analytics">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Analytics Overview</h1>
+            <div class="admin-section__date-filter">
+              <select>
+                <option>Last 7 days</option>
+                <option>Last 30 days</option>
+                <option>Last 90 days</option>
+                <option>Last year</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="grid grid--2" style="gap:var(--space-4);">
-          <div class="form-group">
-            <label class="form-label" for="property-rent">Monthly rent (KSh)</label>
-            <input id="property-rent" name="rent" type="number" class="form-input" required min="1000" step="100">
+
+          <div class="admin-charts">
+            <div class="admin-chart-card">
+              <h3 class="admin-chart-card__title">Property Listings Over Time</h3>
+              <div class="admin-chart-card__chart">
+                <canvas id="listingsChart"></canvas>
+              </div>
+            </div>
+            <div class="admin-chart-card">
+              <h3 class="admin-chart-card__title">User Registrations</h3>
+              <div class="admin-chart-card__chart">
+                <canvas id="registrationsChart"></canvas>
+              </div>
+            </div>
+            <div class="admin-chart-card">
+              <h3 class="admin-chart-card__title">Revenue Overview</h3>
+              <div class="admin-chart-card__chart">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+            <div class="admin-chart-card">
+              <h3 class="admin-chart-card__title">Most Searched Universities</h3>
+              <div class="admin-chart-card__chart">
+                <canvas id="universitiesChart"></canvas>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="property-deposit">Deposit (KSh)</label>
-            <input id="property-deposit" name="deposit" type="number" class="form-input" min="0" step="100">
+
+          <div class="admin-map-section">
+            <h3 class="admin-section__heading">Property Distribution Map</h3>
+            <div class="admin-map-placeholder">
+              <div class="admin-map-placeholder__content">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <p>Interactive map showing KampoStay properties across Kenya</p>
+                <p class="text-muted text-sm">Hotspots: Juja, Kahawa, Nairobi, Ruiru, Kisumu, Eldoret, Nakuru, Murang'a, Thika, Kakamega</p>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="grid grid--2" style="gap:var(--space-4);">
-          <div class="form-group">
-            <label class="form-label" for="property-estate">Estate</label>
-            <input id="property-estate" name="estate" class="form-input" required>
+        </section>
+
+        <!-- Reports Section -->
+        <section class="admin-section" id="section-reports">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Reports & Safety</h1>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="property-address">Address</label>
-            <input id="property-address" name="address" class="form-input" required>
+
+          <div class="admin-reports-grid">
+            <div class="admin-report-card admin-report-card--critical">
+              <div class="admin-report-card__header">
+                <h3>Reported Properties</h3>
+                <span class="badge badge--danger">Critical</span>
+              </div>
+              <div class="admin-report-card__value">8</div>
+              <div class="admin-report-card__description">Properties flagged by users</div>
+              <button class="btn btn--danger btn--sm">Investigate</button>
+            </div>
+            <div class="admin-report-card admin-report-card--high">
+              <div class="admin-report-card__header">
+                <h3>Fraud Reports</h3>
+                <span class="badge badge--warning">High</span>
+              </div>
+              <div class="admin-report-card__value">3</div>
+              <div class="admin-report-card__description">Potential fraudulent activity</div>
+              <button class="btn btn--warning btn--sm">Review</button>
+            </div>
+            <div class="admin-report-card admin-report-card--medium">
+              <div class="admin-report-card__header">
+                <h3>Suspicious Accounts</h3>
+                <span class="badge badge--warning">Medium</span>
+              </div>
+              <div class="admin-report-card__value">5</div>
+              <div class="admin-report-card__description">Accounts requiring review</div>
+              <button class="btn btn--outline btn--sm">Investigate</button>
+            </div>
+            <div class="admin-report-card admin-report-card--low">
+              <div class="admin-report-card__header">
+                <h3>Landlord Complaints</h3>
+                <span class="badge badge--info">Low</span>
+              </div>
+              <div class="admin-report-card__value">12</div>
+              <div class="admin-report-card__description">Complaints about landlords</div>
+              <button class="btn btn--outline btn--sm">Review</button>
+            </div>
           </div>
-        </div>
-        <div class="grid grid--2" style="gap:var(--space-4);">
-          <div class="form-group">
-            <label class="form-label" for="property-city">City</label>
-            <input id="property-city" name="city" class="form-input" placeholder="Nairobi">
+        </section>
+
+        <!-- Other sections placeholders -->
+        <section class="admin-section" id="section-landlords">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Landlord Management</h1>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="property-walk">Walk minutes</label>
-            <input id="property-walk" name="walkingTimeMinutes" type="number" class="form-input" min="1" placeholder="15">
+          <div class="admin-placeholder">
+            <p>Landlord management content will be loaded here.</p>
           </div>
-        </div>
-        <input type="hidden" name="county" value="Nairobi">
-        <input type="hidden" name="lat" value="-1.2921">
-        <input type="hidden" name="lng" value="36.8219">
-        <div class="form-group">
-          <label class="form-label" for="property-image">Image URL (optional)</label>
-          <input id="property-image" name="imageUrl" type="url" class="form-input">
-        </div>
-        <div class="form-group">
-          <span class="form-label">Amenities</span>
-          <div class="flex flex-wrap gap-4 mt-2">
-            <label class="form-checkbox"><input type="checkbox" name="wifi"> WiFi</label>
-            <label class="form-checkbox"><input type="checkbox" name="water" checked> Water</label>
-            <label class="form-checkbox"><input type="checkbox" name="furnished"> Furnished</label>
-            <label class="form-checkbox"><input type="checkbox" name="parking"> Parking</label>
-            <label class="form-checkbox"><input type="checkbox" name="laundry"> Laundry</label>
-            <label class="form-checkbox"><input type="checkbox" name="kitchen" checked> Kitchen</label>
+        </section>
+
+        <section class="admin-section" id="section-tenants">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Tenant Management</h1>
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="property-rules">House rules (one per line)</label>
-          <textarea id="property-rules" name="houseRules" class="form-textarea" rows="2"></textarea>
-        </div>
-      </form>
-      <div class="modal__footer">
-        <button type="button" class="btn btn--ghost" data-modal-close>Cancel</button>
-        <button type="submit" form="add-property-form" class="btn btn--primary">Submit listing</button>
-      </div>
+          <div class="admin-placeholder">
+            <p>Tenant management content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-universities">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">University Management</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>University management content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-bookings">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Booking Management</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>Booking management content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-verification">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Verification Queue</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>Verification queue content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-payments">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Payment Management</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>Payment management content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-reviews">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Review Management</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>Review management content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-messages">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Message Center</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>Message center content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-notifications">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Notification Center</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>Notification center content will be loaded here.</p>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-settings">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Platform Settings</h1>
+          </div>
+          <div class="admin-placeholder">
+            <p>Platform settings content will be loaded here.</p>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
+
   <script type="module" src="../../js/app.js"></script>
   <script type="module" src="../../js/pages/admin-dashboard.js"></script>
 </body>
