@@ -1,6 +1,6 @@
 /* KampoStay Design Tokens — Light & Dark */
 :root {
-  /* Brand */
+  /* Brand — Preserved from existing logo */
   --color-brand: #0B3D2E;
   --color-brand-light: #145A44;
   --color-brand-dark: #062820;
@@ -8,29 +8,29 @@
   --color-accent-light: #E8B82A;
   --color-accent-dark: #B8890F;
 
-  /* Surfaces */
-  --color-bg: #F7F9F8;
+  /* Surfaces — Premium marketplace aesthetic */
+  --color-bg: #FAFAF9;
   --color-bg-elevated: #FFFFFF;
-  --color-bg-muted: #EEF2F0;
-  --color-bg-pattern: radial-gradient(ellipse at 20% 0%, rgba(11, 61, 46, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 100%, rgba(212, 160, 23, 0.05) 0%, transparent 50%),
-    linear-gradient(165deg, #F7F9F8 0%, #EEF4F1 50%, #F7F9F8 100%);
+  --color-bg-muted: #F5F5F4;
+  --color-bg-pattern: radial-gradient(ellipse at 20% 0%, rgba(11, 61, 46, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(212, 160, 23, 0.02) 0%, transparent 50%),
+    linear-gradient(180deg, #FAFAF9 0%, #F5F5F4 100%);
 
-  /* Text */
-  --color-text: #1A1F1C;
-  --color-text-muted: #5A6560;
-  --color-text-inverse: #F7F9F8;
+  /* Text — Enhanced contrast for readability */
+  --color-text: #1C1917;
+  --color-text-muted: #78716C;
+  --color-text-inverse: #FAFAF9;
 
   /* Semantic */
-  --color-success: #1B7A4E;
-  --color-warning: #C47F17;
-  --color-error: #C0392B;
-  --color-info: #1A6B8A;
+  --color-success: #16A34A;
+  --color-warning: #EA580C;
+  --color-error: #DC2626;
+  --color-info: #0284C7;
 
-  /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(11, 61, 46, 0.08);
-  --glass-shadow: 0 8px 32px rgba(11, 61, 46, 0.08);
+  /* Glass — Subtle, premium effect */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(11, 61, 46, 0.06);
+  --glass-shadow: 0 4px 24px rgba(11, 61, 46, 0.06);
 
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
@@ -59,20 +59,20 @@
   --space-20: 5rem;
 
   /* Layout */
-  --container-max: 1200px;
-  --container-narrow: 720px;
-  --header-height: 72px;
+  --container-max: 1280px;
+  --container-narrow: 768px;
+  --header-height: 80px;
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(11, 61, 46, 0.06);
-  --shadow-md: 0 4px 16px rgba(11, 61, 46, 0.08);
-  --shadow-lg: 0 12px 40px rgba(11, 61, 46, 0.12);
-  --shadow-glow: 0 0 24px rgba(212, 160, 23, 0.25);
+  /* Shadows — Premium, subtle depth */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 20px rgba(212, 160, 23, 0.15);
 
   /* Transitions */
   --transition-fast: 150ms ease;
