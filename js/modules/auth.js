@@ -2,6 +2,8 @@ import api from './api.js';
 import { STORAGE_KEYS, ROUTES } from '../config.js';
 import { showToast } from './ui.js';
 
+export { ROUTES };
+
 export function getUser() {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.user);
