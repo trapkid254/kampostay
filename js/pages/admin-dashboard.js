@@ -673,4 +673,63 @@ document.addEventListener('DOMContentLoaded', async () => {
       showToast(err.message || 'Failed to save settings', 'error');
     }
   });
+
+  // Modal functionality
+  function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+
+  // Close modal on overlay click
+  document.querySelectorAll('[data-close-modal]').forEach(el => {
+    el.addEventListener('click', () => {
+      const modal = el.closest('.modal');
+      if (modal) modal.style.display = 'none';
+    });
+  });
+
+  // Add Property Modal
+  document.querySelectorAll('[data-action="add-property"]').forEach(btn => {
+    btn.addEventListener('click', () => openModal('addPropertyModal'));
+  });
+
+  // Add Property Form Submission
+  document.getElementById('addPropertyForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    const amenities = [];
+    form.querySelectorAll('input[name="amenities"]:checked').forEach(cb => {
+      amenities.push(cb.value);
+    });
+
+    const propertyData = {
+      title: formData.get('title'),
+      description: formData.get('description'),
+      propertyType: formData.get('propertyType'),
+      university: formData.get('university'),
+      location: {
+        city: formData.get('city'),
+        walkingTimeMinutes: parseInt(formData.get('walkingTime'))
+      },
+      rent: parseInt(formData.get('rent')),
+      totalRooms: parseInt(formData.get('totalRooms')),
+      amenities: amenities
+    };
+
+    try {
+      showToast('Adding property...', 'info');
+      await api.post('/properties', propertyData);
+      showToast('Property added successfully!', 'success');
+      closeModal('addPropertyModal');
+      form.reset();
+      await loadProperties();
+    } catch (err) {
+      showToast(err.message || 'Failed to add property', 'error');
+    }
+  });
 });
