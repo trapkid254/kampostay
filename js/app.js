@@ -68,6 +68,27 @@ function setActiveNavLink() {
   });
 }
 
+function initPasswordToggles() {
+  document.querySelectorAll('[data-toggle="password"]').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const wrapper = toggle.closest('.form-input-wrapper');
+      const input = wrapper?.querySelector('input[type="password"], input[type="text"]');
+      const eyeIcon = toggle.querySelector('.eye-icon');
+      const eyeOffIcon = toggle.querySelector('.eye-off-icon');
+      
+      if (!input) return;
+      
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      
+      if (eyeIcon && eyeOffIcon) {
+        eyeIcon.style.display = isPassword ? 'none' : 'block';
+        eyeOffIcon.style.display = isPassword ? 'block' : 'none';
+      }
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   showLaunchSplash();
   normalizeLogoText();
@@ -81,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initInstitutionPickers();
   initHeroSearch();
   setActiveNavLink();
+  initPasswordToggles();
   if (document.querySelector('.dashboard__nav')) {
     initDashboardNavIcons();
     bindDashboardPanels();

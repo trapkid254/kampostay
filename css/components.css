@@ -574,6 +574,41 @@
 
 .form-input::placeholder { color: var(--color-text-muted); }
 
+.form-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input-wrapper .form-input {
+  padding-right: 48px;
+}
+
+.form-input__toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: color var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-input__toggle:hover {
+  color: var(--color-brand);
+}
+
+.form-input__toggle:focus {
+  outline: none;
+  color: var(--color-brand);
+}
+
 .form-checkbox,
 .form-radio {
   display: flex;
