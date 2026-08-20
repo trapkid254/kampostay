@@ -1,7 +1,7 @@
 import { requireAuth, requireRole, logout } from '../modules/auth.js';
-import { showToast, formatCurrency } from '../modules/ui.js';
+import { showToast } from '../modules/ui.js';
 import api from '../modules/api.js';
-import { siteUrl } from '../config.js';
+import { siteUrl, STORAGE_KEYS } from '../config.js';
 
 function userName(u) {
   const first = u.profile?.firstName || u.firstName || '';
@@ -230,12 +230,12 @@ function updateGreeting() {
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('Admin dashboard loading...');
   
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = JSON.parse(localStorage.getItem(STORAGE_KEYS.user) || '{}');
   console.log('User from localStorage:', user);
   console.log('User role:', user?.role);
   
   // Check authentication and role
-  if (!localStorage.getItem('token')) {
+  if (!localStorage.getItem(STORAGE_KEYS.token)) {
     console.log('No token found, redirecting to login');
     window.location.href = siteUrl('pages/admin/login.html');
     return;
