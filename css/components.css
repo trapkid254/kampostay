@@ -232,6 +232,7 @@
   .nav-toggle {
     display: inline-flex;
     order: 2;
+    z-index: 10;
   }
 
   .nav {
