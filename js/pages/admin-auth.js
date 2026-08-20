@@ -1,6 +1,6 @@
 import { showToast } from '../modules/ui.js';
 import api from '../modules/api.js';
-import { siteUrl } from '../config.js';
+import { siteUrl, ROUTES } from '../config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('login-form');
@@ -18,18 +18,32 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const response = await api.post('/auth/login', { email, password, role: 'admin' });
       
-      if (response.token) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+      console.log('Admin login response:', response);
+      
+      if (response.token || response.accessToken) {
+        const token = response.token || response.accessToken;
+        const user = response.user;
+        
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        console.log('Admin user role:', user?.role);
+        
+        if (user?.role !== 'admin') {
+          showToast('Access denied. Admin account required.', 'error');
+          localStorage.clear();
+          return;
+        }
         
         showToast('Welcome, Admin!', 'success');
         
         // Redirect to admin dashboard
-        setTimeout(() => {
-          window.location.href = siteUrl('pages/dashboard/admin.html');
-        }, 1000);
+        window.location.href = ROUTES.adminDashboard;
+      } else {
+        showToast('Login failed. No token received.', 'error');
       }
     } catch (err) {
+      console.error('Admin login error:', err);
       showToast(err.message || 'Login failed. Please check your credentials.', 'error');
     }
   });

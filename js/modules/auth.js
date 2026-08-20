@@ -129,7 +129,7 @@ export function requireAuth(redirectUrl) {
   return true;
 }
 
-export function requireRole(role, redirectUrl = ROUTES.home) {
+export function requireRole(role, redirectUrl = ROUTES.login) {
   const user = getUser();
   if (!user || user.role !== role) {
     window.location.href = redirectUrl;

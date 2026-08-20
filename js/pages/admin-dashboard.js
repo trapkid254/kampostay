@@ -228,7 +228,26 @@ function updateGreeting() {
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!requireAuth() || !requireRole('admin', siteUrl('index.html'))) return;
+  console.log('Admin dashboard loading...');
+  
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  console.log('User from localStorage:', user);
+  console.log('User role:', user?.role);
+  
+  // Check authentication and role
+  if (!localStorage.getItem('token')) {
+    console.log('No token found, redirecting to login');
+    window.location.href = siteUrl('pages/admin/login.html');
+    return;
+  }
+  
+  if (user?.role !== 'admin') {
+    console.log('User is not admin, redirecting to login');
+    window.location.href = siteUrl('pages/admin/login.html');
+    return;
+  }
+  
+  console.log('Auth checks passed, loading dashboard...');
 
   // Initialize sidebar navigation
   initSidebarNavigation();

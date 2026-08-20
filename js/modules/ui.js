@@ -156,6 +156,8 @@ export function initMobileNav() {
   const useDashboardSidebar = Boolean(dashboardSidebar && dashboardNav);
   let drawer = null;
 
+  const isMobile = () => window.matchMedia('(max-width: 1024px)').matches;
+
   if (!useDashboardSidebar) {
     if (!links) return;
     drawer = nav.querySelector('[data-nav-drawer]');
@@ -164,11 +166,19 @@ export function initMobileNav() {
       drawer.className = 'nav__drawer';
       drawer.dataset.navDrawer = 'true';
       document.body.appendChild(drawer);
-      drawer.appendChild(links);
+    }
+    // Only move links to drawer on mobile
+    if (isMobile()) {
+      if (!drawer.contains(links)) {
+        drawer.appendChild(links);
+      }
+    } else {
+      // Keep links in nav on desktop
+      if (!nav.contains(links)) {
+        nav.insertBefore(links, actions);
+      }
     }
   }
-
-  const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
 
   function ensureDrawerHead() {
     if (!drawer) return;
@@ -218,8 +228,20 @@ export function initMobileNav() {
   }
 
   window.addEventListener('resize', () => {
-    if (drawer) ensureDrawerHead();
-    if (window.innerWidth > 900) {
+    if (drawer) {
+      ensureDrawerHead();
+      // Re-organize links on resize
+      if (isMobile()) {
+        if (!drawer.contains(links)) {
+          drawer.appendChild(links);
+        }
+      } else {
+        if (!nav.contains(links)) {
+          nav.insertBefore(links, actions);
+        }
+      }
+    }
+    if (window.innerWidth > 1024) {
       if (drawer) {
         drawer.classList.remove('is-open');
         links.classList.remove('is-open');
