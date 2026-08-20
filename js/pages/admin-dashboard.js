@@ -692,9 +692,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Add Property Modal
   document.querySelectorAll('[data-action="add-property"]').forEach(btn => {
-    btn.addEventListener('click', async () => {
+    console.log('Found add-property button:', btn);
+    btn.addEventListener('click', async (e) => {
+      console.log('Add property button clicked');
+      e.preventDefault();
+      e.stopPropagation();
+      
       // Open modal first
-      openModal('addPropertyModal');
+      const modal = document.getElementById('addPropertyModal');
+      console.log('Modal element:', modal);
+      if (modal) {
+        modal.style.display = 'block';
+        console.log('Modal display set to block');
+      } else {
+        console.error('Modal element not found');
+      }
       
       // Load landlords into select
       const select = document.getElementById('landlordSelect');
