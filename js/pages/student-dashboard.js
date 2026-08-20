@@ -162,7 +162,7 @@ async function loadSaved() {
   if (!container) return;
 
   try {
-    const data = await api.get('/favorites');
+    const data = await api.get('/wishlist');
     const list = Array.isArray(data) ? data : data?.data || [];
     
     if (!list.length) {
@@ -203,8 +203,8 @@ async function loadApplications() {
   if (!container) return;
 
   try {
-    const data = await api.get('/applications');
-    const list = Array.isArray(data) ? data : data?.data || [];
+    const data = await api.get('/bookings');
+    const list = Array.isArray(data) ? data : data?.bookings || data?.data || [];
     
     if (!list.length) {
       container.innerHTML = '<div class="student-placeholder"><p>No applications yet.</p></div>';
@@ -291,24 +291,108 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Handle search
-  document.getElementById('searchButton')?.addEventListener('click', async () => {
-    const university = document.getElementById('universityFilter').value;
-    const budget = document.getElementById('budgetFilter').value;
-    const distance = document.getElementById('distanceFilter').value;
-    const query = document.getElementById('globalSearch').value;
-    
-    showToast('Searching properties...', 'info');
-    // Implement search logic
-  });
-
-  // Handle AI assistant
-  document.querySelector('.student-ai-assistant__button')?.addEventListener('click', () => {
-    const input = document.querySelector('.student-ai-assistant__input').value;
-    if (!input) {
-      showToast('Please describe what you\'re looking for', 'error');
+  document.getElementById('globalSearch')?.addEventListener('input', async (e) => {
+    const query = e.target.value.toLowerCase();
+    if (query.length < 2) {
+      // Reset to show recommended
+      await loadRecommended();
       return;
     }
-    showToast('AI recommendations coming soon!', 'info');
+    
+    try {
+      const data = await api.get('/properties/search', { q: query, limit: 20 });
+      const results = Array.isArray(data) ? data : data?.properties || data?.data || [];
+      
+      const container = document.getElementById('recommendedGrid');
+      if (!container) return;
+      
+      if (!results.length) {
+        container.innerHTML = '<div class="student-placeholder"><p>No properties found matching your search.</p></div>';
+        return;
+      }
+      
+      container.innerHTML = results.map((p) => {
+        const id = p._id || p.id;
+        const firstMedia = p.media?.images?.[0] || {};
+        const img = p.primaryImage || firstMedia.url || firstMedia.secure_url || 'https://via.placeholder.com/300';
+        
+        return `<div class="student-property-card">
+          <div class="student-property-card__image">
+            <img src="${img}" alt="${p.title}">
+            <button class="student-property-card__favorite" data-action="favorite" data-id="${id}" aria-label="Add to favorites">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="student-property-card__content">
+            <h3 class="student-property-card__title">${p.title}</h3>
+            <p class="student-property-card__location">${p.location?.city || 'Location not specified'}</p>
+            <div class="student-property-card__price">KSh ${Number(p.rent || 0).toLocaleString()}/month</div>
+            <div class="student-property-card__actions">
+              <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View Details</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    } catch (err) {
+      console.error('Search error:', err);
+    }
+  });
+
+  // Handle message icon click
+  document.querySelector('[aria-label="Messages"]')?.addEventListener('click', () => {
+    showToast('Messages feature coming soon', 'info');
+  });
+
+  // Handle notification icon click
+  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', () => {
+    showToast('Notifications feature coming soon', 'info');
+  });
+
+  // Handle edit profile button
+  document.querySelector('.student-profile__card .btn--outline')?.addEventListener('click', () => {
+    showToast('Edit profile feature coming soon', 'info');
+  });
+
+  // Handle review form submission
+  document.querySelector('.student-review-form form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showToast('Review submission feature coming soon', 'info');
+  });
+
+  // Handle maintenance form submission
+  document.querySelector('.student-maintenance form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showToast('Maintenance request feature coming soon', 'info');
+  });
+
+  // Handle My Home section buttons
+  document.querySelector('.student-my-home__actions')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn');
+    if (!btn) return;
+    
+    const text = btn.textContent.trim();
+    switch (text) {
+      case 'Pay Rent':
+        showToast('Payment feature coming soon', 'info');
+        break;
+      case 'View Lease':
+        showToast('Lease viewing feature coming soon', 'info');
+        break;
+      case 'Contact Landlord':
+        showToast('Messaging feature coming soon', 'info');
+        break;
+      case 'Report Maintenance':
+        // Switch to maintenance section
+        document.querySelector('[data-section="maintenance"]')?.click();
+        break;
+    }
+  });
+
+  // Handle payment button
+  document.querySelector('.student-payment-card .btn--primary')?.addEventListener('click', () => {
+    showToast('Payment feature coming soon', 'info');
   });
 
   // Handle property actions
@@ -352,7 +436,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         break;
       case 'cancel':
         try {
-          await api.patch(`/applications/${id}`, { status: 'cancelled' });
+          await api.patch(`/bookings/${id}`, { status: 'cancelled' });
           showToast('Application cancelled', 'success');
           await loadApplications();
         } catch (err) {

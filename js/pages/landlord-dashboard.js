@@ -285,8 +285,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
-      showToast(`${action} functionality coming soon`, 'info');
+      if (action === 'add-property') {
+        showToast('Add property modal coming soon', 'info');
+      } else if (action === 'view-applications') {
+        // Switch to applications section
+        document.querySelector('[data-section="applications"]')?.click();
+      } else {
+        showToast(`${action} functionality coming soon`, 'info');
+      }
     });
+  });
+
+  // Handle message icon click
+  document.querySelector('[aria-label="Messages"]')?.addEventListener('click', () => {
+    showToast('Messages feature coming soon', 'info');
+  });
+
+  // Handle notification icon click
+  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', () => {
+    showToast('Notifications feature coming soon', 'info');
   });
 
   // Handle search
