@@ -324,11 +324,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Handle quick actions
   document.querySelectorAll('[data-action]').forEach(btn => {
-    if (btn.dataset.action === 'add-property') {
-      btn.addEventListener('click', () => {
-        showToast('Add property modal coming soon', 'info');
-      });
-    } else if (btn.dataset.action === 'view-reports') {
+    if (btn.dataset.action === 'view-reports') {
       btn.addEventListener('click', () => {
         // Navigate to reports section
         document.querySelector('[data-section="reports"]')?.click();
