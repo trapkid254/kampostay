@@ -210,7 +210,7 @@ function initRevenueChart() {
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!requireAuth() || !requireRole('landlord', siteUrl('pages/auth/login.html'))) return;
+  if (!requireAuth() || !requireRole('landlord', siteUrl('pages/landlord/login.html'))) return;
 
   // Initialize sidebar navigation
   initSidebarNavigation();
