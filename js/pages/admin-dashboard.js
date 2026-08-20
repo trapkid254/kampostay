@@ -262,6 +262,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load properties
   await loadProperties();
   
+  // Load universities
+  await loadUniversities();
+  
   // Initialize charts on dashboard view
   initCharts();
 
@@ -467,7 +470,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       container.innerHTML = universities.map(u => `
         <tr>
           <td>${u.name}</td>
-          <td>${u.location || 'N/A'}</td>
+          <td>${u.location?.city || 'N/A'}, ${u.location?.county || 'N/A'}</td>
           <td>${u.propertyCount || 0}</td>
           <td>${u.studentCount || 0}</td>
           <td><span class="badge badge--active">Active</span></td>
@@ -743,6 +746,91 @@ document.addEventListener('DOMContentLoaded', async () => {
       await loadProperties();
     } catch (err) {
       showToast(err.message || 'Failed to add property', 'error');
+    }
+  });
+
+  // University Modal
+  document.querySelectorAll('[data-action="add-university"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('universityModalTitle').textContent = 'Add University';
+      document.getElementById('universityForm').reset();
+      document.getElementById('universityId').value = '';
+      openModal('universityModal');
+    });
+  });
+
+  // University Form Submission
+  document.getElementById('universityForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const universityId = formData.get('universityId');
+
+    const universityData = {
+      name: formData.get('name'),
+      location: {
+        city: formData.get('city'),
+        county: formData.get('county'),
+        country: 'Kenya'
+      },
+      studentCount: parseInt(formData.get('studentCount')) || 0,
+      aliases: formData.get('aliases') ? formData.get('aliases').split(',').map(a => a.trim()) : [],
+      featured: form.querySelector('[name="featured"]').checked
+    };
+
+    try {
+      if (universityId) {
+        showToast('Updating university...', 'info');
+        await api.patch(`/universities/${universityId}`, universityData);
+        showToast('University updated successfully!', 'success');
+      } else {
+        showToast('Adding university...', 'info');
+        await api.post('/universities', universityData);
+        showToast('University added successfully!', 'success');
+      }
+      closeModal('universityModal');
+      form.reset();
+      await loadUniversities();
+    } catch (err) {
+      showToast(err.message || 'Failed to save university', 'error');
+    }
+  });
+
+  // Handle university table actions
+  document.getElementById('universitiesTableBody')?.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+
+    if (action === 'edit-university') {
+      try {
+        const data = await api.get(`/universities/${id}`);
+        const university = data?.data || data;
+        document.getElementById('universityModalTitle').textContent = 'Edit University';
+        document.getElementById('universityId').value = id;
+        document.querySelector('[name="name"]').value = university.name;
+        document.querySelector('[name="city"]').value = university.location?.city || '';
+        document.querySelector('[name="county"]').value = university.location?.county || '';
+        document.querySelector('[name="studentCount"]').value = university.studentCount || '';
+        document.querySelector('[name="aliases"]').value = university.aliases?.join(', ') || '';
+        document.querySelector('[name="featured"]').checked = university.featured || false;
+        openModal('universityModal');
+      } catch (err) {
+        showToast('Failed to load university details', 'error');
+      }
+    } else if (action === 'delete-university') {
+      if (confirm('Are you sure you want to delete this university?')) {
+        try {
+          showToast('Deleting university...', 'info');
+          await api.delete(`/universities/${id}`);
+          showToast('University deleted successfully!', 'success');
+          await loadUniversities();
+        } catch (err) {
+          showToast(err.message || 'Failed to delete university', 'error');
+        }
+      }
     }
   });
 });
