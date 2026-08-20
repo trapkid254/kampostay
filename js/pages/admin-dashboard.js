@@ -693,6 +693,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Add Property Modal
   document.querySelectorAll('[data-action="add-property"]').forEach(btn => {
     btn.addEventListener('click', async () => {
+      // Open modal first
+      openModal('addPropertyModal');
+      
       // Load landlords into select
       const select = document.getElementById('landlordSelect');
       try {
@@ -700,9 +703,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const landlords = Array.isArray(data) ? data : data?.landlords || data?.data || [];
         select.innerHTML = '<option value="">Select landlord</option>' + 
           landlords.map(l => `<option value="${l._id}">${l.profile?.firstName || l.firstName} ${l.profile?.lastName || l.lastName} (${l.email})</option>`).join('');
-        openModal('addPropertyModal');
       } catch (err) {
-        showToast('Failed to load landlords', 'error');
+        console.error('Failed to load landlords:', err);
+        showToast('Failed to load landlords, but you can still add property', 'warning');
+        select.innerHTML = '<option value="">Select landlord</option>';
       }
     });
   });
