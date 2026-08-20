@@ -30,8 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Landlord user role:', user?.role);
         
         if (user?.role !== 'landlord') {
-          showToast('Access denied. Landlord account required.', 'error');
+          showToast('Access denied. Please use the correct login page for your account type.', 'error');
           localStorage.clear();
+          
+          // Redirect to appropriate login page
+          if (user?.role === 'admin') {
+            window.location.href = siteUrl('pages/admin/login.html');
+          } else if (user?.role === 'student') {
+            window.location.href = siteUrl('pages/auth/login.html');
+          }
           return;
         }
         

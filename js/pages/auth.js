@@ -1,4 +1,4 @@
-import { login, register, forgotPassword, verifyEmail, getReturnUrl } from '../modules/auth.js';
+import { login, register, forgotPassword, verifyEmail, getReturnUrl, ROUTES } from '../modules/auth.js';
 import { showToast } from '../modules/ui.js';
 import { siteUrl } from '../config.js';
 
@@ -9,6 +9,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const fd = new FormData(loginForm);
     try {
       const user = await login(fd.get('email'), fd.get('password'));
+      
+      // Ensure only students can log in through this page
+      if (user?.role !== 'student') {
+        showToast('Access denied. Please use the correct login page for your account type.', 'error');
+        localStorage.clear();
+        
+        // Redirect to appropriate login page
+        if (user?.role === 'admin') {
+          window.location.href = siteUrl('pages/admin/login.html');
+        } else if (user?.role === 'landlord') {
+          window.location.href = siteUrl('pages/landlord/login.html');
+        }
+        return;
+      }
+      
       window.location.href = getReturnUrl(user);
     } catch (err) {
       showToast(err.message || 'Login failed', 'error');
