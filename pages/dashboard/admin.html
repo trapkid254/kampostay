@@ -518,6 +518,52 @@
           </div>
         </section>
 
+        <!-- Reports Section -->
+        <section class="admin-section" id="section-reports">
+          <div class="admin-section__header">
+            <h1 class="admin-section__title">Reports & Safety</h1>
+          </div>
+
+          <div class="admin-reports-grid">
+            <div class="admin-report-card admin-report-card--critical">
+              <div class="admin-report-card__header">
+                <h3>Reported Properties</h3>
+                <span class="badge badge--danger">Critical</span>
+              </div>
+              <div class="admin-report-card__value">8</div>
+              <div class="admin-report-card__description">Properties flagged by users</div>
+              <button class="btn btn--danger btn--sm">Investigate</button>
+            </div>
+            <div class="admin-report-card admin-report-card--high">
+              <div class="admin-report-card__header">
+                <h3>Fraud Reports</h3>
+                <span class="badge badge--warning">High</span>
+              </div>
+              <div class="admin-report-card__value">3</div>
+              <div class="admin-report-card__description">Potential fraudulent activity</div>
+              <button class="btn btn--warning btn--sm">Review</button>
+            </div>
+            <div class="admin-report-card admin-report-card--medium">
+              <div class="admin-report-card__header">
+                <h3>Suspicious Accounts</h3>
+                <span class="badge badge--warning">Medium</span>
+              </div>
+              <div class="admin-report-card__value">5</div>
+              <div class="admin-report-card__description">Accounts requiring review</div>
+              <button class="btn btn--outline btn--sm">Investigate</button>
+            </div>
+            <div class="admin-report-card admin-report-card--low">
+              <div class="admin-report-card__header">
+                <h3>Landlord Complaints</h3>
+                <span class="badge badge--info">Low</span>
+              </div>
+              <div class="admin-report-card__value">12</div>
+              <div class="admin-report-card__description">Complaints about landlords</div>
+              <button class="btn btn--outline btn--sm">Review</button>
+            </div>
+          </div>
+        </section>
+
         <!-- Analytics Section -->
         <section class="admin-section" id="section-analytics">
           <div class="admin-section__header">
@@ -574,140 +620,245 @@
           </div>
         </section>
 
-        <!-- Reports Section -->
-        <section class="admin-section" id="section-reports">
-          <div class="admin-section__header">
-            <h1 class="admin-section__title">Reports & Safety</h1>
-          </div>
-
-          <div class="admin-reports-grid">
-            <div class="admin-report-card admin-report-card--critical">
-              <div class="admin-report-card__header">
-                <h3>Reported Properties</h3>
-                <span class="badge badge--danger">Critical</span>
-              </div>
-              <div class="admin-report-card__value">8</div>
-              <div class="admin-report-card__description">Properties flagged by users</div>
-              <button class="btn btn--danger btn--sm">Investigate</button>
-            </div>
-            <div class="admin-report-card admin-report-card--high">
-              <div class="admin-report-card__header">
-                <h3>Fraud Reports</h3>
-                <span class="badge badge--warning">High</span>
-              </div>
-              <div class="admin-report-card__value">3</div>
-              <div class="admin-report-card__description">Potential fraudulent activity</div>
-              <button class="btn btn--warning btn--sm">Review</button>
-            </div>
-            <div class="admin-report-card admin-report-card--medium">
-              <div class="admin-report-card__header">
-                <h3>Suspicious Accounts</h3>
-                <span class="badge badge--warning">Medium</span>
-              </div>
-              <div class="admin-report-card__value">5</div>
-              <div class="admin-report-card__description">Accounts requiring review</div>
-              <button class="btn btn--outline btn--sm">Investigate</button>
-            </div>
-            <div class="admin-report-card admin-report-card--low">
-              <div class="admin-report-card__header">
-                <h3>Landlord Complaints</h3>
-                <span class="badge badge--info">Low</span>
-              </div>
-              <div class="admin-report-card__value">12</div>
-              <div class="admin-report-card__description">Complaints about landlords</div>
-              <button class="btn btn--outline btn--sm">Review</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Other sections placeholders -->
+        <!-- Landlords Section -->
         <section class="admin-section" id="section-landlords">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Landlord Management</h1>
+            <div class="admin-section__actions">
+              <input type="text" placeholder="Search landlords..." id="landlordSearch" class="form-input">
+              <select id="landlordStatusFilter" class="form-select">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="verified">Verified</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
           </div>
-          <div class="admin-placeholder">
-            <p>Landlord management content will be loaded here.</p>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Properties</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="landlordsTableBody">
+                <!-- Landlords will be loaded here -->
+              </tbody>
+            </table>
           </div>
         </section>
 
+        <!-- Tenants Section -->
         <section class="admin-section" id="section-tenants">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Tenant Management</h1>
+            <div class="admin-section__actions">
+              <input type="text" placeholder="Search tenants..." id="tenantSearch" class="form-input">
+              <select id="tenantUniversityFilter" class="form-select">
+                <option value="">All Universities</option>
+                <option value="jkuat">JKUAT</option>
+                <option value="uon">University of Nairobi</option>
+                <option value="kenyatta">Kenyatta University</option>
+                <option value="strathmore">Strathmore University</option>
+              </select>
+            </div>
           </div>
-          <div class="admin-placeholder">
-            <p>Tenant management content will be loaded here.</p>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>University</th>
+                  <th>Current Property</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tenantsTableBody">
+                <!-- Tenants will be loaded here -->
+              </tbody>
+            </table>
           </div>
         </section>
 
+        <!-- Universities Section -->
         <section class="admin-section" id="section-universities">
           <div class="admin-section__header">
             <h1 class="admin-section__title">University Management</h1>
+            <button class="btn btn--primary" data-action="add-university">+ Add University</button>
           </div>
-          <div class="admin-placeholder">
-            <p>University management content will be loaded here.</p>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Properties</th>
+                  <th>Students</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="universitiesTableBody">
+                <!-- Universities will be loaded here -->
+              </tbody>
+            </table>
           </div>
         </section>
 
+        <!-- Bookings Section -->
         <section class="admin-section" id="section-bookings">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Booking Management</h1>
+            <div class="admin-section__actions">
+              <select id="bookingStatusFilter" class="form-select">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
           </div>
-          <div class="admin-placeholder">
-            <p>Booking management content will be loaded here.</p>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Property</th>
+                  <th>Landlord</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody">
+                <!-- Bookings will be loaded here -->
+              </tbody>
+            </table>
           </div>
         </section>
 
+        <!-- Verification Section -->
         <section class="admin-section" id="section-verification">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Verification Queue</h1>
+            <div class="admin-section__actions">
+              <button class="badge badge--pending" data-filter="pending">Pending (12)</button>
+              <button class="badge badge--verified" data-filter="verified">Verified (8)</button>
+              <button class="badge badge--warning" data-filter="flagged">Flagged (3)</button>
+            </div>
           </div>
-          <div class="admin-placeholder">
-            <p>Verification queue content will be loaded here.</p>
-          </div>
-        </section>
-
-        <section class="admin-section" id="section-payments">
-          <div class="admin-section__header">
-            <h1 class="admin-section__title">Payment Management</h1>
-          </div>
-          <div class="admin-placeholder">
-            <p>Payment management content will be loaded here.</p>
+          <div class="admin-verification-list" id="verificationList">
+            <!-- Verification items will be loaded here -->
           </div>
         </section>
 
+        <!-- Reviews Section -->
         <section class="admin-section" id="section-reviews">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Review Management</h1>
           </div>
-          <div class="admin-placeholder">
-            <p>Review management content will be loaded here.</p>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Student</th>
+                  <th>Rating</th>
+                  <th>Comment</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="reviewsTableBody">
+                <!-- Reviews will be loaded here -->
+              </tbody>
+            </table>
           </div>
         </section>
 
+        <!-- Messages Section -->
         <section class="admin-section" id="section-messages">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Message Center</h1>
           </div>
-          <div class="admin-placeholder">
-            <p>Message center content will be loaded here.</p>
+          <div class="admin-messages">
+            <div class="admin-message-list" id="messageList">
+              <!-- Messages will be loaded here -->
+            </div>
           </div>
         </section>
 
+        <!-- Notifications Section -->
         <section class="admin-section" id="section-notifications">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Notification Center</h1>
           </div>
-          <div class="admin-placeholder">
-            <p>Notification center content will be loaded here.</p>
+          <div class="admin-notifications">
+            <div class="admin-notification-list" id="notificationList">
+              <!-- Notifications will be loaded here -->
+            </div>
           </div>
         </section>
 
+        <!-- Settings Section -->
         <section class="admin-section" id="section-settings">
           <div class="admin-section__header">
             <h1 class="admin-section__title">Platform Settings</h1>
           </div>
-          <div class="admin-placeholder">
-            <p>Platform settings content will be loaded here.</p>
+          <div class="admin-settings">
+            <div class="admin-settings__section">
+              <h3>General Settings</h3>
+              <form id="generalSettingsForm">
+                <div class="form-group">
+                  <label class="form-label">Platform Name</label>
+                  <input type="text" class="form-input" name="platformName" value="KampoStay">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Support Email</label>
+                  <input type="email" class="form-input" name="supportEmail" value="support@kampostay.co.ke">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Platform Fee (%)</label>
+                  <input type="number" class="form-input" name="platformFee" value="5">
+                </div>
+                <button type="submit" class="btn btn--primary">Save Settings</button>
+              </form>
+            </div>
+            <div class="admin-settings__section">
+              <h3>Verification Settings</h3>
+              <form id="verificationSettingsForm">
+                <div class="form-group">
+                  <label class="form-checkbox">
+                    <input type="checkbox" name="autoVerify" checked>
+                    Auto-verify properties with complete documentation
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="form-checkbox">
+                    <input type="checkbox" name="requireId" checked>
+                    Require ID verification for landlords
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="form-checkbox">
+                    <input type="checkbox" name="requirePhone" checked>
+                    Require phone verification
+                  </label>
+                </div>
+                <button type="submit" class="btn btn--primary">Save Settings</button>
+              </form>
+            </div>
           </div>
         </section>
       </main>

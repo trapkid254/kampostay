@@ -298,17 +298,226 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Handle message icon click
   document.querySelector('[aria-label="Messages"]')?.addEventListener('click', () => {
-    showToast('Messages feature coming soon', 'info');
+    // Switch to messages section
+    document.querySelector('[data-section="messages"]')?.click();
   });
 
   // Handle notification icon click
-  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', () => {
-    showToast('Notifications feature coming soon', 'info');
+  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', async () => {
+    try {
+      const notifications = await api.get('/notifications');
+      showToast(`You have ${notifications.length || 0} new notifications`, 'info');
+    } catch (err) {
+      showToast('Could not load notifications', 'error');
+    }
   });
 
   // Handle search
   document.getElementById('globalSearch')?.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
     console.log('Searching for:', query);
+  });
+
+  // Modal functionality
+  function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+
+  // Close modal on overlay click
+  document.querySelectorAll('[data-close-modal]').forEach(el => {
+    el.addEventListener('click', () => {
+      const modal = el.closest('.modal');
+      if (modal) modal.style.display = 'none';
+    });
+  });
+
+  // Add Property Modal
+  document.querySelectorAll('[data-action="add-property"]').forEach(btn => {
+    btn.addEventListener('click', () => openModal('addPropertyModal'));
+  });
+
+  // Add Property Form Submission
+  document.getElementById('addPropertyForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    const amenities = [];
+    form.querySelectorAll('input[name="amenities"]:checked').forEach(cb => {
+      amenities.push(cb.value);
+    });
+
+    const propertyData = {
+      title: formData.get('title'),
+      description: formData.get('description'),
+      propertyType: formData.get('propertyType'),
+      university: formData.get('university'),
+      location: {
+        city: formData.get('city'),
+        walkingTimeMinutes: parseInt(formData.get('walkingTime'))
+      },
+      rent: parseInt(formData.get('rent')),
+      totalRooms: parseInt(formData.get('totalRooms')),
+      amenities: amenities
+    };
+
+    try {
+      showToast('Adding property...', 'info');
+      await api.post('/properties', propertyData);
+      showToast('Property added successfully!', 'success');
+      closeModal('addPropertyModal');
+      form.reset();
+      await loadProperties();
+    } catch (err) {
+      showToast(err.message || 'Failed to add property', 'error');
+    }
+  });
+
+  // Add Room Modal
+  document.querySelectorAll('[data-action="add-room"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      // Load properties into select
+      const select = document.getElementById('propertySelect');
+      try {
+        const data = await api.get('/properties');
+        const properties = Array.isArray(data) ? data : data?.properties || data?.data || [];
+        select.innerHTML = '<option value="">Select property</option>' + 
+          properties.map(p => `<option value="${p._id}">${p.title}</option>`).join('');
+        openModal('addRoomModal');
+      } catch (err) {
+        showToast('Failed to load properties', 'error');
+      }
+    });
+  });
+
+  // Add Room Form Submission
+  document.getElementById('addRoomForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    const amenities = [];
+    form.querySelectorAll('input[name="amenities"]:checked').forEach(cb => {
+      amenities.push(cb.value);
+    });
+
+    const roomData = {
+      propertyId: formData.get('propertyId'),
+      roomNumber: formData.get('roomNumber'),
+      roomType: formData.get('roomType'),
+      capacity: parseInt(formData.get('capacity')),
+      rent: parseInt(formData.get('rent')),
+      status: formData.get('status'),
+      amenities: amenities
+    };
+
+    try {
+      showToast('Adding room...', 'info');
+      await api.post('/rooms', roomData);
+      showToast('Room added successfully!', 'success');
+      closeModal('addRoomModal');
+      form.reset();
+    } catch (err) {
+      showToast(err.message || 'Failed to add room', 'error');
+    }
+  });
+
+  // View Application Modal
+  document.querySelectorAll('[data-action="view-application"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const applicationId = btn.dataset.id;
+      try {
+        const application = await api.get(`/applications/${applicationId}`);
+        const details = document.getElementById('applicationDetails');
+        details.innerHTML = `
+          <div class="application-detail">
+            <h3>${application.student?.name || 'Student'}</h3>
+            <p><strong>Email:</strong> ${application.student?.email || 'N/A'}</p>
+            <p><strong>Phone:</strong> ${application.student?.phone || 'N/A'}</p>
+            <p><strong>University:</strong> ${application.student?.university || 'N/A'}</p>
+            <p><strong>Applied:</strong> ${fmtDate(application.createdAt)}</p>
+            <p><strong>Message:</strong> ${application.message || 'No message'}</p>
+          </div>
+        `;
+        
+        const actions = document.getElementById('applicationActions');
+        if (application.status === 'pending') {
+          actions.innerHTML = `
+            <button type="button" class="btn btn--success" data-action="accept" data-id="${applicationId}">Accept</button>
+            <button type="button" class="btn btn--danger" data-action="reject" data-id="${applicationId}">Reject</button>
+            <button type="button" class="btn btn--outline" data-close-modal>Close</button>
+          `;
+        } else {
+          actions.innerHTML = `<button type="button" class="btn btn--outline" data-close-modal>Close</button>`;
+        }
+        
+        openModal('viewApplicationModal');
+      } catch (err) {
+        showToast('Failed to load application details', 'error');
+      }
+    });
+  });
+
+  // Settings Forms
+  document.getElementById('profileSettingsForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      showToast('Updating profile...', 'info');
+      await api.patch('/users/profile', {
+        fullName: formData.get('fullName'),
+        email: formData.get('email'),
+        phone: formData.get('phone')
+      });
+      showToast('Profile updated successfully!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to update profile', 'error');
+    }
+  });
+
+  document.getElementById('notificationSettingsForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    
+    try {
+      showToast('Saving preferences...', 'info');
+      await api.patch('/users/notifications', {
+        emailNotifications: form.querySelector('[name="emailNotifications"]').checked,
+        smsNotifications: form.querySelector('[name="smsNotifications"]').checked,
+        paymentReminders: form.querySelector('[name="paymentReminders"]').checked
+      });
+      showToast('Preferences saved successfully!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to save preferences', 'error');
+    }
+  });
+
+  document.getElementById('securityForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    if (formData.get('newPassword') !== formData.get('confirmPassword')) {
+      showToast('Passwords do not match', 'error');
+      return;
+    }
+    
+    try {
+      showToast('Updating password...', 'info');
+      await api.patch('/users/password', {
+        currentPassword: formData.get('currentPassword'),
+        newPassword: formData.get('newPassword')
+      });
+      showToast('Password updated successfully!', 'success');
+      form.reset();
+    } catch (err) {
+      showToast(err.message || 'Failed to update password', 'error');
+    }
   });
 });

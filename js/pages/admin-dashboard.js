@@ -342,4 +342,331 @@ document.addEventListener('DOMContentLoaded', async () => {
       loadProperties();
     });
   });
+
+  // Handle sidebar navigation - ensure all sections work
+  document.querySelectorAll('.admin-sidebar__link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const section = link.dataset.section;
+      console.log('Navigating to section:', section);
+      
+      // Load data for specific sections
+      switch (section) {
+        case 'landlords':
+          loadLandlords();
+          break;
+        case 'tenants':
+          loadTenants();
+          break;
+        case 'universities':
+          loadUniversities();
+          break;
+        case 'bookings':
+          loadAdminBookings();
+          break;
+        case 'verification':
+          loadVerifications();
+          break;
+        case 'reviews':
+          loadReviews();
+          break;
+        case 'messages':
+          loadMessages();
+          break;
+        case 'notifications':
+          loadAdminNotifications();
+          break;
+      }
+    });
+  });
+
+  // Load landlords
+  async function loadLandlords() {
+    const container = document.getElementById('landlordsTableBody');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/users/landlords');
+      const landlords = Array.isArray(data) ? data : data?.landlords || data?.data || [];
+      
+      if (!landlords.length) {
+        container.innerHTML = '<tr><td colspan="7">No landlords found</td></tr>';
+        return;
+      }
+
+      container.innerHTML = landlords.map(l => `
+        <tr>
+          <td>${l.profile?.firstName || ''} ${l.profile?.lastName || l.email?.split('@')[0]}</td>
+          <td>${l.email}</td>
+          <td>${l.profile?.phone || 'N/A'}</td>
+          <td>${l.propertyCount || 0}</td>
+          <td><span class="badge badge--${l.verification?.adminApproved ? 'verified' : 'pending'}">${l.verification?.adminApproved ? 'Verified' : 'Pending'}</span></td>
+          <td>${fmtDate(l.createdAt)}</td>
+          <td>
+            <button class="btn btn--ghost btn--sm" data-action="view-landlord" data-id="${l._id}">View</button>
+            <button class="btn btn--ghost btn--sm" data-action="verify-landlord" data-id="${l._id}">Verify</button>
+            <button class="btn btn--ghost btn--sm" data-action="suspend-landlord" data-id="${l._id}">Suspend</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<tr><td colspan="7">${err.message || 'Could not load landlords'}</td></tr>`;
+    }
+  }
+
+  // Load tenants
+  async function loadTenants() {
+    const container = document.getElementById('tenantsTableBody');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/users/students');
+      const tenants = Array.isArray(data) ? data : data?.students || data?.data || [];
+      
+      if (!tenants.length) {
+        container.innerHTML = '<tr><td colspan="7">No tenants found</td></tr>';
+        return;
+      }
+
+      container.innerHTML = tenants.map(t => `
+        <tr>
+          <td>${t.profile?.firstName || ''} ${t.profile?.lastName || t.email?.split('@')[0]}</td>
+          <td>${t.email}</td>
+          <td>${t.profile?.university || 'N/A'}</td>
+          <td>${t.currentProperty || 'None'}</td>
+          <td><span class="badge badge--active">Active</span></td>
+          <td>${fmtDate(t.createdAt)}</td>
+          <td>
+            <button class="btn btn--ghost btn--sm" data-action="view-tenant" data-id="${t._id}">View</button>
+            <button class="btn btn--ghost btn--sm" data-action="message-tenant" data-id="${t._id}">Message</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<tr><td colspan="7">${err.message || 'Could not load tenants'}</td></tr>`;
+    }
+  }
+
+  // Load universities
+  async function loadUniversities() {
+    const container = document.getElementById('universitiesTableBody');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/universities');
+      const universities = Array.isArray(data) ? data : data?.universities || data?.data || [];
+      
+      if (!universities.length) {
+        container.innerHTML = '<tr><td colspan="6">No universities found</td></tr>';
+        return;
+      }
+
+      container.innerHTML = universities.map(u => `
+        <tr>
+          <td>${u.name}</td>
+          <td>${u.location || 'N/A'}</td>
+          <td>${u.propertyCount || 0}</td>
+          <td>${u.studentCount || 0}</td>
+          <td><span class="badge badge--active">Active</span></td>
+          <td>
+            <button class="btn btn--ghost btn--sm" data-action="edit-university" data-id="${u._id}">Edit</button>
+            <button class="btn btn--ghost btn--sm" data-action="delete-university" data-id="${u._id}">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<tr><td colspan="6">${err.message || 'Could not load universities'}</td></tr>`;
+    }
+  }
+
+  // Load admin bookings
+  async function loadAdminBookings() {
+    const container = document.getElementById('bookingsTableBody');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/bookings');
+      const bookings = Array.isArray(data) ? data : data?.bookings || data?.data || [];
+      
+      if (!bookings.length) {
+        container.innerHTML = '<tr><td colspan="6">No bookings found</td></tr>';
+        return;
+      }
+
+      container.innerHTML = bookings.map(b => `
+        <tr>
+          <td>${b.student?.name || b.student?.email || 'N/A'}</td>
+          <td>${b.property?.title || 'N/A'}</td>
+          <td>${b.landlord?.name || b.landlord?.email || 'N/A'}</td>
+          <td>${fmtDate(b.scheduledDate)}</td>
+          <td><span class="badge badge--${b.status}">${b.status}</span></td>
+          <td>
+            <button class="btn btn--ghost btn--sm" data-action="view-booking" data-id="${b._id}">View</button>
+            <button class="btn btn--ghost btn--sm" data-action="cancel-booking" data-id="${b._id}">Cancel</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<tr><td colspan="6">${err.message || 'Could not load bookings'}</td></tr>`;
+    }
+  }
+
+  // Load verifications
+  async function loadVerifications() {
+    const container = document.getElementById('verificationList');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/verifications/pending');
+      const verifications = Array.isArray(data) ? data : data?.verifications || data?.data || [];
+      
+      if (!verifications.length) {
+        container.innerHTML = '<div class="admin-placeholder"><p>No pending verifications</p></div>';
+        return;
+      }
+
+      container.innerHTML = verifications.map(v => `
+        <div class="admin-verification-item">
+          <div class="admin-verification-item__info">
+            <h3>${v.user?.name || v.user?.email || 'User'}</h3>
+            <p>${v.type} verification</p>
+            <p>Submitted: ${fmtDate(v.createdAt)}</p>
+          </div>
+          <div class="admin-verification-item__actions">
+            <button class="btn btn--success btn--sm" data-action="approve-verification" data-id="${v._id}">Approve</button>
+            <button class="btn btn--danger btn--sm" data-action="reject-verification" data-id="${v._id}">Reject</button>
+            <button class="btn btn--outline btn--sm" data-action="view-verification" data-id="${v._id}">View Documents</button>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="admin-placeholder"><p>${err.message || 'Could not load verifications'}</p></div>`;
+    }
+  }
+
+  // Load reviews
+  async function loadReviews() {
+    const container = document.getElementById('reviewsTableBody');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/reviews');
+      const reviews = Array.isArray(data) ? data : data?.reviews || data?.data || [];
+      
+      if (!reviews.length) {
+        container.innerHTML = '<tr><td colspan="7">No reviews found</td></tr>';
+        return;
+      }
+
+      container.innerHTML = reviews.map(r => `
+        <tr>
+          <td>${r.property?.title || 'N/A'}</td>
+          <td>${r.student?.name || r.student?.email || 'N/A'}</td>
+          <td>${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</td>
+          <td>${r.comment?.substring(0, 50) || 'N/A'}...</td>
+          <td>${fmtDate(r.createdAt)}</td>
+          <td><span class="badge badge--active">Visible</span></td>
+          <td>
+            <button class="btn btn--ghost btn--sm" data-action="hide-review" data-id="${r._id}">Hide</button>
+            <button class="btn btn--ghost btn--sm" data-action="delete-review" data-id="${r._id}">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<tr><td colspan="7">${err.message || 'Could not load reviews'}</td></tr>`;
+    }
+  }
+
+  // Load messages
+  async function loadMessages() {
+    const container = document.getElementById('messageList');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/messages');
+      const messages = Array.isArray(data) ? data : data?.messages || data?.data || [];
+      
+      if (!messages.length) {
+        container.innerHTML = '<div class="admin-placeholder"><p>No messages found</p></div>';
+        return;
+      }
+
+      container.innerHTML = messages.map(m => `
+        <div class="admin-message-item">
+          <div class="admin-message-item__header">
+            <strong>${m.sender?.name || m.sender?.email || 'Unknown'}</strong>
+            <span class="text-muted">${fmtDate(m.createdAt)}</span>
+          </div>
+          <p>${m.message?.substring(0, 100) || 'N/A'}...</p>
+          <button class="btn btn--ghost btn--sm" data-action="reply-message" data-id="${m._id}">Reply</button>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="admin-placeholder"><p>${err.message || 'Could not load messages'}</p></div>`;
+    }
+  }
+
+  // Load admin notifications
+  async function loadAdminNotifications() {
+    const container = document.getElementById('notificationList');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/notifications');
+      const notifications = Array.isArray(data) ? data : data?.notifications || data?.data || [];
+      
+      if (!notifications.length) {
+        container.innerHTML = '<div class="admin-placeholder"><p>No notifications found</p></div>';
+        return;
+      }
+
+      container.innerHTML = notifications.map(n => `
+        <div class="admin-notification-item">
+          <div class="admin-notification-item__header">
+            <strong>${n.title || 'Notification'}</strong>
+            <span class="text-muted">${fmtDate(n.createdAt)}</span>
+          </div>
+          <p>${n.message || 'N/A'}</p>
+          <button class="btn btn--ghost btn--sm" data-action="dismiss-notification" data-id="${n._id}">Dismiss</button>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="admin-placeholder"><p>${err.message || 'Could not load notifications'}</p></div>`;
+    }
+  }
+
+  // Handle settings forms
+  document.getElementById('generalSettingsForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      showToast('Saving settings...', 'info');
+      await api.patch('/admin/settings', {
+        platformName: formData.get('platformName'),
+        supportEmail: formData.get('supportEmail'),
+        platformFee: parseFloat(formData.get('platformFee'))
+      });
+      showToast('Settings saved successfully!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to save settings', 'error');
+    }
+  });
+
+  document.getElementById('verificationSettingsForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    
+    try {
+      showToast('Saving settings...', 'info');
+      await api.patch('/admin/settings/verification', {
+        autoVerify: form.querySelector('[name="autoVerify"]').checked,
+        requireId: form.querySelector('[name="requireId"]').checked,
+        requirePhone: form.querySelector('[name="requirePhone"]').checked
+      });
+      showToast('Settings saved successfully!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to save settings', 'error');
+    }
+  });
 });

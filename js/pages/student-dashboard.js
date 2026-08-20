@@ -342,29 +342,64 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Handle message icon click
   document.querySelector('[aria-label="Messages"]')?.addEventListener('click', () => {
-    showToast('Messages feature coming soon', 'info');
+    // Switch to messages section
+    document.querySelector('[data-section="messages"]')?.click();
   });
 
   // Handle notification icon click
-  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', () => {
-    showToast('Notifications feature coming soon', 'info');
+  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', async () => {
+    try {
+      const notifications = await api.get('/notifications');
+      showToast(`You have ${notifications.length || 0} new notifications`, 'info');
+    } catch (err) {
+      showToast('Could not load notifications', 'error');
+    }
   });
 
   // Handle edit profile button
   document.querySelector('.student-profile__card .btn--outline')?.addEventListener('click', () => {
-    showToast('Edit profile feature coming soon', 'info');
+    // Switch to profile section
+    document.querySelector('[data-section="profile"]')?.click();
   });
 
   // Handle review form submission
   document.querySelector('.student-review-form form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    showToast('Review submission feature coming soon', 'info');
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      showToast('Submitting review...', 'info');
+      await api.post('/reviews', {
+        propertyId: formData.get('property'),
+        rating: 5,
+        comment: formData.get('review')
+      });
+      showToast('Review submitted successfully!', 'success');
+      form.reset();
+    } catch (err) {
+      showToast(err.message || 'Failed to submit review', 'error');
+    }
   });
 
   // Handle maintenance form submission
   document.querySelector('.student-maintenance form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    showToast('Maintenance request feature coming soon', 'info');
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      showToast('Submitting maintenance request...', 'info');
+      await api.post('/maintenance', {
+        category: formData.get('category'),
+        description: formData.get('description'),
+        priority: formData.get('priority')
+      });
+      showToast('Maintenance request submitted!', 'success');
+      form.reset();
+    } catch (err) {
+      showToast(err.message || 'Failed to submit request', 'error');
+    }
   });
 
   // Handle My Home section buttons
@@ -391,8 +426,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Handle payment button
-  document.querySelector('.student-payment-card .btn--primary')?.addEventListener('click', () => {
-    showToast('Payment feature coming soon', 'info');
+  document.querySelector('.student-payment-card .btn--primary')?.addEventListener('click', async () => {
+    try {
+      showToast('Initiating payment...', 'info');
+      // In production, this would integrate with M-Pesa or payment gateway
+      await api.post('/payments/initiate', { amount: 6500 });
+      showToast('Payment initiated. Check your phone to complete.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Payment initiation failed', 'error');
+    }
   });
 
   // Handle property actions
