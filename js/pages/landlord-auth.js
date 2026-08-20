@@ -1,6 +1,6 @@
 import { showToast } from '../modules/ui.js';
 import api from '../modules/api.js';
-import { siteUrl, ROUTES } from '../config.js';
+import { siteUrl, ROUTES, STORAGE_KEYS } from '../config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('login-form');
@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const token = response.token || response.accessToken;
         const user = response.user;
         
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem(STORAGE_KEYS.token, token);
+        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
         
         console.log('Landlord user role:', user?.role);
         
