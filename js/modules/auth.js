@@ -70,8 +70,8 @@ export function dashboardForRole(role) {
   return ROUTES.studentDashboard;
 }
 
-export async function login(email, password) {
-  const data = await api.post('/auth/login', { email, password });
+export async function login(email, password, role = 'student') {
+  const data = await api.post('/auth/login', { email, password, role });
   api.setTokens(data.accessToken || data.token, data.refreshToken);
   const user = normalizeUser(data.user);
   setUser(user);

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const fd = new FormData(loginForm);
     try {
-      const user = await login(fd.get('email'), fd.get('password'));
+      const user = await login(fd.get('email'), fd.get('password'), 'student');
       
       // Ensure only students can log in through this page
       if (user?.role !== 'student') {
