@@ -44,8 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         showToast('Welcome back!', 'success');
         
-        // Redirect to admin dashboard
-        window.location.href = ROUTES.adminDashboard;
+        // Small delay to ensure localStorage is set before redirect
+        setTimeout(() => {
+          // Redirect to admin dashboard
+          window.location.href = ROUTES.adminDashboard;
+        }, 100);
       } else {
         showToast('Login failed. No token received.', 'error');
       }

@@ -231,11 +231,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Admin dashboard loading...');
   
   const user = JSON.parse(localStorage.getItem(STORAGE_KEYS.user) || '{}');
+  const token = localStorage.getItem(STORAGE_KEYS.token);
   console.log('User from localStorage:', user);
   console.log('User role:', user?.role);
+  console.log('Token from localStorage:', token ? 'exists' : 'missing');
+  console.log('Expected token key:', STORAGE_KEYS.token);
+  console.log('Expected user key:', STORAGE_KEYS.user);
   
   // Check authentication and role
-  if (!localStorage.getItem(STORAGE_KEYS.token)) {
+  if (!token) {
     console.log('No token found, redirecting to login');
     window.location.href = siteUrl('pages/admin/login.html');
     return;
