@@ -693,7 +693,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Add Property Modal
   document.querySelectorAll('[data-action="add-property"]').forEach(btn => {
-    btn.addEventListener('click', () => openModal('addPropertyModal'));
+    btn.addEventListener('click', async () => {
+      // Load landlords into select
+      const select = document.getElementById('landlordSelect');
+      try {
+        const data = await api.get('/users/landlords');
+        const landlords = Array.isArray(data) ? data : data?.landlords || data?.data || [];
+        select.innerHTML = '<option value="">Select landlord</option>' + 
+          landlords.map(l => `<option value="${l._id}">${l.profile?.firstName || l.firstName} ${l.profile?.lastName || l.lastName} (${l.email})</option>`).join('');
+        openModal('addPropertyModal');
+      } catch (err) {
+        showToast('Failed to load landlords', 'error');
+      }
+    });
   });
 
   // Add Property Form Submission
@@ -710,6 +722,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const propertyData = {
       title: formData.get('title'),
       description: formData.get('description'),
+      landlord: formData.get('landlord'),
       propertyType: formData.get('propertyType'),
       university: formData.get('university'),
       location: {
