@@ -7,7 +7,9 @@ class ApiClient {
   }
 
   getToken() {
-    return localStorage.getItem(STORAGE_KEYS.token);
+    const token = localStorage.getItem(STORAGE_KEYS.token);
+    console.debug('[api] getToken:', STORAGE_KEYS.token, token ? 'exists' : 'missing', token ? `length=${token.length}` : '');
+    return token;
   }
 
   getRefreshToken() {
