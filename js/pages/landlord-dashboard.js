@@ -366,13 +366,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Handle notification icon click
   document.querySelector('[data-action="notifications"]')?.addEventListener('click', () => {
-    // Switch to notifications section if it exists, otherwise show toast
-    const notificationsSection = document.querySelector('[data-section="notifications"]');
-    if (notificationsSection) {
-      notificationsSection.click();
-    } else {
-      showToast('Notifications section coming soon', 'info');
-    }
+    showToast('Notifications functionality coming soon', 'info');
   });
 
   // Handle search

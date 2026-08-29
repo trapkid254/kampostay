@@ -286,36 +286,36 @@
             <h1 class="student-section__title">My Home</h1>
           </div>
           <div class="student-my-home">
-            <div class="student-my-home__card">
+            <div class="student-my-home__card" id="myHomeCard">
               <div class="student-my-home__image">
-                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop" alt="Green View Hostels">
+                <img id="myHomeImage" src="https://via.placeholder.com/400x250?text=No+Property" alt="My Home">
               </div>
               <div class="student-my-home__content">
-                <h2 class="student-my-home__title">GREEN VIEW HOSTELS</h2>
-                <p class="student-my-home__room">Room B12</p>
+                <h2 class="student-my-home__title" id="myHomeTitle">No active booking</h2>
+                <p class="student-my-home__room" id="myHomeRoom">—</p>
                 <div class="student-my-home__location">
-                  <span>📍 Juja</span>
-                  <span>JKUAT</span>
+                  <span id="myHomeLocation">📍 —</span>
+                  <span id="myHomeUniversity">—</span>
                 </div>
                 <div class="student-my-home__details">
                   <div class="student-my-home__detail">
                     <span class="student-my-home__label">Monthly Rent</span>
-                    <span class="student-my-home__value">KSh 6,500</span>
+                    <span class="student-my-home__value" id="myHomeRent">KSh 0</span>
                   </div>
                   <div class="student-my-home__detail">
                     <span class="student-my-home__label">Next Payment</span>
-                    <span class="student-my-home__value">1 September</span>
+                    <span class="student-my-home__value" id="myHomeNextPayment">—</span>
                   </div>
                   <div class="student-my-home__detail">
                     <span class="student-my-home__label">Lease Status</span>
-                    <span class="student-my-home__value student-my-home__value--active">Active</span>
+                    <span class="student-my-home__value" id="myHomeLeaseStatus">—</span>
                   </div>
                 </div>
                 <div class="student-my-home__actions">
-                  <button class="btn btn--primary">Pay Rent</button>
-                  <button class="btn btn--outline">View Lease</button>
-                  <button class="btn btn--ghost">Contact Landlord</button>
-                  <button class="btn btn--ghost">Report Maintenance</button>
+                  <button class="btn btn--primary" id="btnPayRent">Pay Rent</button>
+                  <button class="btn btn--outline" id="btnViewLease">View Lease</button>
+                  <button class="btn btn--ghost" id="btnContactLandlord">Contact Landlord</button>
+                  <button class="btn btn--ghost" data-action="Report Maintenance">Report Maintenance</button>
                 </div>
               </div>
             </div>
@@ -469,15 +469,16 @@
           <div class="student-profile">
             <div class="student-profile__card">
               <div class="student-profile__avatar">
-                <img src="https://ui-avatars.com/api/?name=Delvin&background=0B3D2E&color=fff" alt="Delvin">
+                <img id="profileAvatar" src="https://ui-avatars.com/api/?name=Student&background=0B3D2E&color=fff" alt="Profile">
               </div>
               <div class="student-profile__info">
-                <h2>Delvin</h2>
-                <p>delvin@kampostay.com</p>
-                <p>JKUAT</p>
-                <p>Computer Science</p>
+                <h2 id="profileName">Loading...</h2>
+                <p id="profileEmail">Loading...</p>
+                <p id="profileUniversity">—</p>
+                <p id="profileCourse">—</p>
+                <p id="profilePhone">—</p>
               </div>
-              <button class="btn btn--outline">Edit Profile</button>
+              <button class="btn btn--outline" id="btnEditProfile">Edit Profile</button>
             </div>
           </div>
         </section>

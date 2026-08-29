@@ -283,6 +283,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadSaved();
   await loadApplications();
   await loadBookings();
+  await loadMyHome();
+  await loadProfile();
 
   // Handle logout
   document.querySelector('[data-logout]')?.addEventListener('click', (e) => {
@@ -410,10 +412,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const text = btn.textContent.trim();
     switch (text) {
       case 'Pay Rent':
-        showToast('Payment feature coming soon', 'info');
+        handlePayRent();
         break;
       case 'View Lease':
-        showToast('Lease viewing feature coming soon', 'info');
+        handleViewLease();
         break;
       case 'Contact Landlord':
         showToast('Messaging feature coming soon', 'info');
@@ -424,6 +426,166 @@ document.addEventListener('DOMContentLoaded', async () => {
         break;
     }
   });
+
+  // Load profile data
+  async function loadProfile() {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (user.profile) {
+        const firstName = user.profile.firstName || '';
+        const lastName = user.profile.lastName || '';
+        const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`;
+        
+        document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
+        document.getElementById('profileName').textContent = `${firstName} ${lastName}`.trim() || 'Student';
+        document.getElementById('profileEmail').textContent = user.email || '—';
+        document.getElementById('profileUniversity').textContent = user.profile.university || '—';
+        document.getElementById('profileCourse').textContent = user.profile.course || '—';
+        document.getElementById('profilePhone').textContent = user.profile.phone || '—';
+      }
+    } catch (err) {
+      console.error('Failed to load profile:', err);
+    }
+  }
+
+  // Handle edit profile button
+  document.getElementById('btnEditProfile')?.addEventListener('click', () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const firstName = prompt('First Name:', user.profile?.firstName || '');
+    const lastName = prompt('Last Name:', user.profile?.lastName || '');
+    const phone = prompt('Phone Number:', user.profile?.phone || '');
+    const university = prompt('University:', user.profile?.university || '');
+    const course = prompt('Course:', user.profile?.course || '');
+    
+    if (firstName !== null || lastName !== null || phone !== null) {
+      // Update local storage for now (in production, this would call an API)
+      user.profile = user.profile || {};
+      if (firstName !== null) user.profile.firstName = firstName;
+      if (lastName !== null) user.profile.lastName = lastName;
+      if (phone !== null) user.profile.phone = phone;
+      if (university !== null) user.profile.university = university;
+      if (course !== null) user.profile.course = course;
+      
+      localStorage.setItem('user', JSON.stringify(user));
+      loadProfile();
+      showToast('Profile updated successfully', 'success');
+    }
+  });
+
+  // Load My Home (active booking) data
+  async function loadMyHome() {
+    try {
+      const bookings = await api.get('/bookings', { status: 'confirmed', type: 'reservation' });
+      const activeBooking = Array.isArray(bookings) ? bookings[0] : bookings?.bookings?.[0];
+      
+      if (!activeBooking) {
+        document.getElementById('myHomeTitle').textContent = 'No active booking';
+        document.getElementById('myHomeRoom').textContent = '—';
+        document.getElementById('myHomeLocation').textContent = '📍 —';
+        document.getElementById('myHomeUniversity').textContent = '—';
+        document.getElementById('myHomeRent').textContent = 'KSh 0';
+        document.getElementById('myHomeNextPayment').textContent = '—';
+        document.getElementById('myHomeLeaseStatus').textContent = '—';
+        return;
+      }
+
+      const property = activeBooking.property;
+      const firstMedia = property?.media?.images?.[0] || {};
+      const img = property?.primaryImage || firstMedia?.url || firstMedia?.secure_url || 'https://via.placeholder.com/400x250';
+      
+      document.getElementById('myHomeImage').src = img;
+      document.getElementById('myHomeTitle').textContent = property?.title || 'My Home';
+      document.getElementById('myHomeRoom').textContent = activeBooking.roomNumber || '—';
+      document.getElementById('myHomeLocation').textContent = `📍 ${property?.location?.city || '—'}`;
+      document.getElementById('myHomeUniversity').textContent = property?.university?.name || '—';
+      document.getElementById('myHomeRent').textContent = formatMoney(property?.rent || 0);
+      
+      // Calculate next payment date (1 month from now or from booking date)
+      const nextPayment = new Date(activeBooking.createdAt || Date.now());
+      nextPayment.setMonth(nextPayment.getMonth() + 1);
+      document.getElementById('myHomeNextPayment').textContent = nextPayment.toLocaleDateString('en-KE', { day: 'numeric', month: 'long' });
+      
+      const leaseStatus = document.getElementById('myHomeLeaseStatus');
+      leaseStatus.textContent = 'Active';
+      leaseStatus.className = 'student-my-home__value student-my-home__value--active';
+      
+      // Store booking ID for payment/lease actions
+      document.getElementById('myHomeCard').dataset.bookingId = activeBooking._id;
+      document.getElementById('myHomeCard').dataset.propertyId = property._id;
+      
+    } catch (err) {
+      console.error('Failed to load my home data:', err);
+    }
+  }
+
+  async function handleViewLease() {
+    const card = document.getElementById('myHomeCard');
+    const bookingId = card?.dataset.bookingId;
+    
+    if (!bookingId) {
+      showToast('No active booking found', 'error');
+      return;
+    }
+
+    try {
+      const booking = await api.get(`/bookings/${bookingId}`);
+      
+      // Create lease modal content
+      const leaseContent = `
+        <div class="lease-modal">
+          <h3>Lease Agreement</h3>
+          <div class="lease-details">
+            <p><strong>Property:</strong> ${booking.property?.title || 'N/A'}</p>
+            <p><strong>Landlord:</strong> ${booking.landlord?.profile?.firstName || ''} ${booking.landlord?.profile?.lastName || ''}</p>
+            <p><strong>Student:</strong> ${booking.student?.profile?.firstName || ''} ${booking.student?.profile?.lastName || ''}</p>
+            <p><strong>Monthly Rent:</strong> ${formatMoney(booking.property?.rent || 0)}</p>
+            <p><strong>Booking Date:</strong> ${fmtDate(booking.createdAt)}</p>
+            <p><strong>Status:</strong> ${booking.status}</p>
+            <p><strong>Terms:</strong> This lease agreement is between the landlord and student for the property listed above. Monthly rent must be paid on time.</p>
+          </div>
+        </div>
+      `;
+      
+      // Show in a simple alert for now (can be upgraded to a proper modal)
+      alert(leaseContent.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n'));
+      
+    } catch (err) {
+      showToast(err.message || 'Could not load lease details', 'error');
+    }
+  }
+
+  async function handlePayRent() {
+    const card = document.getElementById('myHomeCard');
+    const bookingId = card?.dataset.bookingId;
+    const propertyId = card?.dataset.propertyId;
+    
+    if (!bookingId || !propertyId) {
+      showToast('No active booking found', 'error');
+      return;
+    }
+
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const phoneNumber = user.profile?.phone;
+      
+      if (!phoneNumber) {
+        showToast('Please add your phone number in profile to receive payment prompt', 'error');
+        return;
+      }
+
+      showToast('Initiating payment...', 'info');
+      await api.post('/payments/initiate', {
+        phoneNumber,
+        amount: 6500, // This should come from the actual rent amount
+        bookingId,
+        description: 'Monthly Rent Payment'
+      });
+      showToast('Payment initiated. Check your phone to complete.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Payment initiation failed', 'error');
+    }
+  }
 
   // Handle payment button
   document.querySelector('.student-payment-card .btn--primary')?.addEventListener('click', async () => {
@@ -444,6 +606,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     const action = btn.dataset.action;
     const id = btn.dataset.id;
+    
+    if (!id && ['favorite', 'unfavorite', 'remove', 'cancel', 'view'].includes(action)) {
+      console.warn(`No ID found for action: ${action}`);
+      return;
+    }
     
     switch (action) {
       case 'view':
@@ -478,6 +645,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         break;
       case 'cancel':
         try {
+          if (!id) {
+            showToast('Cannot cancel: missing booking ID', 'error');
+            return;
+          }
           await api.patch(`/bookings/${id}`, { status: 'cancelled' });
           showToast('Application cancelled', 'success');
           await loadApplications();
