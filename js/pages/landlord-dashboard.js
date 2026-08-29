@@ -17,6 +17,24 @@ function fmtDate(d) {
   }
 }
 
+function getListData(data, fallback = []) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.properties)) return data.properties;
+  if (Array.isArray(data?.items)) return data.items;
+  return fallback;
+}
+
+function getCount(data, fallback = 0) {
+  if (typeof data === 'number') return Number.isFinite(data) ? data : fallback;
+  if (Array.isArray(data)) return data.length;
+  if (typeof data?.count === 'number') return data.count;
+  if (typeof data?.total === 'number') return data.total;
+  if (Array.isArray(data?.data)) return data.data.length;
+  if (Array.isArray(data?.properties)) return data.properties.length;
+  return fallback;
+}
+
 let revenueChart;
 
 // Sidebar navigation
@@ -66,146 +84,211 @@ function initSidebarNavigation() {
 
 // Load properties
 async function loadProperties() {
-  const container = document.getElementById('propertiesGrid');
-  if (!container) return;
+  const containers = [
+    document.getElementById('propertiesGrid'),
+    document.getElementById('dashboardPropertiesGrid')
+  ].filter(Boolean);
+
+  if (!containers.length) return;
 
   try {
     const data = await api.get('/properties/mine', { limit: 50 });
-    const list = Array.isArray(data) ? data : data?.properties || data?.data || [];
-    
-    if (!list.length) {
-      container.innerHTML = '<div class="landlord-placeholder"><p>No properties yet. Click "+ Add Property" to list your first room.</p></div>';
-      return;
-    }
+    const list = getListData(data, []);
+    const emptyMarkup = '<div class="landlord-placeholder"><p>No properties yet. Click "+ Add Property" to list your first room.</p></div>';
 
-    container.innerHTML = list.map((p) => {
-      const id = p._id || p.id;
-      const verified = p.verification?.status === 'verified';
-      const firstMedia = p.media?.images?.[0] || {};
-      const img = p.primaryImage || firstMedia.url || firstMedia.secure_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
-      
-      return `<div class="landlord-property-card">
-        <div class="landlord-property-card__image">
-          <img src="${img}" alt="${p.title}" onerror="this.src='${PLACEHOLDER_IMG}'">
-          <span class="landlord-property-card__badge landlord-property-card__badge--${verified ? 'verified' : 'pending'}">${verified ? 'Verified Property ✓' : 'Pending Verification'}</span>
-        </div>
-        <div class="landlord-property-card__content">
-          <h3 class="landlord-property-card__title">${p.title}</h3>
-          <p class="landlord-property-card__location">${p.location?.city || 'Location'}, ${p.university?.name || 'Near University'}</p>
-          <div class="landlord-property-card__stats">
-            <div class="landlord-property-card__stat">
-              <span class="landlord-property-card__stat-value">48</span>
-              <span class="landlord-property-card__stat-label">Rooms</span>
+    containers.forEach(container => {
+      if (!list.length) {
+        container.innerHTML = emptyMarkup;
+        return;
+      }
+
+      const items = container.id === 'dashboardPropertiesGrid' ? list.slice(0, 3) : list;
+      container.innerHTML = items.map((p) => {
+        const id = p._id || p.id;
+        const verified = p.verification?.status === 'verified';
+        const firstMedia = p.media?.images?.[0] || {};
+        const img = p.primaryImage || firstMedia.url || firstMedia.secure_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
+
+        return `<div class="landlord-property-card">
+          <div class="landlord-property-card__image">
+            <img src="${img}" alt="${p.title}" onerror="this.src='${PLACEHOLDER_IMG}'">
+            <span class="landlord-property-card__badge landlord-property-card__badge--${verified ? 'verified' : 'pending'}">${verified ? 'Verified Property ✓' : 'Pending Verification'}</span>
+          </div>
+          <div class="landlord-property-card__content">
+            <h3 class="landlord-property-card__title">${p.title}</h3>
+            <p class="landlord-property-card__location">${p.location?.city || 'Location'}, ${p.university?.name || 'Near University'}</p>
+            <div class="landlord-property-card__stats">
+              <div class="landlord-property-card__stat">
+                <span class="landlord-property-card__stat-value">${p.rooms?.length || 0}</span>
+                <span class="landlord-property-card__stat-label">Rooms</span>
+              </div>
+              <div class="landlord-property-card__stat">
+                <span class="landlord-property-card__stat-value">${p.rooms?.filter(r => r.status === 'occupied')?.length || 0}</span>
+                <span class="landlord-property-card__stat-label">Occupied</span>
+              </div>
+              <div class="landlord-property-card__stat">
+                <span class="landlord-property-card__stat-value">${p.rooms?.filter(r => r.status === 'available')?.length || 0}</span>
+                <span class="landlord-property-card__stat-label">Available</span>
+              </div>
             </div>
-            <div class="landlord-property-card__stat">
-              <span class="landlord-property-card__stat-value">36</span>
-              <span class="landlord-property-card__stat-label">Occupied</span>
-            </div>
-            <div class="landlord-property-card__stat">
-              <span class="landlord-property-card__stat-value">12</span>
-              <span class="landlord-property-card__stat-label">Available</span>
+            <div class="landlord-property-card__rent">${formatMoney(p.rent)}</div>
+            <div class="landlord-property-card__rating">${p.averageRating ? `★${'★'.repeat(Math.round(p.averageRating))} ${p.averageRating.toFixed(1)}` : 'No ratings yet'}</div>
+            <div class="landlord-property-card__actions">
+              <button class="btn btn--primary btn--sm" data-action="manage" data-id="${id}">Manage Property</button>
+              <button class="btn btn--outline btn--sm" data-action="view" data-id="${id}">View Listing</button>
             </div>
           </div>
-          <div class="landlord-property-card__rent">${formatMoney(p.rent)}</div>
-          <div class="landlord-property-card__rating">★★★★★ 4.8</div>
-          <div class="landlord-property-card__actions">
-            <button class="btn btn--primary btn--sm" data-action="manage" data-id="${id}">Manage Property</button>
-            <button class="btn btn--outline btn--sm" data-action="view" data-id="${id}">View Listing</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
+        </div>`;
+      }).join('');
+    });
   } catch (err) {
-    container.innerHTML = `<div class="landlord-placeholder"><p>${err.message || 'Could not load properties.'}</p></div>`;
+    containers.forEach(container => {
+      container.innerHTML = `<div class="landlord-placeholder"><p>${err.message || 'Could not load properties.'}</p></div>`;
+    });
   }
 }
 
 // Load applications
 async function loadApplications() {
-  const container = document.getElementById('applicationsList');
-  if (!container) return;
+  const containers = [
+    document.getElementById('applicationsList'),
+    document.getElementById('dashboardApplicationsList')
+  ].filter(Boolean);
+
+  if (!containers.length) return;
 
   try {
     const data = await api.get('/applications');
-    const list = Array.isArray(data) ? data : data?.data || [];
-    
-    if (!list.length) {
-      container.innerHTML = '<div class="landlord-placeholder"><p>No applications yet.</p></div>';
-      return;
-    }
+    const list = getListData(data, []);
 
-    container.innerHTML = list.map((app) => {
-      const id = app._id || app.id;
-      const student = app.student || {};
-      
-      return `<div class="landlord-application-card">
-        <div class="landlord-application-card__profile">
-          <img src="https://ui-avatars.com/api/?name=${student.profile?.firstName || 'S'}&background=10b981&color=fff" alt="${student.profile?.firstName || 'Student'}">
-          <div class="landlord-application-card__info">
-            <div class="landlord-application-card__name">${student.profile?.firstName || ''} ${student.profile?.lastName || ''}</div>
-            <div class="landlord-application-card__details">${student.university || 'University'} • ${student.course || 'Course'}</div>
+    containers.forEach(container => {
+      if (!list.length) {
+        container.innerHTML = '<div class="landlord-placeholder"><p>No applications yet.</p></div>';
+        return;
+      }
+
+      const items = container.id === 'dashboardApplicationsList' ? list.slice(0, 3) : list;
+      container.innerHTML = items.map((app) => {
+        const id = app._id || app.id;
+        const student = app.student || {};
+
+        return `<div class="landlord-application-card">
+          <div class="landlord-application-card__profile">
+            <img src="https://ui-avatars.com/api/?name=${student.profile?.firstName || 'S'}&background=10b981&color=fff" alt="${student.profile?.firstName || 'Student'}">
+            <div class="landlord-application-card__info">
+              <div class="landlord-application-card__name">${student.profile?.firstName || ''} ${student.profile?.lastName || ''}</div>
+              <div class="landlord-application-card__details">${student.university || 'University'} • ${student.course || 'Course'}</div>
+            </div>
           </div>
-        </div>
-        <div class="landlord-application-card__details">
-          <div class="landlord-application-card__detail">
-            <span class="landlord-application-card__label">Preferred Room:</span>
-            <span>${app.preferredRoom || 'Single Room'}</span>
+          <div class="landlord-application-card__details">
+            <div class="landlord-application-card__detail">
+              <span class="landlord-application-card__label">Preferred Room:</span>
+              <span>${app.preferredRoom || 'Single Room'}</span>
+            </div>
+            <div class="landlord-application-card__detail">
+              <span class="landlord-application-card__label">Budget:</span>
+              <span>${formatMoney(app.budget)}</span>
+            </div>
+            <div class="landlord-application-card__detail">
+              <span class="landlord-application-card__label">Move-in:</span>
+              <span>${fmtDate(app.moveInDate)}</span>
+            </div>
           </div>
-          <div class="landlord-application-card__detail">
-            <span class="landlord-application-card__label">Budget:</span>
-            <span>${formatMoney(app.budget)}</span>
+          <div class="landlord-application-card__status">
+            <span class="badge badge--${app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'danger' : 'pending'}">${app.status || 'New'}</span>
           </div>
-          <div class="landlord-application-card__detail">
-            <span class="landlord-application-card__label">Move-in:</span>
-            <span>${fmtDate(app.moveInDate)}</span>
+          <div class="landlord-application-card__actions">
+            <button class="btn btn--ghost btn--sm" data-action="view-profile" data-id="${id}">View Profile</button>
+            <button class="btn btn--primary btn--sm" data-action="accept" data-id="${id}">Accept</button>
+            <button class="btn btn--danger btn--sm" data-action="reject" data-id="${id}">Reject</button>
+            <button class="btn btn--outline btn--sm" data-action="message" data-id="${id}">Message</button>
           </div>
-        </div>
-        <div class="landlord-application-card__status">
-          <span class="badge badge--${app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'danger' : 'pending'}">${app.status || 'New'}</span>
-        </div>
-        <div class="landlord-application-card__actions">
-          <button class="btn btn--ghost btn--sm" data-action="view-profile" data-id="${id}">View Profile</button>
-          <button class="btn btn--primary btn--sm" data-action="accept" data-id="${id}">Accept</button>
-          <button class="btn btn--danger btn--sm" data-action="reject" data-id="${id}">Reject</button>
-          <button class="btn btn--outline btn--sm" data-action="message" data-id="${id}">Message</button>
-        </div>
-      </div>`;
-    }).join('');
+        </div>`;
+      }).join('');
+    });
   } catch (err) {
-    container.innerHTML = `<div class="landlord-placeholder"><p>${err.message || 'Could not load applications.'}</p></div>`;
+    containers.forEach(container => {
+      container.innerHTML = `<div class="landlord-placeholder"><p>${err.message || 'Could not load applications.'}</p></div>`;
+    });
   }
 }
 
 // Initialize revenue chart
-function initRevenueChart() {
+async function initRevenueChart() {
   const ctx = document.getElementById('landlordRevenueChart');
   if (!ctx || !window.Chart) return;
 
   if (revenueChart) revenueChart.destroy();
 
-  revenueChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-      datasets: [{
-        label: 'Revenue (KSh)',
-        data: [180000, 195000, 210000, 225000, 234000, 248000, 234000],
-        borderColor: '#0B3D2E',
-        backgroundColor: 'rgba(11, 61, 46, 0.1)',
-        fill: true,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
+  try {
+    // Try to fetch real payment data from API
+    const paymentsData = await api.get('/payments', { limit: 100 });
+    const payments = Array.isArray(paymentsData) ? paymentsData : paymentsData?.data || [];
+    
+    // Group payments by month
+    const monthlyRevenue = [0, 0, 0, 0, 0, 0, 0];
+    const now = new Date();
+    
+    payments.forEach(p => {
+      if (p.amount && p.createdAt) {
+        const date = new Date(p.createdAt);
+        const monthDiff = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+        if (monthDiff >= 0 && monthDiff < 7) {
+          monthlyRevenue[6 - monthDiff] += p.amount;
         }
       }
-    }
-  });
+    });
+    
+    revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [{
+          label: 'Revenue (KSh)',
+          data: monthlyRevenue,
+          borderColor: '#0B3D2E',
+          backgroundColor: 'rgba(11, 61, 46, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.debug('Could not load payment data, using placeholder:', err);
+    // Fallback to placeholder data
+    revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [{
+          label: 'Revenue (KSh)',
+          data: [0, 0, 0, 0, 0, 0, 0],
+          borderColor: '#0B3D2E',
+          backgroundColor: 'rgba(11, 61, 46, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  }
 }
 
 // Load dashboard statistics
@@ -214,48 +297,58 @@ async function loadDashboardStats() {
     // Load landlord profile
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user.profile) {
-      document.getElementById('landlordName').textContent = `${user.profile.firstName || ''} ${user.profile.lastName || ''}`;
+      const landlordName = `${user.profile.firstName || ''} ${user.profile.lastName || ''}`.trim() || 'Landlord';
+      document.getElementById('landlordName').textContent = landlordName;
       document.getElementById('landlordRole').textContent = user.verification?.adminApproved ? 'Verified Landlord ✓' : 'Landlord';
-      document.getElementById('welcomeMessage').textContent = `Welcome back, ${user.profile.firstName || ''} 👋`;
-      
-      const initials = `${user.profile.firstName?.[0] || ''}${user.profile.lastName?.[0] || ''}`;
+      document.getElementById('welcomeMessage').textContent = `Welcome back, ${user.profile.firstName || 'Landlord'} 👋`;
+
+      const initials = `${user.profile.firstName?.[0] || ''}${user.profile.lastName?.[0] || ''}`.trim() || 'L';
       document.getElementById('headerProfileImg').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
     }
 
     // Load properties count
-    const propertiesData = await api.get('/properties/mine', { limit: 1 });
-    const propertiesCount = propertiesData?.pagination?.total || Array.isArray(propertiesData) ? propertiesData.length : 0;
-    document.getElementById('statProperties').textContent = propertiesCount;
+    try {
+      const propertiesData = await api.get('/properties/mine', { limit: 1 });
+      const propertiesCount = getCount(propertiesData?.pagination?.total ?? propertiesData, 0);
+      document.getElementById('statProperties').textContent = propertiesCount;
+    } catch (err) {
+      document.getElementById('statProperties').textContent = '0';
+    }
 
     // Load applications count
-    const applicationsData = await api.get('/applications');
-    const applicationsCount = Array.isArray(applicationsData) ? applicationsData.length : applicationsData?.data?.length || 0;
-    document.getElementById('statApplications').textContent = applicationsCount;
+    try {
+      const applicationsData = await api.get('/applications');
+      document.getElementById('statApplications').textContent = getCount(applicationsData, 0);
+    } catch (err) {
+      document.getElementById('statApplications').textContent = '0';
+    }
 
     // Load messages count
     try {
       const messagesData = await api.get('/messages');
-      const unreadCount = messagesData?.filter?.(m => !m.read)?.length || 0;
+      const messages = getListData(messagesData, []);
+      const unreadCount = messages.filter(item => !item.read).length;
       const messageBadge = document.getElementById('messageBadge');
-      if (unreadCount > 0) {
+      if (unreadCount > 0 && messageBadge) {
         messageBadge.textContent = unreadCount;
         messageBadge.style.display = 'inline-flex';
       }
     } catch (err) {
-      // Messages endpoint might not exist yet
+      // Endpoint may not exist yet or user has no messages.
     }
 
     // Load notifications count
     try {
       const notificationsData = await api.get('/notifications');
-      const unreadCount = notificationsData?.filter?.(n => !n.read)?.length || 0;
+      const notifications = getListData(notificationsData, []);
+      const unreadCount = notifications.filter(item => !item.read).length;
       const notificationBadge = document.getElementById('notificationBadge');
-      if (unreadCount > 0) {
+      if (unreadCount > 0 && notificationBadge) {
         notificationBadge.textContent = unreadCount;
         notificationBadge.style.display = 'inline-flex';
       }
     } catch (err) {
-      // Notifications endpoint might not exist yet
+      // Endpoint may not exist yet or user has no notifications.
     }
 
     // For now, set other stats to 0 (rooms, income, maintenance need proper backend endpoints)
@@ -516,13 +609,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Load properties into select
       const select = document.getElementById('propertySelect');
       try {
-        const data = await api.get('/properties');
-        const properties = Array.isArray(data) ? data : data?.properties || data?.data || [];
+        const data = await api.get('/properties/mine');
+        const properties = getListData(data, []);
         select.innerHTML = '<option value="">Select property</option>' + 
           properties.map(p => `<option value="${p._id}">${p.title}</option>`).join('');
         openModal('addRoomModal');
       } catch (err) {
-        showToast('Failed to load properties', 'error');
+        showToast('Failed to load your properties', 'error');
       }
     });
   });

@@ -107,7 +107,7 @@ async function loadProperties() {
           <h3 class="student-property-card__title">${p.title}</h3>
           <p class="student-property-card__location">📍 ${p.location?.city || 'Location'} · 🚶 ${p.walkingTimeMinutes || 10} min walk to ${p.university?.name || 'University'}</p>
           <div class="student-property-card__price">${formatMoney(p.rent)}/month</div>
-          <div class="student-property-card__rating">★★★★★ 4.8</div>
+            <div class="student-property-card__rating">${p.averageRating ? `★${'★'.repeat(Math.round(p.averageRating))} ${p.averageRating.toFixed(1)}` : 'No ratings'}</div>
           ${verified ? '<span class="badge badge--verified">✓ Verified Property</span>' : ''}
           <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View Details</button>
         </div>
@@ -146,7 +146,7 @@ async function loadRecommended() {
           <h3 class="student-property-card__title">${p.title}</h3>
           <p class="student-property-card__location">📍 ${p.location?.city || 'Location'}</p>
           <div class="student-property-card__price">${formatMoney(p.rent)}/month</div>
-          <div class="student-property-card__rating">★★★★★ 4.8</div>
+            <div class="student-property-card__rating">${p.averageRating ? `★${'★'.repeat(Math.round(p.averageRating))} ${p.averageRating.toFixed(1)}` : 'No ratings'}</div>
           <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View Details</button>
         </div>
       </div>`;
@@ -331,6 +331,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <h3 class="student-property-card__title">${p.title}</h3>
             <p class="student-property-card__location">${p.location?.city || 'Location not specified'}</p>
             <div class="student-property-card__price">KSh ${Number(p.rent || 0).toLocaleString()}/month</div>
+            <div class="student-property-card__rating">${p.averageRating ? `★${'★'.repeat(Math.round(p.averageRating))} ${p.averageRating.toFixed(1)}` : 'No ratings'}</div>
             <div class="student-property-card__actions">
               <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View Details</button>
             </div>
