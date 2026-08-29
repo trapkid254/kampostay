@@ -24,7 +24,7 @@ let listingsChart, registrationsChart, revenueChart, universitiesChart;
 function initCharts() {
   if (!window.Chart) return;
 
-  // Listings Chart
+  // Listings Chart - use real data or empty
   const listingsCtx = document.getElementById('listingsChart');
   if (listingsCtx) {
     listingsChart = new Chart(listingsCtx, {
@@ -33,7 +33,7 @@ function initCharts() {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
         datasets: [{
           label: 'Property Listings',
-          data: [120, 190, 300, 500, 200, 300, 450],
+          data: [0, 0, 0, 0, 0, 0, 0],
           borderColor: '#0B3D2E',
           backgroundColor: 'rgba(11, 61, 46, 0.1)',
           fill: true,
@@ -48,7 +48,7 @@ function initCharts() {
     });
   }
 
-  // Registrations Chart
+  // Registrations Chart - use real data or empty
   const registrationsCtx = document.getElementById('registrationsChart');
   if (registrationsCtx) {
     registrationsChart = new Chart(registrationsCtx, {
@@ -57,7 +57,7 @@ function initCharts() {
         labels: ['Students', 'Landlords'],
         datasets: [{
           label: 'Registrations',
-          data: [28640, 3284],
+          data: [0, 0],
           backgroundColor: ['#0B3D2E', '#10b981']
         }]
       },
@@ -69,7 +69,7 @@ function initCharts() {
     });
   }
 
-  // Revenue Chart
+  // Revenue Chart - use real data or empty
   const revenueCtx = document.getElementById('revenueChart');
   if (revenueCtx) {
     revenueChart = new Chart(revenueCtx, {
@@ -78,7 +78,7 @@ function initCharts() {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
         datasets: [{
           label: 'Revenue (KSh)',
-          data: [1200000, 1900000, 3000000, 5000000, 2000000, 3000000, 4820000],
+          data: [0, 0, 0, 0, 0, 0, 0],
           borderColor: '#10b981',
           backgroundColor: 'rgba(16, 185, 129, 0.1)',
           fill: true,
@@ -220,9 +220,69 @@ function updateGreeting() {
     greeting = 'Good evening';
   }
 
-  const greetingEl = document.querySelector('.admin-header__user span');
+  const greetingEl = document.querySelector('.admin-section__title');
   if (greetingEl) {
     greetingEl.textContent = `${greeting}, Admin 👋`;
+  }
+}
+
+// Load admin dashboard statistics
+async function loadAdminStats() {
+  try {
+    // Load total properties
+    const propertiesData = await api.get('/properties', { limit: 1 });
+    const totalProperties = propertiesData?.pagination?.total || Array.isArray(propertiesData) ? propertiesData.length : 0;
+    document.getElementById('statTotalProperties').textContent = totalProperties;
+
+    // Load verified properties
+    const verifiedData = await api.get('/properties', { status: 'verified', limit: 1 });
+    const verifiedProperties = verifiedData?.pagination?.total || Array.isArray(verifiedData) ? verifiedData.length : 0;
+    document.getElementById('statVerifiedProperties').textContent = verifiedProperties;
+
+    // Load total students
+    const studentsData = await api.get('/users', { role: 'student', limit: 1 });
+    const totalStudents = studentsData?.pagination?.total || Array.isArray(studentsData) ? studentsData.length : 0;
+    document.getElementById('statTotalStudents').textContent = totalStudents;
+
+    // Load landlords
+    const landlordsData = await api.get('/users/landlords');
+    const landlordsCount = Array.isArray(landlordsData) ? landlordsData.length : landlordsData?.data?.length || 0;
+    document.getElementById('statLandlords').textContent = landlordsCount;
+
+    // Load active bookings
+    try {
+      const bookingsData = await api.get('/bookings', { status: 'confirmed', limit: 1 });
+      const activeBookings = bookingsData?.pagination?.total || Array.isArray(bookingsData) ? bookingsData.length : 0;
+      document.getElementById('statActiveBookings').textContent = activeBookings;
+    } catch (err) {
+      document.getElementById('statActiveBookings').textContent = '0';
+    }
+
+    // Load pending property verifications
+    try {
+      const pendingPropsData = await api.get('/properties', { status: 'pending', limit: 1 });
+      const pendingProps = pendingPropsData?.pagination?.total || Array.isArray(pendingPropsData) ? pendingPropsData.length : 0;
+      document.getElementById('statPendingPropertyVerification').textContent = pendingProps;
+    } catch (err) {
+      document.getElementById('statPendingPropertyVerification').textContent = '0';
+    }
+
+    // Load pending landlord verifications
+    try {
+      const pendingLandlordsData = await api.get('/users', { role: 'landlord', verificationStatus: 'pending', limit: 1 });
+      const pendingLandlords = pendingLandlordsData?.pagination?.total || Array.isArray(pendingLandlordsData) ? pendingLandlordsData.length : 0;
+      document.getElementById('statPendingLandlordVerification').textContent = pendingLandlords;
+    } catch (err) {
+      document.getElementById('statPendingLandlordVerification').textContent = '0';
+    }
+
+    // For now, set other stats to 0 (reported listings, suspended accounts, revenue need proper backend endpoints)
+    document.getElementById('statReportedListings').textContent = '0';
+    document.getElementById('statSuspendedAccounts').textContent = '0';
+    document.getElementById('statRevenue').textContent = 'KSh 0';
+
+  } catch (err) {
+    console.error('Failed to load admin stats:', err);
   }
 }
 
@@ -259,6 +319,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Update greeting
   updateGreeting();
   
+  // Load admin statistics
+  await loadAdminStats();
+  
   // Load properties
   await loadProperties();
   
@@ -267,6 +330,47 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Initialize charts on dashboard view
   initCharts();
+
+  // Make admin dashboard stat cards clickable shortcuts
+  document.getElementById('statTotalProperties')?.closest('.admin-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="properties"]')?.click();
+  });
+
+  document.getElementById('statVerifiedProperties')?.closest('.admin-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="properties"]')?.click();
+  });
+
+  document.getElementById('statTotalStudents')?.closest('.admin-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="tenants"]')?.click();
+  });
+
+  document.getElementById('statLandlords')?.closest('.admin-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="landlords"]')?.click();
+  });
+
+  document.getElementById('statActiveBookings')?.closest('.admin-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="bookings"]')?.click();
+  });
+
+  document.getElementById('statRevenue')?.closest('.admin-stat-card')?.addEventListener('click', () => {
+    showToast('Revenue/Payments section coming soon', 'info');
+  });
+
+  document.getElementById('statPendingPropertyVerification')?.closest('.admin-verification-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="verification"]')?.click();
+  });
+
+  document.getElementById('statPendingLandlordVerification')?.closest('.admin-verification-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="verification"]')?.click();
+  });
+
+  document.getElementById('statReportedListings')?.closest('.admin-verification-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="reports"]')?.click();
+  });
+
+  document.getElementById('statSuspendedAccounts')?.closest('.admin-verification-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="landlords"]')?.click();
+  });
 
   // Handle logout
   document.querySelector('[data-logout]')?.addEventListener('click', (e) => {

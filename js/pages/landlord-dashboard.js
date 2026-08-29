@@ -208,12 +208,76 @@ function initRevenueChart() {
   });
 }
 
+// Load dashboard statistics
+async function loadDashboardStats() {
+  try {
+    // Load landlord profile
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.profile) {
+      document.getElementById('landlordName').textContent = `${user.profile.firstName || ''} ${user.profile.lastName || ''}`;
+      document.getElementById('landlordRole').textContent = user.verification?.adminApproved ? 'Verified Landlord ✓' : 'Landlord';
+      document.getElementById('welcomeMessage').textContent = `Welcome back, ${user.profile.firstName || ''} 👋`;
+      
+      const initials = `${user.profile.firstName?.[0] || ''}${user.profile.lastName?.[0] || ''}`;
+      document.getElementById('headerProfileImg').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
+    }
+
+    // Load properties count
+    const propertiesData = await api.get('/properties/mine', { limit: 1 });
+    const propertiesCount = propertiesData?.pagination?.total || Array.isArray(propertiesData) ? propertiesData.length : 0;
+    document.getElementById('statProperties').textContent = propertiesCount;
+
+    // Load applications count
+    const applicationsData = await api.get('/applications');
+    const applicationsCount = Array.isArray(applicationsData) ? applicationsData.length : applicationsData?.data?.length || 0;
+    document.getElementById('statApplications').textContent = applicationsCount;
+
+    // Load messages count
+    try {
+      const messagesData = await api.get('/messages');
+      const unreadCount = messagesData?.filter?.(m => !m.read)?.length || 0;
+      const messageBadge = document.getElementById('messageBadge');
+      if (unreadCount > 0) {
+        messageBadge.textContent = unreadCount;
+        messageBadge.style.display = 'inline-flex';
+      }
+    } catch (err) {
+      // Messages endpoint might not exist yet
+    }
+
+    // Load notifications count
+    try {
+      const notificationsData = await api.get('/notifications');
+      const unreadCount = notificationsData?.filter?.(n => !n.read)?.length || 0;
+      const notificationBadge = document.getElementById('notificationBadge');
+      if (unreadCount > 0) {
+        notificationBadge.textContent = unreadCount;
+        notificationBadge.style.display = 'inline-flex';
+      }
+    } catch (err) {
+      // Notifications endpoint might not exist yet
+    }
+
+    // For now, set other stats to 0 (rooms, income, maintenance need proper backend endpoints)
+    document.getElementById('statAvailableRooms').textContent = '0';
+    document.getElementById('statOccupiedRooms').textContent = '0';
+    document.getElementById('statIncome').textContent = 'KSh 0';
+    document.getElementById('statMaintenance').textContent = '0';
+
+  } catch (err) {
+    console.error('Failed to load dashboard stats:', err);
+  }
+}
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', async () => {
   if (!requireAuth() || !requireRole('landlord', siteUrl('pages/landlord/login.html'))) return;
 
   // Initialize sidebar navigation
   initSidebarNavigation();
+  
+  // Load dashboard statistics
+  await loadDashboardStats();
   
   // Load properties
   await loadProperties();
@@ -295,18 +359,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Handle message icon click
-  document.querySelector('[aria-label="Messages"]')?.addEventListener('click', () => {
+  document.querySelector('[data-action="messages"]')?.addEventListener('click', () => {
     // Switch to messages section
     document.querySelector('[data-section="messages"]')?.click();
   });
 
   // Handle notification icon click
-  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', async () => {
-    try {
-      const notifications = await api.get('/notifications');
-      showToast(`You have ${notifications.length || 0} new notifications`, 'info');
-    } catch (err) {
-      showToast('Could not load notifications', 'error');
+  document.querySelector('[data-action="notifications"]')?.addEventListener('click', () => {
+    // Switch to notifications section if it exists, otherwise show toast
+    const notificationsSection = document.querySelector('[data-section="notifications"]');
+    if (notificationsSection) {
+      notificationsSection.click();
+    } else {
+      showToast('Notifications section coming soon', 'info');
     }
   });
 
@@ -314,6 +379,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('globalSearch')?.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
     console.log('Searching for:', query);
+  });
+
+  // Make dashboard stat cards clickable shortcuts
+  document.getElementById('statProperties')?.closest('.landlord-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="properties"]')?.click();
+  });
+
+  document.getElementById('statAvailableRooms')?.closest('.landlord-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="properties"]')?.click();
+  });
+
+  document.getElementById('statOccupiedRooms')?.closest('.landlord-stat-card')?.addEventListener('click', () => {
+    // Navigate to tenants section if exists, otherwise properties
+    const tenantsSection = document.querySelector('[data-section="tenants"]');
+    if (tenantsSection) {
+      tenantsSection.click();
+    } else {
+      document.querySelector('[data-section="properties"]')?.click();
+    }
+  });
+
+  document.getElementById('statApplications')?.closest('.landlord-stat-card')?.addEventListener('click', () => {
+    document.querySelector('[data-section="applications"]')?.click();
+  });
+
+  document.getElementById('statIncome')?.closest('.landlord-stat-card')?.addEventListener('click', () => {
+    // Navigate to payments section if exists
+    const paymentsSection = document.querySelector('[data-section="payments"]');
+    if (paymentsSection) {
+      paymentsSection.click();
+    } else {
+      showToast('Payments section coming soon', 'info');
+    }
+  });
+
+  document.getElementById('statMaintenance')?.closest('.landlord-stat-card')?.addEventListener('click', () => {
+    // Navigate to maintenance section if exists
+    const maintenanceSection = document.querySelector('[data-section="maintenance"]');
+    if (maintenanceSection) {
+      maintenanceSection.click();
+    } else {
+      showToast('Maintenance section coming soon', 'info');
+    }
   });
 
   // Modal functionality
