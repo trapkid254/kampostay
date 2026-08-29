@@ -208,7 +208,7 @@ async function loadApplications() {
     });
   } catch (err) {
     containers.forEach(container => {
-      container.innerHTML = `<div class="landlord-placeholder"><p>${err.message || 'Could not load applications.'}</p></div>`;
+      container.innerHTML = '<div class="landlord-placeholder"><p>No applications yet.</p></div>';
     });
   }
 }
@@ -221,14 +221,12 @@ async function initRevenueChart() {
   if (revenueChart) revenueChart.destroy();
 
   try {
-    // Try to fetch real payment data from API
     const paymentsData = await api.get('/payments', { limit: 100 });
     const payments = Array.isArray(paymentsData) ? paymentsData : paymentsData?.data || [];
-    
-    // Group payments by month
+
     const monthlyRevenue = [0, 0, 0, 0, 0, 0, 0];
     const now = new Date();
-    
+
     payments.forEach(p => {
       if (p.amount && p.createdAt) {
         const date = new Date(p.createdAt);
@@ -238,7 +236,7 @@ async function initRevenueChart() {
         }
       }
     });
-    
+
     revenueChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -256,15 +254,12 @@ async function initRevenueChart() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            display: false
-          }
+          legend: { display: false }
         }
       }
     });
   } catch (err) {
-    console.debug('Could not load payment data, using placeholder:', err);
-    // Fallback to placeholder data
+    // No mock fallback data. Show empty state instead of fake numbers.
     revenueChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -272,8 +267,8 @@ async function initRevenueChart() {
         datasets: [{
           label: 'Revenue (KSh)',
           data: [0, 0, 0, 0, 0, 0, 0],
-          borderColor: '#0B3D2E',
-          backgroundColor: 'rgba(11, 61, 46, 0.1)',
+          borderColor: '#D1D5DB',
+          backgroundColor: 'rgba(209, 213, 219, 0.2)',
           fill: true,
           tension: 0.4
         }]
@@ -282,9 +277,12 @@ async function initRevenueChart() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            display: false
-          }
+          legend: { display: false },
+          tooltip: { enabled: false }
+        },
+        scales: {
+          y: { display: false },
+          x: { display: false }
         }
       }
     });
@@ -315,13 +313,8 @@ async function loadDashboardStats() {
       document.getElementById('statProperties').textContent = '0';
     }
 
-    // Load applications count
-    try {
-      const applicationsData = await api.get('/applications');
-      document.getElementById('statApplications').textContent = getCount(applicationsData, 0);
-    } catch (err) {
-      document.getElementById('statApplications').textContent = '0';
-    }
+    // No applications endpoint is available yet; show a clean empty state.
+    document.getElementById('statApplications').textContent = '0';
 
     // Load messages count
     try {
