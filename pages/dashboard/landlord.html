@@ -788,6 +788,28 @@
     </div>
   </div>
 
+  <!-- Notifications Modal -->
+  <div class="modal" id="notificationsModal" style="display: none;">
+    <div class="modal__overlay" data-close-modal></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2>Notifications</h2>
+        <button class="modal__close" data-close-modal aria-label="Close">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body" id="notificationsList">
+        <!-- Notifications will be loaded here -->
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--outline" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="../../js/app.js"></script>
   <script type="module" src="../../js/pages/landlord-dashboard.js"></script>
 </body>

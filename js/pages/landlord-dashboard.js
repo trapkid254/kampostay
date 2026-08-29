@@ -352,6 +352,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (action === 'view-applications') {
         // Switch to applications section
         document.querySelector('[data-section="applications"]')?.click();
+      } else if (action === 'add-property') {
+        // This is handled by the specific add-property listener
+        return;
       } else {
         showToast(`${action} functionality coming soon`, 'info');
       }
@@ -365,9 +368,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Handle notification icon click
-  document.querySelector('[data-action="notifications"]')?.addEventListener('click', () => {
-    showToast('Notifications functionality coming soon', 'info');
+  document.querySelector('[data-action="notifications"]')?.addEventListener('click', async () => {
+    await loadNotifications();
+    openModal('notificationsModal');
   });
+
+  // Load notifications
+  async function loadNotifications() {
+    const container = document.getElementById('notificationsList');
+    if (!container) return;
+
+    try {
+      const data = await api.get('/notifications');
+      const notifications = Array.isArray(data) ? data : data?.notifications || data?.data || [];
+      
+      if (!notifications.length) {
+        container.innerHTML = '<div class="landlord-placeholder"><p>No notifications yet.</p></div>';
+        return;
+      }
+
+      container.innerHTML = notifications.map(n => `
+        <div class="notification-item ${n.read ? 'notification-item--read' : 'notification-item--unread'}">
+          <div class="notification-item__content">
+            <h4>${n.title || 'Notification'}</h4>
+            <p>${n.message || n.body || ''}</p>
+            <small class="text-muted">${fmtDate(n.createdAt)}</small>
+          </div>
+          ${!n.read ? '<span class="notification-item__unread-indicator"></span>' : ''}
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="landlord-placeholder"><p>${err.message || 'Could not load notifications'}</p></div>`;
+    }
+  }
 
   // Handle search
   document.getElementById('globalSearch')?.addEventListener('input', (e) => {
