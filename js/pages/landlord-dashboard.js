@@ -546,11 +546,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Modal functionality
   function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'block';
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.style.display = 'flex';
+    modal.classList.add('is-open');
   }
 
   function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.classList.remove('is-open');
   }
 
   // Close modal on overlay click
