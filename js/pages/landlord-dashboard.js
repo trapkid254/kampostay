@@ -285,9 +285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
-      if (action === 'add-property') {
-        showToast('Add property modal coming soon', 'info');
-      } else if (action === 'view-applications') {
+      if (action === 'view-applications') {
         // Switch to applications section
         document.querySelector('[data-section="applications"]')?.click();
       } else {
