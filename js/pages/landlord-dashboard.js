@@ -157,60 +157,9 @@ async function loadApplications() {
 
   if (!containers.length) return;
 
-  try {
-    const data = await api.get('/applications');
-    const list = getListData(data, []);
-
-    containers.forEach(container => {
-      if (!list.length) {
-        container.innerHTML = '<div class="landlord-placeholder"><p>No applications yet.</p></div>';
-        return;
-      }
-
-      const items = container.id === 'dashboardApplicationsList' ? list.slice(0, 3) : list;
-      container.innerHTML = items.map((app) => {
-        const id = app._id || app.id;
-        const student = app.student || {};
-
-        return `<div class="landlord-application-card">
-          <div class="landlord-application-card__profile">
-            <img src="https://ui-avatars.com/api/?name=${student.profile?.firstName || 'S'}&background=10b981&color=fff" alt="${student.profile?.firstName || 'Student'}">
-            <div class="landlord-application-card__info">
-              <div class="landlord-application-card__name">${student.profile?.firstName || ''} ${student.profile?.lastName || ''}</div>
-              <div class="landlord-application-card__details">${student.university || 'University'} • ${student.course || 'Course'}</div>
-            </div>
-          </div>
-          <div class="landlord-application-card__details">
-            <div class="landlord-application-card__detail">
-              <span class="landlord-application-card__label">Preferred Room:</span>
-              <span>${app.preferredRoom || 'Single Room'}</span>
-            </div>
-            <div class="landlord-application-card__detail">
-              <span class="landlord-application-card__label">Budget:</span>
-              <span>${formatMoney(app.budget)}</span>
-            </div>
-            <div class="landlord-application-card__detail">
-              <span class="landlord-application-card__label">Move-in:</span>
-              <span>${fmtDate(app.moveInDate)}</span>
-            </div>
-          </div>
-          <div class="landlord-application-card__status">
-            <span class="badge badge--${app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'danger' : 'pending'}">${app.status || 'New'}</span>
-          </div>
-          <div class="landlord-application-card__actions">
-            <button class="btn btn--ghost btn--sm" data-action="view-profile" data-id="${id}">View Profile</button>
-            <button class="btn btn--primary btn--sm" data-action="accept" data-id="${id}">Accept</button>
-            <button class="btn btn--danger btn--sm" data-action="reject" data-id="${id}">Reject</button>
-            <button class="btn btn--outline btn--sm" data-action="message" data-id="${id}">Message</button>
-          </div>
-        </div>`;
-      }).join('');
-    });
-  } catch (err) {
-    containers.forEach(container => {
-      container.innerHTML = '<div class="landlord-placeholder"><p>No applications yet.</p></div>';
-    });
-  }
+  containers.forEach(container => {
+    container.innerHTML = '<div class="landlord-placeholder"><p>No applications yet.</p></div>';
+  });
 }
 
 // Initialize revenue chart
@@ -405,22 +354,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     switch (action) {
       case 'accept':
-        try {
-          await api.patch(`/applications/${id}`, { status: 'approved' });
-          showToast('Application accepted', 'success');
-          await loadApplications();
-        } catch (err) {
-          showToast(err.message || 'Could not accept application', 'error');
-        }
+        showToast('Applications are not available yet.', 'info');
         break;
       case 'reject':
-        try {
-          await api.patch(`/applications/${id}`, { status: 'rejected' });
-          showToast('Application rejected', 'success');
-          await loadApplications();
-        } catch (err) {
-          showToast(err.message || 'Could not reject application', 'error');
-        }
+        showToast('Applications are not available yet.', 'info');
         break;
       case 'message':
         showToast('Messaging coming soon', 'info');
@@ -656,16 +593,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', async () => {
       const applicationId = btn.dataset.id;
       try {
-        const application = await api.get(`/applications/${applicationId}`);
         const details = document.getElementById('applicationDetails');
         details.innerHTML = `
           <div class="application-detail">
-            <h3>${application.student?.name || 'Student'}</h3>
-            <p><strong>Email:</strong> ${application.student?.email || 'N/A'}</p>
-            <p><strong>Phone:</strong> ${application.student?.phone || 'N/A'}</p>
-            <p><strong>University:</strong> ${application.student?.university || 'N/A'}</p>
-            <p><strong>Applied:</strong> ${fmtDate(application.createdAt)}</p>
-            <p><strong>Message:</strong> ${application.message || 'No message'}</p>
+            <h3>Application</h3>
+            <p><strong>Status:</strong> Not available yet</p>
+            <p><strong>Message:</strong> Applications are not enabled for this portal yet.</p>
           </div>
         `;
         
