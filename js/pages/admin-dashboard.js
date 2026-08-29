@@ -240,7 +240,7 @@ async function loadAdminStats() {
     document.getElementById('statVerifiedProperties').textContent = verifiedProperties;
 
     // Load total students
-    const studentsData = await api.get('/users', { role: 'student', limit: 1 });
+    const studentsData = await api.get('/users/students', { limit: 1 });
     const totalStudents = studentsData?.pagination?.total || Array.isArray(studentsData) ? studentsData.length : 0;
     document.getElementById('statTotalStudents').textContent = totalStudents;
 
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const tenants = Array.isArray(data) ? data : data?.students || data?.data || [];
       
       if (!tenants.length) {
-        container.innerHTML = '<tr><td colspan="7">No tenants found</td></tr>';
+        container.innerHTML = '<tr><td colspan="8">No tenants found</td></tr>';
         return;
       }
 
@@ -538,6 +538,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <tr>
           <td>${t.profile?.firstName || ''} ${t.profile?.lastName || t.email?.split('@')[0]}</td>
           <td>${t.email}</td>
+          <td>${t.profile?.phone || 'N/A'}</td>
           <td>${t.profile?.university || 'N/A'}</td>
           <td>${t.currentProperty || 'None'}</td>
           <td><span class="badge badge--active">Active</span></td>
@@ -549,7 +550,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </tr>
       `).join('');
     } catch (err) {
-      container.innerHTML = `<tr><td colspan="7">${err.message || 'Could not load tenants'}</td></tr>`;
+      container.innerHTML = `<tr><td colspan="8">${err.message || 'Could not load tenants'}</td></tr>`;
     }
   }
 
