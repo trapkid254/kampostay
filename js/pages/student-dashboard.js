@@ -198,9 +198,8 @@ async function loadSaved() {
       // Handle different response structures for wishlist
       const property = p.property || p;
       
-      // Skip items with null/missing property
+      // Skip items with null/missing property silently
       if (!property || !property._id) {
-        console.warn('Skipping wishlist item with missing/invalid property:', p);
         return '';
       }
       
@@ -209,7 +208,6 @@ async function loadSaved() {
       const img = property.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
       
       if (!id) {
-        console.warn('Skipping wishlist item with missing ID:', p);
         return '';
       }
       
