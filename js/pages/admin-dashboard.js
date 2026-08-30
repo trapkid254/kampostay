@@ -20,9 +20,78 @@ function fmtDate(d) {
 // Chart instances
 let listingsChart, registrationsChart, revenueChart, universitiesChart;
 
+// Sidebar navigation
+function initSidebarNavigation() {
+  const sidebarLinks = document.querySelectorAll('.admin-sidebar__link');
+  const sections = document.querySelectorAll('.admin-section');
+  const sidebar = document.getElementById('adminSidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const main = document.querySelector('.admin-main');
+
+  // Handle section switching
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const section = link.dataset.section;
+      
+      // Update active link
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      
+      // Show corresponding section
+      sections.forEach(s => s.classList.remove('active'));
+      const targetSection = document.getElementById(`section-${section}`);
+      if (targetSection) {
+        targetSection.classList.add('active');
+        
+        // Load section-specific data
+        if (section === 'dashboard') {
+          initCharts();
+        }
+      }
+    });
+  });
+
+  // Handle sidebar toggle
+  sidebarToggle?.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    main.classList.toggle('expanded');
+    
+    // Update toggle icon
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    if (isCollapsed) {
+      sidebarToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      `;
+    } else {
+      sidebarToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      `;
+    }
+  });
+
+  // Mobile sidebar toggle
+  if (window.innerWidth <= 1024) {
+    sidebar.classList.add('collapsed');
+    main.classList.add('expanded');
+  }
+}
+
 // Initialize charts with data
 async function initCharts() {
   if (!window.Chart) return;
+
+  // Destroy existing charts before creating new ones to prevent canvas reuse errors
+  if (listingsChart) listingsChart.destroy();
+  if (registrationsChart) registrationsChart.destroy();
+  if (revenueChart) revenueChart.destroy();
+  if (universitiesChart) universitiesChart.destroy();
 
   try {
     // Booking Trends Chart (Real data from API)
@@ -351,6 +420,38 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize sidebar navigation
   initSidebarNavigation();
   
+  // Load admin profile
+  await loadAdminProfile();
+  
+  // Load notification counts
+  await loadNotificationCounts();
+  
+  // Handle profile dropdown
+  document.getElementById('adminProfileDropdown')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('adminDropdownMenu');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    const dropdown = document.getElementById('adminDropdownMenu');
+    if (dropdown) dropdown.style.display = 'none';
+  });
+
+  // Handle profile button click
+  document.getElementById('btnProfile')?.addEventListener('click', () => {
+    document.querySelector('[data-section="analytics"]')?.click();
+  });
+
+  // Handle logout
+  document.querySelectorAll('[data-logout]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+  });
+  
   // Update greeting
   updateGreeting();
   
@@ -475,7 +576,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('globalSearch')?.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
     // Implement search functionality
-    console.log('Searching for:', query);
   });
 
   // Handle filters
@@ -489,7 +589,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.admin-sidebar__link').forEach(link => {
     link.addEventListener('click', (e) => {
       const section = link.dataset.section;
-      console.log('Navigating to section:', section);
       
       // Load data for specific sections
       switch (section) {
@@ -659,19 +758,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!container) return;
 
     try {
-      const data = await api.get('/verifications/pending');
-      const verifications = Array.isArray(data) ? data : data?.verifications || data?.data || [];
+      // Load landlords with pending verification status
+      const data = await api.get('/users/landlords');
+      const landlords = Array.isArray(data) ? data : data?.landlords || data?.data || [];
       
-      if (!verifications.length) {
+      // Filter for pending verifications
+      const pendingVerifications = landlords.filter(l => 
+        !l.verification?.adminApproved || l.verification?.status === 'pending'
+      );
+      
+      if (!pendingVerifications.length) {
         container.innerHTML = '<div class="admin-placeholder"><p>No pending verifications</p></div>';
         return;
       }
 
-      container.innerHTML = verifications.map(v => `
+      container.innerHTML = pendingVerifications.map(v => `
         <div class="admin-verification-item">
           <div class="admin-verification-item__info">
-            <h3>${v.user?.name || v.user?.email || 'User'}</h3>
-            <p>${v.type} verification</p>
+            <h3>${v.profile?.firstName || ''} ${v.profile?.lastName || v.email?.split('@')[0]}</h3>
+            <p>Landlord verification</p>
             <p>Submitted: ${fmtDate(v.createdAt)}</p>
           </div>
           <div class="admin-verification-item__actions">
@@ -683,6 +788,59 @@ document.addEventListener('DOMContentLoaded', async () => {
       `).join('');
     } catch (err) {
       container.innerHTML = `<div class="admin-placeholder"><p>${err.message || 'Could not load verifications'}</p></div>`;
+    }
+  }
+
+  // Load admin profile data
+  async function loadAdminProfile() {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (user.profile) {
+        const firstName = user.profile.firstName || '';
+        const lastName = user.profile.lastName || '';
+        const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+        
+        // Update profile image in header
+        document.getElementById('adminProfileImg').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
+        
+        // Update greeting with real name
+        const greetingEl = document.getElementById('adminGreeting');
+        if (greetingEl) {
+          const hour = new Date().getHours();
+          const timeOfDay = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+          greetingEl.textContent = `${timeOfDay}, ${firstName || 'Admin'} 👋`;
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load admin profile:', err);
+    }
+  }
+
+  // Load message and notification counts
+  async function loadNotificationCounts() {
+    try {
+      const [messagesData, notificationsData] = await Promise.all([
+        api.get('/messages'),
+        api.get('/notifications')
+      ]);
+      
+      const messages = Array.isArray(messagesData) ? messagesData : messagesData?.messages || messagesData?.data || [];
+      const notifications = Array.isArray(notificationsData) ? notificationsData : notificationsData?.notifications || notificationsData?.data || [];
+      
+      const unreadMessages = messages.filter(m => !m.read).length;
+      const unreadNotifications = notifications.filter(n => !n.read).length;
+      
+      const messageBadges = document.querySelectorAll('.admin-header__badge');
+      if (messageBadges.length >= 2) {
+        messageBadges[0].textContent = unreadMessages;
+        messageBadges[0].style.display = unreadMessages > 0 ? 'block' : 'none';
+        
+        messageBadges[1].textContent = unreadNotifications;
+        messageBadges[1].style.display = unreadNotifications > 0 ? 'block' : 'none';
+      }
+    } catch (err) {
+      console.error('Failed to load notification counts:', err);
     }
   }
 
@@ -838,18 +996,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Add Property Modal
   document.querySelectorAll('[data-action="add-property"]').forEach(btn => {
-    console.log('Found add-property button:', btn);
     btn.addEventListener('click', async (e) => {
-      console.log('Add property button clicked');
       e.preventDefault();
       e.stopPropagation();
       
       // Open modal first
       const modal = document.getElementById('addPropertyModal');
-      console.log('Modal element:', modal);
       if (modal) {
         modal.style.display = 'block';
-        console.log('Modal display set to block');
       } else {
         console.error('Modal element not found');
       }

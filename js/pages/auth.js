@@ -4,9 +4,19 @@ import { siteUrl } from '../config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
+  const loginBtn = loginForm?.querySelector('button[type="submit"]');
+  
   loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const fd = new FormData(loginForm);
+    
+    // Add loading state
+    if (loginBtn) {
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
+      loginBtn.style.opacity = '0.7';
+    }
+    
     try {
       const user = await login(fd.get('email'), fd.get('password'), 'student');
       
@@ -27,6 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = getReturnUrl(user);
     } catch (err) {
       showToast(err.message || 'Login failed', 'error');
+    } finally {
+      // Remove loading state
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Log In as Student';
+        loginBtn.style.opacity = '1';
+      }
     }
   });
 

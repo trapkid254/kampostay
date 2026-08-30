@@ -73,6 +73,24 @@ function initSidebarNavigation() {
   sidebarToggle?.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
     main.classList.toggle('expanded');
+    
+    // Update toggle icon
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    if (isCollapsed) {
+      sidebarToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      `;
+    } else {
+      sidebarToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      `;
+    }
   });
 
   // Mobile sidebar toggle
@@ -244,13 +262,18 @@ async function loadDashboardStats() {
     // Load landlord profile
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user.profile) {
-      const landlordName = `${user.profile.firstName || ''} ${user.profile.lastName || ''}`.trim() || 'Landlord';
-      document.getElementById('landlordName').textContent = landlordName;
-      document.getElementById('landlordRole').textContent = user.verification?.adminApproved ? 'Verified Landlord ✓' : 'Landlord';
-      document.getElementById('welcomeMessage').textContent = `Welcome back, ${user.profile.firstName || 'Landlord'} 👋`;
-
-      const initials = `${user.profile.firstName?.[0] || ''}${user.profile.lastName?.[0] || ''}`.trim() || 'L';
-      document.getElementById('headerProfileImg').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
+      const firstName = user.profile.firstName || '';
+      const lastName = user.profile.lastName || '';
+      const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+      
+      // Update profile image in header
+      document.getElementById('landlordProfileImg').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
+      
+      // Update welcome message with real name
+      const welcomeEl = document.getElementById('welcomeMessage');
+      if (welcomeEl) {
+        welcomeEl.textContent = `Welcome back, ${firstName || 'Landlord'} 👋`;
+      }
     }
 
     // Load properties count
@@ -274,6 +297,8 @@ async function loadDashboardStats() {
       if (unreadCount > 0 && messageBadge) {
         messageBadge.textContent = unreadCount;
         messageBadge.style.display = 'inline-flex';
+      } else if (messageBadge) {
+        messageBadge.style.display = 'none';
       }
     } catch (err) {
       // Endpoint may not exist yet or user has no messages.
@@ -288,6 +313,8 @@ async function loadDashboardStats() {
       if (unreadCount > 0 && notificationBadge) {
         notificationBadge.textContent = unreadCount;
         notificationBadge.style.display = 'inline-flex';
+      } else if (notificationBadge) {
+        notificationBadge.style.display = 'none';
       }
     } catch (err) {
       // Endpoint may not exist yet or user has no notifications.
@@ -301,6 +328,37 @@ async function loadDashboardStats() {
 
   } catch (err) {
     console.error('Failed to load dashboard stats:', err);
+  }
+}
+
+// Load message and notification counts
+async function loadNotificationCounts() {
+  try {
+    const [messagesData, notificationsData] = await Promise.all([
+      api.get('/messages'),
+      api.get('/notifications')
+    ]);
+
+    const messages = getListData(messagesData, []);
+    const notifications = getListData(notificationsData, []);
+
+    const unreadMessages = messages.filter(m => !m.read).length;
+    const unreadNotifications = notifications.filter(n => !n.read).length;
+
+    const messageBadge = document.getElementById('messageBadge');
+    const notificationBadge = document.getElementById('notificationBadge');
+
+    if (messageBadge) {
+      messageBadge.textContent = unreadMessages;
+      messageBadge.style.display = unreadMessages > 0 ? 'block' : 'none';
+    }
+
+    if (notificationBadge) {
+      notificationBadge.textContent = unreadNotifications;
+      notificationBadge.style.display = unreadNotifications > 0 ? 'block' : 'none';
+    }
+  } catch (err) {
+    console.error('Failed to load notification counts:', err);
   }
 }
 
@@ -320,10 +378,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load applications
   await loadApplications();
 
+  // Handle profile dropdown
+  document.getElementById('landlordProfileDropdown')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('landlordDropdownMenu');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    const dropdown = document.getElementById('landlordDropdownMenu');
+    if (dropdown) dropdown.style.display = 'none';
+  });
+
+  // Handle profile button click
+  document.getElementById('btnProfile')?.addEventListener('click', () => {
+    document.querySelector('[data-section="analytics"]')?.click();
+  });
+
   // Handle logout
-  document.querySelector('[data-logout]')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    logout();
+  document.querySelectorAll('[data-logout]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
   });
 
   // Handle property actions
@@ -428,7 +506,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Handle search
   document.getElementById('globalSearch')?.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
-    console.log('Searching for:', query);
+    // Implement search functionality
   });
 
   // Make dashboard stat cards clickable shortcuts

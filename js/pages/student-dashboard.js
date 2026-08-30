@@ -39,6 +39,12 @@ function initSidebarNavigation() {
       if (targetSection) {
         targetSection.classList.add('active');
       }
+      
+      // Show/hide search bar based on section
+      const searchBar = document.querySelector('.student-search');
+      if (searchBar) {
+        searchBar.style.display = section === 'discover' ? 'block' : 'none';
+      }
     });
   });
 
@@ -46,6 +52,24 @@ function initSidebarNavigation() {
   sidebarToggle?.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
     main.classList.toggle('expanded');
+    
+    // Update toggle icon
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    if (isCollapsed) {
+      sidebarToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      `;
+    } else {
+      sidebarToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      `;
+    }
   });
 
   // Mobile sidebar toggle
@@ -171,19 +195,21 @@ async function loadSaved() {
     }
 
     container.innerHTML = list.map((p) => {
-      const id = p._id || p.id;
-      const firstMedia = p.media?.images?.[0] || {};
-      const img = p.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
+      // Handle different response structures for wishlist
+      const id = p._id || p.id || p.property?._id || p.property?.id;
+      const property = p.property || p;
+      const firstMedia = property.media?.images?.[0] || {};
+      const img = property.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
       
       return `<div class="student-property-card">
         <div class="student-property-card__image">
-          <img src="${img}" alt="${p.title}">
+          <img src="${img}" alt="${property.title}">
           <button class="student-property-card__favorite student-property-card__favorite--active" data-action="unfavorite" data-id="${id}">♥</button>
         </div>
         <div class="student-property-card__content">
-          <h3 class="student-property-card__title">${p.title}</h3>
-          <p class="student-property-card__location">📍 ${p.location?.city || 'Location'}</p>
-          <div class="student-property-card__price">${formatMoney(p.rent)}/month</div>
+          <h3 class="student-property-card__title">${property.title}</h3>
+          <p class="student-property-card__location">📍 ${property.location?.city || 'Location'}</p>
+          <div class="student-property-card__price">${formatMoney(property.rent)}/month</div>
           <div class="student-property-card__rating">★★★★★ 4.8</div>
           <div class="student-property-card__actions">
             <button class="btn btn--primary btn--sm" data-action="view" data-id="${id}">View</button>
@@ -285,11 +311,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadBookings();
   await loadMyHome();
   await loadProfile();
+  await loadNotificationCounts();
+
+  // Handle profile dropdown
+  document.getElementById('studentProfileDropdown')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('studentDropdownMenu');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    const dropdown = document.getElementById('studentDropdownMenu');
+    if (dropdown) dropdown.style.display = 'none';
+  });
+
+  // Handle profile button click
+  document.getElementById('btnProfile')?.addEventListener('click', () => {
+    document.querySelector('[data-section="profile"]')?.click();
+  });
 
   // Handle logout
-  document.querySelector('[data-logout]')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    logout();
+  document.querySelectorAll('[data-logout]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
   });
 
   // Handle search
@@ -436,7 +483,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (user.profile) {
         const firstName = user.profile.firstName || '';
         const lastName = user.profile.lastName || '';
-        const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`;
+        const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+        
+        // Update profile image in header
+        document.getElementById('studentProfileImg').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
+        
+        // Update welcome message with real name
+        const welcomeEl = document.querySelector('.student-header__welcome h1');
+        if (welcomeEl) {
+          welcomeEl.textContent = `Find your perfect campus home, ${firstName || 'Student'} 👋`;
+        }
         
         document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${initials}&background=0B3D2E&color=fff`;
         document.getElementById('profileName').textContent = `${firstName} ${lastName}`.trim() || 'Student';
@@ -447,6 +503,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (err) {
       console.error('Failed to load profile:', err);
+    }
+  }
+
+  // Load message and notification counts
+  async function loadNotificationCounts() {
+    try {
+      const [messagesData, notificationsData] = await Promise.all([
+        api.get('/messages'),
+        api.get('/notifications')
+      ]);
+      
+      const messages = Array.isArray(messagesData) ? messagesData : messagesData?.messages || messagesData?.data || [];
+      const notifications = Array.isArray(notificationsData) ? notificationsData : notificationsData?.notifications || notificationsData?.data || [];
+      
+      const unreadMessages = messages.filter(m => !m.read).length;
+      const unreadNotifications = notifications.filter(n => !n.read).length;
+      
+      const messageBadges = document.querySelectorAll('.student-header__badge');
+      if (messageBadges.length >= 2) {
+        messageBadges[0].textContent = unreadMessages;
+        messageBadges[0].style.display = unreadMessages > 0 ? 'block' : 'none';
+        
+        messageBadges[1].textContent = unreadNotifications;
+        messageBadges[1].style.display = unreadNotifications > 0 ? 'block' : 'none';
+      }
+    } catch (err) {
+      console.error('Failed to load notification counts:', err);
     }
   }
 

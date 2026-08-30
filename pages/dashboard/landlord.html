@@ -119,33 +119,8 @@
           </svg>
           Analytics
         </a>
-        <a href="#settings" class="landlord-sidebar__link" data-section="settings">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-          Settings
-        </a>
       </nav>
       
-      <div class="landlord-sidebar__footer">
-        <div class="landlord-profile">
-          <div class="landlord-profile__avatar">
-            <img src="https://ui-avatars.com/api/?name=Landlord&background=0B3D2E&color=fff" alt="Landlord">
-          </div>
-          <div class="landlord-profile__info">
-            <div class="landlord-profile__name" id="landlordName">Loading...</div>
-            <div class="landlord-profile__role" id="landlordRole">Loading...</div>
-          </div>
-          <button class="landlord-profile__logout" data-logout aria-label="Logout">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <polyline points="16 17 21 12 16 7"></polyline>
-              <line x1="21" y1="12" x2="9" y2="12"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
     </aside>
 
     <!-- Main Content -->
@@ -177,8 +152,12 @@
             </svg>
             <span class="landlord-header__badge" id="notificationBadge" style="display: none;">0</span>
           </button>
-          <div class="landlord-header__profile">
-            <img src="https://ui-avatars.com/api/?name=Landlord&background=0B3D2E&color=fff" alt="Landlord" id="headerProfileImg">
+          <div class="landlord-header__profile" id="landlordProfileDropdown">
+            <img src="https://ui-avatars.com/api/?name=L&background=0B3D2E&color=fff" alt="Profile" id="landlordProfileImg">
+            <div class="landlord-header__dropdown" id="landlordDropdownMenu" style="display: none;">
+              <button class="landlord-header__dropdown-item" id="btnProfile">Profile</button>
+              <button class="landlord-header__dropdown-item" data-logout>Logout</button>
+            </div>
           </div>
         </div>
       </header>
@@ -362,28 +341,8 @@
           <div class="landlord-section__header">
             <h1 class="landlord-section__title">Bookings</h1>
           </div>
-          <div class="landlord-bookings">
-            <div class="landlord-booking-card">
-              <div class="landlord-booking-card__profile">
-                <img src="https://ui-avatars.com/api/?name=Sarah&background=10b981&color=fff" alt="Sarah">
-                <div class="landlord-booking-card__info">
-                  <div class="landlord-booking-card__name">Sarah Wanjiku</div>
-                  <div class="landlord-booking-card__details">JKUAT</div>
-                </div>
-              </div>
-              <div class="landlord-booking-card__details">
-                <div class="landlord-booking-card__property">Green View — Room B12</div>
-                <div class="landlord-booking-card__time">Viewing: Tomorrow, 2:00 PM</div>
-              </div>
-              <div class="landlord-booking-card__status">
-                <span class="badge badge--pending">Upcoming</span>
-              </div>
-              <div class="landlord-booking-card__actions">
-                <button class="btn btn--primary btn--sm" data-action="confirm">Confirm</button>
-                <button class="btn btn--outline btn--sm" data-action="reschedule">Reschedule</button>
-                <button class="btn btn--ghost btn--sm" data-action="message">Message</button>
-              </div>
-            </div>
+          <div class="landlord-bookings" id="bookingsList">
+            <div class="landlord-placeholder"><p>No bookings yet.</p></div>
           </div>
         </section>
 
@@ -429,29 +388,8 @@
           <div class="landlord-section__header">
             <h1 class="landlord-section__title">Messages</h1>
           </div>
-          <div class="landlord-messages">
-            <div class="landlord-message-card">
-              <div class="landlord-message-card__profile">
-                <img src="https://ui-avatars.com/api/?name=Sarah&background=10b981&color=fff" alt="Sarah">
-                <div class="landlord-message-card__info">
-                  <div class="landlord-message-card__name">Sarah Wanjiku</div>
-                  <div class="landlord-message-card__preview">"Is Wi-Fi available in Room B12?"</div>
-                </div>
-              </div>
-              <div class="landlord-message-card__time">2 hours ago</div>
-              <button class="btn btn--primary btn--sm" data-action="reply">Reply</button>
-            </div>
-            <div class="landlord-message-card">
-              <div class="landlord-message-card__profile">
-                <img src="https://ui-avatars.com/api/?name=John&background=3b82f6&color=fff" alt="John">
-                <div class="landlord-message-card__info">
-                  <div class="landlord-message-card__name">John Kamau</div>
-                  <div class="landlord-message-card__preview">"I'd like to schedule a viewing."</div>
-                </div>
-              </div>
-              <div class="landlord-message-card__time">5 hours ago</div>
-              <button class="btn btn--primary btn--sm" data-action="reply">Reply</button>
-            </div>
+          <div class="landlord-messages" id="messagesList">
+            <div class="landlord-placeholder"><p>No messages yet.</p></div>
           </div>
         </section>
 
