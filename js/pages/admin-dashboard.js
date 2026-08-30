@@ -241,51 +241,6 @@ async function initCharts() {
   }
 }
 
-// Sidebar navigation
-function initSidebarNavigation() {
-  const sidebarLinks = document.querySelectorAll('.admin-sidebar__link');
-  const sections = document.querySelectorAll('.admin-section');
-  const sidebar = document.getElementById('adminSidebar');
-  const sidebarToggle = document.getElementById('sidebarToggle');
-  const main = document.querySelector('.admin-main');
-
-  // Handle section switching
-  sidebarLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const section = link.dataset.section;
-      
-      // Update active link
-      sidebarLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      
-      // Show corresponding section
-      sections.forEach(s => s.classList.remove('active'));
-      const targetSection = document.getElementById(`section-${section}`);
-      if (targetSection) {
-        targetSection.classList.add('active');
-        
-        // Initialize charts when analytics section is shown
-        if (section === 'analytics') {
-          initCharts();
-        }
-      }
-    });
-  });
-
-  // Handle sidebar toggle
-  sidebarToggle?.addEventListener('click', () => {
-    sidebar.classList.toggle('collapsed');
-    main.classList.toggle('expanded');
-  });
-
-  // Mobile sidebar toggle
-  if (window.innerWidth <= 1024) {
-    sidebar.classList.add('collapsed');
-    main.classList.add('expanded');
-  }
-}
-
 // Load properties table
 async function loadProperties() {
   const tbody = document.getElementById('propertiesTableBody');
