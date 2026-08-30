@@ -290,6 +290,7 @@
   background: var(--admin-bg-secondary);
   border-radius: 8px;
   cursor: pointer;
+  z-index: 1001;
 }
 
 .admin-header__user img {

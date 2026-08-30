@@ -747,11 +747,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             showToast('Cannot cancel: missing booking ID', 'error');
             return;
           }
+          // Try to cancel the booking/application
           await api.patch(`/bookings/${id}`, { status: 'cancelled' });
           showToast('Application cancelled', 'success');
           await loadApplications();
         } catch (err) {
-          showToast(err.message || 'Could not cancel application', 'error');
+          console.error('Cancel error:', err);
+          if (err.status === 404) {
+            showToast('Application not found or already cancelled', 'error');
+          } else {
+            showToast(err.message || 'Could not cancel application', 'error');
+          }
         }
         break;
     }

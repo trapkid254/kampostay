@@ -85,56 +85,58 @@ function initSidebarNavigation() {
 
 // Initialize charts with data
 async function initCharts() {
-  if (!window.Chart) return;
-
-  // Destroy existing charts before creating new ones to prevent canvas reuse errors
+  // Destroy existing chart instances before creating new ones
   if (listingsChart) listingsChart.destroy();
   if (registrationsChart) registrationsChart.destroy();
   if (revenueChart) revenueChart.destroy();
   if (universitiesChart) universitiesChart.destroy();
 
   try {
-    // Booking Trends Chart (Real data from API)
+    // Listings Chart - Real data from API
     const listingsCtx = document.getElementById('listingsChart');
     if (listingsCtx) {
       try {
-        const trendData = await api.get('/admin/trends/bookings?days=30');
-        const trends = trendData?.data || trendData;
-        const labels = trends?.labels || [];
-        const data = trends?.data || [];
+        const propertiesData = await api.get('/properties', { limit: 100 });
+        const properties = Array.isArray(propertiesData) ? propertiesData : propertiesData?.data || [];
+        
+        const activeCount = properties.filter(p => p.status === 'active').length;
+        const pendingCount = properties.filter(p => p.status === 'pending').length;
+        const suspendedCount = properties.filter(p => p.status === 'suspended').length;
         
         listingsChart = new Chart(listingsCtx, {
-          type: 'line',
+          type: 'doughnut',
           data: {
-            labels: labels.length > 0 ? labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            labels: ['Active', 'Pending', 'Suspended'],
             datasets: [{
-              label: 'Bookings Created',
-              data: data.length > 0 ? data : [0, 0, 0, 0, 0, 0, 0],
-              borderColor: '#0B3D2E',
-              backgroundColor: 'rgba(11, 61, 46, 0.1)',
-              fill: true,
-              tension: 0.4
+              data: [activeCount, pendingCount, suspendedCount],
+              backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: { legend: { position: 'bottom' } }
           }
         });
       } catch (err) {
-        console.debug('Could not load booking trends:', err);
+        console.debug('Could not load listings chart data:', err);
       }
     }
 
-    // Registrations Chart
+    // Registrations Chart - Real data from API
     const registrationsCtx = document.getElementById('registrationsChart');
     if (registrationsCtx) {
       try {
-        const dashboardStats = await api.get('/admin/dashboard');
-        const stats = dashboardStats?.data || dashboardStats;
-        const studentCount = stats?.users?.students || 0;
-        const landlordCount = stats?.users?.landlords || 0;
+        const [studentsData, landlordsData] = await Promise.all([
+          api.get('/users/students'),
+          api.get('/users/landlords')
+        ]);
+        
+        const students = Array.isArray(studentsData) ? studentsData : studentsData?.data || [];
+        const landlords = Array.isArray(landlordsData) ? landlordsData : landlordsData?.data || [];
+        
+        const studentCount = students.length;
+        const landlordCount = landlords.length;
         
         registrationsChart = new Chart(registrationsCtx, {
           type: 'bar',
