@@ -258,7 +258,7 @@ async function loadProperties() {
     tbody.innerHTML = list.map((p) => {
       const id = p._id || p.id;
       const firstMedia = p.media?.images?.[0] || {};
-      const img = p.primaryImage || firstMedia.url || firstMedia.secure_url || 'https://via.placeholder.com/60';
+      const img = p.primaryImage || firstMedia.url || firstMedia.secure_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=60&h=60&fit=crop';
       const verified = p.verification?.status === 'verified';
       const active = p.status === 'published' || p.status === 'active';
       
@@ -1100,4 +1100,63 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   });
+
+  // Handle profile dropdown
+  document.getElementById('adminProfileDropdown')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('adminDropdownMenu');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    const dropdown = document.getElementById('adminDropdownMenu');
+    if (dropdown) dropdown.style.display = 'none';
+  });
+
+  // Handle profile button click
+  document.getElementById('btnProfile')?.addEventListener('click', () => {
+    // Navigate to profile section or show profile modal
+    document.querySelector('[data-section="analytics"]')?.click();
+  });
+
+  // Handle logout
+  document.querySelector('[data-logout]')?.addEventListener('click', () => {
+    localStorage.clear();
+    window.location.href = '/pages/admin/login.html';
+  });
+
+  // Load notification counts
+  async function loadNotificationCounts() {
+    try {
+      const [messagesData, notificationsData] = await Promise.all([
+        api.get('/messages'),
+        api.get('/notifications')
+      ]);
+
+      const messages = Array.isArray(messagesData) ? messagesData : messagesData?.messages || messagesData?.data || [];
+      const notifications = Array.isArray(notificationsData) ? notificationsData : notificationsData?.notifications || notificationsData?.data || [];
+
+      const unreadMessages = messages.filter(m => !m.read).length;
+      const unreadNotifications = notifications.filter(n => !n.read).length;
+
+      const messageBadge = document.getElementById('adminMessageBadge');
+      const notificationBadge = document.getElementById('adminNotificationBadge');
+      
+      if (messageBadge) {
+        messageBadge.textContent = unreadMessages;
+        messageBadge.style.display = unreadMessages > 0 ? 'inline-flex' : 'none';
+      }
+      
+      if (notificationBadge) {
+        notificationBadge.textContent = unreadNotifications;
+        notificationBadge.style.display = unreadNotifications > 0 ? 'inline-flex' : 'none';
+      }
+    } catch (err) {
+      console.error('Failed to load notification counts:', err);
+    }
+  }
+
+  // Load notification counts on initialization
+  loadNotificationCounts();
 });

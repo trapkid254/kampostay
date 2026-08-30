@@ -105,13 +105,6 @@
           </svg>
           Reviews
         </a>
-        <a href="#profile" class="student-sidebar__link" data-section="profile">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          Profile
-        </a>
       </nav>
       
       <div class="student-sidebar__footer">
@@ -129,7 +122,7 @@
       <!-- Top Header -->
       <header class="student-header">
         <div class="student-header__welcome">
-          <h1>Find your perfect campus home, Delvin 👋</h1>
+          <h1 id="studentWelcomeMessage">Find your perfect campus home 👋</h1>
           <p>Safe, verified and affordable student accommodation.</p>
         </div>
         <div class="student-header__actions">
@@ -137,14 +130,14 @@
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            <span class="student-header__badge">3</span>
+            <span class="student-header__badge" id="studentMessageBadge" style="display: none;">0</span>
           </button>
           <button class="student-header__action" aria-label="Notifications">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
-            <span class="student-header__badge">5</span>
+            <span class="student-header__badge" id="studentNotificationBadge" style="display: none;">0</span>
           </button>
           <div class="student-header__profile" id="studentProfileDropdown">
             <img src="https://ui-avatars.com/api/?name=S&background=0B3D2E&color=fff" alt="Profile" id="studentProfileImg">
@@ -284,7 +277,7 @@
           <div class="student-my-home">
             <div class="student-my-home__card" id="myHomeCard">
               <div class="student-my-home__image">
-                <img id="myHomeImage" src="https://via.placeholder.com/400x250?text=No+Property" alt="My Home">
+                <img id="myHomeImage" src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop" alt="My Home">
               </div>
               <div class="student-my-home__content">
                 <h2 class="student-my-home__title" id="myHomeTitle">No active booking</h2>

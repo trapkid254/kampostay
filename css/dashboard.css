@@ -282,23 +282,72 @@
 }
 
 .admin-header__user {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 1rem;
   background: var(--admin-bg-secondary);
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .admin-header__user img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  transition: border-color 0.2s;
+}
+
+.admin-header__user:hover img {
+  border-color: #0B3D2E;
 }
 
 .admin-header__user span {
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+.admin-header__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  min-width: 160px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.admin-header__dropdown-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-header__dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.admin-header__dropdown-item[data-logout] {
+  color: #ef4444;
+  border-top: 1px solid #e2e8f0;
+}
+
+.admin-header__dropdown-item[data-logout]:hover {
+  background: #fef2f2;
 }
 
 /* Content */
@@ -1272,10 +1321,62 @@
   text-align: center;
 }
 
+.landlord-header__profile {
+  position: relative;
+  cursor: pointer;
+}
+
 .landlord-header__profile img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  transition: border-color 0.2s;
+}
+
+.landlord-header__profile:hover img {
+  border-color: #0B3D2E;
+}
+
+.landlord-header__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  min-width: 160px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.landlord-header__dropdown-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.landlord-header__dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.landlord-header__dropdown-item[data-logout] {
+  color: #ef4444;
+  border-top: 1px solid #e2e8f0;
+}
+
+.landlord-header__dropdown-item[data-logout]:hover {
+  background: #fef2f2;
 }
 
 /* Landlord Content */
@@ -2178,10 +2279,62 @@
   text-align: center;
 }
 
+.student-header__profile {
+  position: relative;
+  cursor: pointer;
+}
+
 .student-header__profile img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  transition: border-color 0.2s;
+}
+
+.student-header__profile:hover img {
+  border-color: #0B3D2E;
+}
+
+.student-header__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  min-width: 160px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.student-header__dropdown-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.student-header__dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.student-header__dropdown-item[data-logout] {
+  color: #ef4444;
+  border-top: 1px solid #e2e8f0;
+}
+
+.student-header__dropdown-item[data-logout]:hover {
+  background: #fef2f2;
 }
 
 /* Student Search */

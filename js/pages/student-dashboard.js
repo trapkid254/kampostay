@@ -196,10 +196,15 @@ async function loadSaved() {
 
     container.innerHTML = list.map((p) => {
       // Handle different response structures for wishlist
-      const id = p._id || p.id || p.property?._id || p.property?.id;
+      const id = p._id || p.id || p.property?._id || p.property?.id || p.wishlistId;
       const property = p.property || p;
       const firstMedia = property.media?.images?.[0] || {};
       const img = property.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
+      
+      if (!id) {
+        console.warn('Skipping wishlist item with missing ID:', p);
+        return '';
+      }
       
       return `<div class="student-property-card">
         <div class="student-property-card__image">
@@ -241,6 +246,11 @@ async function loadApplications() {
       const id = app._id || app.id;
       const property = app.property || {};
       
+      if (!id) {
+        console.warn('Skipping application with missing ID:', app);
+        return '';
+      }
+      
       return `<div class="student-application-card">
         <div class="student-application-card__property">
           <h3>${property.title || 'Property'}</h3>
@@ -251,7 +261,7 @@ async function loadApplications() {
         <div class="student-application-card__actions">
           <button class="btn btn--ghost btn--sm" data-action="view" data-id="${id}">View Application</button>
           <button class="btn btn--outline btn--sm" data-action="message" data-id="${id}">Message Landlord</button>
-          ${app.status === 'pending' ? '<button class="btn btn--danger btn--sm" data-action="cancel" data-id="${id}">Cancel</button>' : ''}
+          ${app.status === 'pending' ? `<button class="btn btn--danger btn--sm" data-action="cancel" data-id="${id}">Cancel</button>` : ''}
         </div>
       </div>`;
     }).join('');
@@ -513,20 +523,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         api.get('/messages'),
         api.get('/notifications')
       ]);
-      
+
       const messages = Array.isArray(messagesData) ? messagesData : messagesData?.messages || messagesData?.data || [];
       const notifications = Array.isArray(notificationsData) ? notificationsData : notificationsData?.notifications || notificationsData?.data || [];
-      
+
       const unreadMessages = messages.filter(m => !m.read).length;
       const unreadNotifications = notifications.filter(n => !n.read).length;
+
+      const messageBadge = document.getElementById('studentMessageBadge');
+      const notificationBadge = document.getElementById('studentNotificationBadge');
       
-      const messageBadges = document.querySelectorAll('.student-header__badge');
-      if (messageBadges.length >= 2) {
-        messageBadges[0].textContent = unreadMessages;
-        messageBadges[0].style.display = unreadMessages > 0 ? 'block' : 'none';
-        
-        messageBadges[1].textContent = unreadNotifications;
-        messageBadges[1].style.display = unreadNotifications > 0 ? 'block' : 'none';
+      if (messageBadge) {
+        messageBadge.textContent = unreadMessages;
+        messageBadge.style.display = unreadMessages > 0 ? 'inline-flex' : 'none';
+      }
+      
+      if (notificationBadge) {
+        notificationBadge.textContent = unreadNotifications;
+        notificationBadge.style.display = unreadNotifications > 0 ? 'inline-flex' : 'none';
       }
     } catch (err) {
       console.error('Failed to load notification counts:', err);
@@ -576,7 +590,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const property = activeBooking.property;
       const firstMedia = property?.media?.images?.[0] || {};
-      const img = property?.primaryImage || firstMedia?.url || firstMedia?.secure_url || 'https://via.placeholder.com/400x250';
+      const img = property?.primaryImage || firstMedia?.url || firstMedia?.secure_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
       
       document.getElementById('myHomeImage').src = img;
       document.getElementById('myHomeTitle').textContent = property?.title || 'My Home';
@@ -729,7 +743,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         break;
       case 'cancel':
         try {
-          if (!id) {
+          if (!id || id === '${id}' || id === 'undefined') {
             showToast('Cannot cancel: missing booking ID', 'error');
             return;
           }

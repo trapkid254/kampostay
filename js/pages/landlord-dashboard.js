@@ -397,11 +397,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Handle logout
-  document.querySelectorAll('[data-logout]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      logout();
-    });
+  document.querySelector('[data-logout]')?.addEventListener('click', () => {
+    logout();
   });
 
   // Handle property actions
