@@ -196,8 +196,15 @@ async function loadSaved() {
 
     container.innerHTML = list.map((p) => {
       // Handle different response structures for wishlist
-      const id = p._id || p.id || p.property?._id || p.property?.id || p.wishlistId;
       const property = p.property || p;
+      
+      // Skip items with null/missing property
+      if (!property || !property._id) {
+        console.warn('Skipping wishlist item with missing/invalid property:', p);
+        return '';
+      }
+      
+      const id = p._id || p.id || property._id || property.id || p.wishlistId;
       const firstMedia = property.media?.images?.[0] || {};
       const img = property.primaryImage || firstMedia.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=250&fit=crop';
       
@@ -456,6 +463,119 @@ document.addEventListener('DOMContentLoaded', async () => {
         priority: formData.get('priority')
       });
       showToast('Maintenance request submitted!', 'success');
+      form.reset();
+    } catch (err) {
+      showToast(err.message || 'Failed to submit request', 'error');
+    }
+  });
+
+  // Handle safety support modal actions
+  document.querySelector('.student-safety-grid')?.addEventListener('click', (e) => {
+    const card = e.target.closest('.student-safety-card');
+    if (!card) return;
+    
+    const action = card.dataset.action;
+    
+    switch (action) {
+      case 'report-property':
+        openModal('reportPropertyModal');
+        break;
+      case 'report-landlord':
+        openModal('reportLandlordModal');
+        break;
+      case 'emergency-contacts':
+        openModal('emergencyContactsModal');
+        break;
+      case 'support':
+        openModal('supportModal');
+        break;
+      case 'scam-tips':
+        openModal('scamTipsModal');
+        break;
+    }
+  });
+
+  // Modal functionality
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.style.display = 'flex';
+    modal.classList.add('is-open');
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.classList.remove('is-open');
+  }
+
+  // Close modal on overlay click or close button
+  document.querySelectorAll('[data-close-modal]').forEach(el => {
+    el.addEventListener('click', () => {
+      const modal = el.closest('.modal');
+      if (modal) modal.style.display = 'none';
+    });
+  });
+
+  // Handle report property form submission
+  document.getElementById('reportPropertyForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      showToast('Submitting report...', 'info');
+      await api.post('/reports/property', {
+        propertyId: formData.get('propertyId'),
+        reason: formData.get('reason'),
+        description: formData.get('description')
+      });
+      showToast('Report submitted successfully!', 'success');
+      closeModal('reportPropertyModal');
+      form.reset();
+    } catch (err) {
+      showToast(err.message || 'Failed to submit report', 'error');
+    }
+  });
+
+  // Handle report landlord form submission
+  document.getElementById('reportLandlordForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      showToast('Submitting report...', 'info');
+      await api.post('/reports/landlord', {
+        landlordId: formData.get('landlordId'),
+        reason: formData.get('reason'),
+        description: formData.get('description')
+      });
+      showToast('Report submitted successfully!', 'success');
+      closeModal('reportLandlordModal');
+      form.reset();
+    } catch (err) {
+      showToast(err.message || 'Failed to submit report', 'error');
+    }
+  });
+
+  // Handle support form submission
+  document.getElementById('supportForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    try {
+      showToast('Submitting support request...', 'info');
+      await api.post('/support', {
+        topic: formData.get('topic'),
+        subject: formData.get('subject'),
+        message: formData.get('message'),
+        email: formData.get('email')
+      });
+      showToast('Support request submitted! We\'ll get back to you soon.', 'success');
+      closeModal('supportModal');
       form.reset();
     } catch (err) {
       showToast(err.message || 'Failed to submit request', 'error');

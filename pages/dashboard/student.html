@@ -479,41 +479,41 @@
           </div>
           <div class="student-safety">
             <div class="student-safety-grid">
-              <a href="#" class="student-safety-card">
+              <button class="student-safety-card" data-action="report-property">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                   <line x1="12" y1="9" x2="12" y2="13"></line>
                   <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
                 <span>Report Property</span>
-              </a>
-              <a href="#" class="student-safety-card">
+              </button>
+              <button class="student-safety-card" data-action="report-landlord">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                   <circle cx="9" cy="7" r="4"></circle>
                 </svg>
                 <span>Report Landlord</span>
-              </a>
-              <a href="#" class="student-safety-card">
+              </button>
+              <button class="student-safety-card" data-action="emergency-contacts">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                 </svg>
                 <span>Emergency Contacts</span>
-              </a>
-              <a href="#" class="student-safety-card">
+              </button>
+              <button class="student-safety-card" data-action="support">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"></circle>
                   <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                   <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
                 <span>KampoStay Support</span>
-              </a>
-              <a href="#" class="student-safety-card">
+              </button>
+              <button class="student-safety-card" data-action="scam-tips">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
                 <span>Scam Prevention Tips</span>
-              </a>
+              </button>
             </div>
           </div>
         </section>
@@ -558,6 +558,204 @@
           <span>Profile</span>
         </a>
       </nav>
+    </div>
+  </div>
+
+  <!-- Safety Modals -->
+  <div class="modal" id="reportPropertyModal" style="display: none;">
+    <div class="modal__overlay" data-close-modal></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2>Report Property</h2>
+        <button class="modal__close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal__body">
+        <form id="reportPropertyForm">
+          <div class="form-group">
+            <label class="form-label">Property Name/ID</label>
+            <input type="text" class="form-input" name="propertyId" placeholder="Enter property name or ID" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reason for Report</label>
+            <select class="form-select" name="reason" required>
+              <option value="">Select a reason</option>
+              <option value="fake-listing">Fake or misleading listing</option>
+              <option value="inaccurate-info">Inaccurate information</option>
+              <option value="safety-concern">Safety concern</option>
+              <option value="fraud">Suspected fraud</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" name="description" rows="4" placeholder="Please provide details about your report..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload Evidence (optional)</label>
+            <input type="file" class="form-input" accept="image/*,application/pdf">
+          </div>
+          <button type="submit" class="btn btn--primary">Submit Report</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="reportLandlordModal" style="display: none;">
+    <div class="modal__overlay" data-close-modal></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2>Report Landlord</h2>
+        <button class="modal__close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal__body">
+        <form id="reportLandlordForm">
+          <div class="form-group">
+            <label class="form-label">Landlord Name/ID</label>
+            <input type="text" class="form-input" name="landlordId" placeholder="Enter landlord name or ID" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reason for Report</label>
+            <select class="form-select" name="reason" required>
+              <option value="">Select a reason</option>
+              <option value="harassment">Harassment</option>
+              <option value="discrimination">Discrimination</option>
+              <option value="unfair-practices">Unfair business practices</option>
+              <option value="safety-concern">Safety concern</option>
+              <option value="fraud">Suspected fraud</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" name="description" rows="4" placeholder="Please provide details about your report..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload Evidence (optional)</label>
+            <input type="file" class="form-input" accept="image/*,application/pdf">
+          </div>
+          <button type="submit" class="btn btn--primary">Submit Report</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="emergencyContactsModal" style="display: none;">
+    <div class="modal__overlay" data-close-modal></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2>Emergency Contacts</h2>
+        <button class="modal__close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="emergency-contacts">
+          <div class="emergency-contact">
+            <h3>Police Emergency</h3>
+            <p class="emergency-phone">999 / 112</p>
+            <p>For immediate police assistance</p>
+          </div>
+          <div class="emergency-contact">
+            <h3>Ambulance</h3>
+            <p class="emergency-phone">998</p>
+            <p>For medical emergencies</p>
+          </div>
+          <div class="emergency-contact">
+            <h3>Fire Service</h3>
+            <p class="emergency-phone">997</p>
+            <p>For fire emergencies</p>
+          </div>
+          <div class="emergency-contact">
+            <h3>KampoStay Admin</h3>
+            <p class="emergency-phone">+254 700 000 000</p>
+            <p>Platform support (24/7)</p>
+          </div>
+          <div class="emergency-contact">
+            <h3>University Security</h3>
+            <p class="emergency-phone">Contact your campus security</p>
+            <p>For on-campus emergencies</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="supportModal" style="display: none;">
+    <div class="modal__overlay" data-close-modal></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2>KampoStay Support</h2>
+        <button class="modal__close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal__body">
+        <form id="supportForm">
+          <div class="form-group">
+            <label class="form-label">Support Topic</label>
+            <select class="form-select" name="topic" required>
+              <option value="">Select a topic</option>
+              <option value="booking">Booking issue</option>
+              <option value="payment">Payment problem</option>
+              <option value="property">Property inquiry</option>
+              <option value="account">Account issue</option>
+              <option value="technical">Technical problem</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input type="text" class="form-input" name="subject" placeholder="Brief description of your issue" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" name="message" rows="5" placeholder="Please describe your issue in detail..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Email</label>
+            <input type="email" class="form-input" name="email" placeholder="your@email.com" required>
+          </div>
+          <button type="submit" class="btn btn--primary">Submit Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="scamTipsModal" style="display: none;">
+    <div class="modal__overlay" data-close-modal></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2>Scam Prevention Tips</h2>
+        <button class="modal__close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="scam-tips">
+          <div class="scam-tip">
+            <h3>🔒 Never Pay Before Viewing</h3>
+            <p>Always view the property in person before making any payments. Scammers often ask for deposits before showing the property.</p>
+          </div>
+          <div class="scam-tip">
+            <h3>📱 Use KampoStay Messaging</h3>
+            <p>Keep all communication within the KampoStay platform. Avoid sharing personal phone numbers or email addresses until you've met the landlord.</p>
+          </div>
+          <div class="scam-tip">
+            <h3>💰 Verify Payment Methods</h3>
+            <p>Only use the official KampoStay payment system. Never send money via bank transfer, mobile money to personal accounts, or cryptocurrency.</p>
+          </div>
+          <div class="scam-tip">
+            <h3>🔍 Verify Landlord Identity</h3>
+            <p>Check the landlord's verification status on their profile. Verified landlords have been vetted by KampoStay.</p>
+          </div>
+          <div class="scam-tip">
+            <h3>⚠️ Watch for Red Flags</h3>
+            <p>Be suspicious of prices that are too good to be true, landlords who refuse to meet in person, or those who pressure you to decide quickly.</p>
+          </div>
+          <div class="scam-tip">
+            <h3>📋 Get Everything in Writing</h3>
+            <p>Ensure you have a written lease agreement that clearly states terms, rent amount, and payment schedule.</p>
+          </div>
+          <div class="scam-tip">
+            <h3>🆘 Report Suspicious Activity</h3>
+            <p>If you encounter a suspicious listing or landlord, report it immediately using the Report Property or Report Landlord options.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

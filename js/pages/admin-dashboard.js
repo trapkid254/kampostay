@@ -1118,8 +1118,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Handle profile button click
   document.getElementById('btnProfile')?.addEventListener('click', () => {
-    // Navigate to profile section or show profile modal
-    document.querySelector('[data-section="analytics"]')?.click();
+    // Navigate to settings section for profile management
+    document.querySelector('[data-section="settings"]')?.click();
   });
 
   // Handle logout
