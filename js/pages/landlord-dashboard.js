@@ -582,6 +582,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
+    const submitBtn = document.getElementById('addPropertySubmitBtn');
     
     const amenities = [];
     form.querySelectorAll('input[name="amenities"]:checked').forEach(cb => {
@@ -592,12 +593,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       title: formData.get('title'),
       description: formData.get('description'),
       propertyType: formData.get('propertyType'),
-      roomType: formData.get('propertyType'), // Use propertyType as roomType
       university: formData.get('university'),
       location: {
         city: formData.get('city'),
         walkingTimeMinutes: parseInt(formData.get('walkingTime')) || 0,
-        // Add optional coordinates - backend may require these
         coordinates: {
           lat: null,
           lng: null
@@ -605,12 +604,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       rent: parseInt(formData.get('rent')) || 0,
       totalRooms: parseInt(formData.get('totalRooms')) || 0,
-      amenities: amenities,
-      status: 'pending' // Changed from 'active' to 'pending' as valid enum
+      amenities: amenities
     };
 
     try {
-      showToast('Adding property...', 'info');
+      // Add loading state to button
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn--loading');
+        submitBtn.innerHTML = '<span class="btn--loading-text">Adding property</span>';
+      }
+      
       console.log('Submitting property data:', propertyData);
       const response = await api.post('/properties', propertyData);
       console.log('Property added successfully:', response);
@@ -622,6 +626,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.error('Property creation error:', err);
       console.error('Error details:', err.response || err.message);
       showToast(err.message || 'Failed to add property', 'error');
+    } finally {
+      // Remove loading state from button
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn--loading');
+        submitBtn.textContent = 'Add Property';
+      }
     }
   });
 

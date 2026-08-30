@@ -1,4 +1,4 @@
-import { API_BASE_URL, STORAGE_KEYS } from '../config.js';
+import { API_BASE_URL, STORAGE_KEYS, ROUTES } from '../config.js';
 
 class ApiClient {
   constructor(baseUrl) {
@@ -138,13 +138,13 @@ class ApiClient {
         } else {
           // Refresh failed: clear tokens and force login
           this.clearTokens();
-          try { window.location.href = '/pages/auth/login.html'; } catch (e) { /* ignore when not in browser */ }
+          try { window.location.href = ROUTES.login; } catch (e) { /* ignore when not in browser */ }
           throw new ApiError('Not authorized. Please sign in again.', 401, { code: 'UNAUTHORIZED' });
         }
       } else {
         // No refresh token available: clear tokens and force login
         this.clearTokens();
-        try { window.location.href = '/pages/auth/login.html'; } catch (e) { /* ignore when not in browser */ }
+        try { window.location.href = ROUTES.login; } catch (e) { /* ignore when not in browser */ }
         throw new ApiError('Not authorized. Please sign in.', 401, { code: 'UNAUTHORIZED' });
       }
     }

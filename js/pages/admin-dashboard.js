@@ -1000,10 +1000,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       university: formData.get('university'),
       location: {
         city: formData.get('city'),
-        walkingTimeMinutes: parseInt(formData.get('walkingTime'))
+        walkingTimeMinutes: parseInt(formData.get('walkingTime')) || 0,
+        coordinates: {
+          lat: null,
+          lng: null
+        }
       },
-      rent: parseInt(formData.get('rent')),
-      totalRooms: parseInt(formData.get('totalRooms')),
+      rent: parseInt(formData.get('rent')) || 0,
+      totalRooms: parseInt(formData.get('totalRooms')) || 0,
       amenities: amenities
     };
 
