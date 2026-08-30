@@ -593,6 +593,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       title: formData.get('title'),
       description: formData.get('description'),
       propertyType: formData.get('propertyType'),
+      roomType: formData.get('roomType'),
       university: formData.get('university'),
       location: {
         city: formData.get('city'),
