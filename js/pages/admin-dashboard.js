@@ -985,6 +985,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
+    const submitBtn = document.getElementById('addPropertySubmitBtn');
     
     const amenities = [];
     form.querySelectorAll('input[name="amenities"]:checked').forEach(cb => {
@@ -1007,7 +1008,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     try {
-      showToast('Adding property...', 'info');
+      // Add loading state to button
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn--loading');
+        submitBtn.innerHTML = '<span class="btn--loading-text">Adding property</span>';
+      }
+      
       await api.post('/properties', propertyData);
       showToast('Property added successfully!', 'success');
       closeModal('addPropertyModal');
@@ -1015,6 +1022,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       await loadProperties();
     } catch (err) {
       showToast(err.message || 'Failed to add property', 'error');
+    } finally {
+      // Remove loading state from button
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn--loading');
+        submitBtn.textContent = 'Add Property';
+      }
     }
   });
 

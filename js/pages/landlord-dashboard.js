@@ -592,6 +592,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       title: formData.get('title'),
       description: formData.get('description'),
       propertyType: formData.get('propertyType'),
+      roomType: formData.get('propertyType'), // Use propertyType as roomType
       university: formData.get('university'),
       location: {
         city: formData.get('city'),
@@ -605,7 +606,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       rent: parseInt(formData.get('rent')) || 0,
       totalRooms: parseInt(formData.get('totalRooms')) || 0,
       amenities: amenities,
-      status: 'active'
+      status: 'pending' // Changed from 'active' to 'pending' as valid enum
     };
 
     try {

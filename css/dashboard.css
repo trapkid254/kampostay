@@ -3307,6 +3307,49 @@
   padding: 1.5rem;
 }
 
+/* Loading Dots Animation */
+.btn--loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn--loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn--loading-text {
+  display: inline-block;
+}
+
+.btn--loading-text::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+ margin-left: 2px;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
 @media (max-width: 480px) {
   .student-header__actions {
     gap: 0.5rem;
