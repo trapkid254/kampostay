@@ -1107,17 +1107,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('adminProfileDropdown')?.addEventListener('click', (e) => {
     e.stopPropagation();
     const dropdown = document.getElementById('adminDropdownMenu');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    if (dropdown) {
+      const isHidden = dropdown.style.display === 'none' || dropdown.style.display === '';
+      dropdown.style.display = isHidden ? 'block' : 'none';
+    }
   });
 
   // Close dropdown when clicking outside
-  document.addEventListener('click', () => {
+  document.addEventListener('click', (e) => {
     const dropdown = document.getElementById('adminDropdownMenu');
-    if (dropdown) dropdown.style.display = 'none';
+    const profileDropdown = document.getElementById('adminProfileDropdown');
+    if (dropdown && !e.target.closest('#adminProfileDropdown')) {
+      dropdown.style.display = 'none';
+    }
   });
 
   // Handle profile button click
-  document.getElementById('btnProfile')?.addEventListener('click', () => {
+  document.getElementById('btnProfile')?.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent dropdown from closing immediately
     // Navigate to settings section for profile management
     document.querySelector('[data-section="settings"]')?.click();
   });

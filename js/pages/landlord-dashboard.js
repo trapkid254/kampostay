@@ -595,21 +595,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       university: formData.get('university'),
       location: {
         city: formData.get('city'),
-        walkingTimeMinutes: parseInt(formData.get('walkingTime'))
+        walkingTimeMinutes: parseInt(formData.get('walkingTime')) || 0,
+        // Add optional coordinates - backend may require these
+        coordinates: {
+          lat: null,
+          lng: null
+        }
       },
-      rent: parseInt(formData.get('rent')),
-      totalRooms: parseInt(formData.get('totalRooms')),
-      amenities: amenities
+      rent: parseInt(formData.get('rent')) || 0,
+      totalRooms: parseInt(formData.get('totalRooms')) || 0,
+      amenities: amenities,
+      status: 'active'
     };
 
     try {
       showToast('Adding property...', 'info');
-      await api.post('/properties', propertyData);
+      console.log('Submitting property data:', propertyData);
+      const response = await api.post('/properties', propertyData);
+      console.log('Property added successfully:', response);
       showToast('Property added successfully!', 'success');
       closeModal('addPropertyModal');
       form.reset();
       await loadProperties();
     } catch (err) {
+      console.error('Property creation error:', err);
+      console.error('Error details:', err.response || err.message);
       showToast(err.message || 'Failed to add property', 'error');
     }
   });
